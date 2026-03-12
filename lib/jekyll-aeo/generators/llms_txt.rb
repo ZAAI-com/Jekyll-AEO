@@ -194,19 +194,7 @@ module JekyllAeo
       end
 
       def self.md_url(url, config, baseurl = "")
-        baseurl = baseurl.to_s.chomp("/")
-        md_path = if config["md_path_style"] == "spec"
-                    url.end_with?("/") ? "#{url}index.html.md" : "#{url}.md"
-                  else
-                    if url == "/"
-                      "/index.md"
-                    elsif url.end_with?("/")
-                      url.sub(%r{/\z}, ".md")
-                    else
-                      "#{url}.md"
-                    end
-                  end
-        "#{baseurl}#{md_path}"
+        JekyllAeo::Utils::MdUrl.for(url, config, baseurl)
       end
 
       private_class_method :collect_eligible, :build_sections, :build_custom_sections,

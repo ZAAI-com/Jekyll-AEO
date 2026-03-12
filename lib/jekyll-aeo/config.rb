@@ -7,6 +7,7 @@ module JekyllAeo
       "md_path_style" => "clean",
       "strip_block_tags" => true,
       "protect_indented_code" => false,
+      "link_tag" => "auto",
       "exclude" => [],
       "include" => [],
       "html_fallback" => false,
@@ -20,7 +21,7 @@ module JekyllAeo
       },
       "url_map" => {
         "enabled" => false,
-        "output_path" => "url-map.md",
+        "output_filepath" => "docs/Url-Map.md",
         "columns" => %w[page_id url lang layout path redirects markdown_copy skipped]
       }
     }.freeze

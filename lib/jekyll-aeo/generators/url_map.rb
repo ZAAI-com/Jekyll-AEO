@@ -28,9 +28,9 @@ module JekyllAeo
         sections = build_sections(items)
         markdown = build_markdown(sections, columns, config)
 
-        output_path = File.join(site.dest, url_map_config["output_path"] || "url-map.md")
-        FileUtils.mkdir_p(File.dirname(output_path))
-        File.write(output_path, markdown)
+        output_file = File.join(site.source, url_map_config["output_filepath"] || "docs/Url-Map.md")
+        FileUtils.mkdir_p(File.dirname(output_file))
+        File.write(output_file, markdown)
       end
 
       def self.collect_all_items(site, config, columns)

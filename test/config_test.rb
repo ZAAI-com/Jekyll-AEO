@@ -22,6 +22,7 @@ class ConfigTest < Minitest::Test
     assert_equal "clean", config["md_path_style"]
     assert_equal true, config["strip_block_tags"]
     assert_equal false, config["protect_indented_code"]
+    assert_equal "auto", config["link_tag"]
     assert_equal [], config["exclude"]
     assert_equal [], config["include"]
     assert_equal false, config["html_fallback"]
@@ -79,7 +80,7 @@ class ConfigTest < Minitest::Test
   def test_defaults_include_url_map
     config = JekyllAeo::Config.from_site(mock_site_no_config)
     assert_equal false, config["url_map"]["enabled"]
-    assert_equal "url-map.md", config["url_map"]["output_path"]
+    assert_equal "docs/Url-Map.md", config["url_map"]["output_filepath"]
     assert_equal %w[page_id url lang layout path redirects markdown_copy skipped], config["url_map"]["columns"]
   end
 
@@ -89,6 +90,6 @@ class ConfigTest < Minitest::Test
     }))
     assert_equal true, config["url_map"]["enabled"]
     assert_equal %w[url path], config["url_map"]["columns"]
-    assert_equal "url-map.md", config["url_map"]["output_path"]
+    assert_equal "docs/Url-Map.md", config["url_map"]["output_filepath"]
   end
 end

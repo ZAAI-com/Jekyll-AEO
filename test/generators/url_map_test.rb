@@ -78,7 +78,7 @@ class UrlMapTest < Minitest::Test
   end
 
   def output_path
-    File.join(@dest_dir, "url-map.md")
+    File.join(@source_dir, "docs/Url-Map.md")
   end
 
   # --- Enabled/Disabled tests ---
@@ -114,16 +114,16 @@ class UrlMapTest < Minitest::Test
 
   # --- Output path ---
 
-  def test_custom_output_path
+  def test_custom_output_file
     write_source("about.md")
     page = mock_page(url: "/about/", source_file: "about.md")
     site = mock_site(pages: [page], aeo_config: {
-      "url_map" => { "enabled" => true, "output_path" => "custom/map.md" }
+      "url_map" => { "enabled" => true, "output_filepath" => "custom/map.md" }
     })
     JekyllAeo::Generators::UrlMap.generate(site)
 
-    custom_path = File.join(@dest_dir, "custom/map.md")
-    assert File.exist?(custom_path), "custom output path should work"
+    custom_path = File.join(@source_dir, "custom/map.md")
+    assert File.exist?(custom_path), "custom output_file should work"
   end
 
   # --- Columns ---
