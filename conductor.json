@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "setup": "bash toolkit/conductor/setup.sh",
+    "run": "bash toolkit/conductor/run.sh"
+  }
+}
