@@ -8,7 +8,14 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Manuel Gruber"]
   spec.summary       = "Answer Engine Optimization for Jekyll"
   spec.description   = "Generates clean markdown copies of Jekyll pages and llms.txt files for LLM consumption"
+  spec.homepage      = "https://zaai.com/jekyll-aeo"
   spec.license       = "MIT"
+
+  spec.metadata      = {
+    "homepage_uri"    => spec.homepage,
+    "source_code_uri" => "https://github.com/ZAAI-com/Jekyll-AEO",
+    "bug_tracker_uri" => "https://github.com/ZAAI-com/Jekyll-AEO/issues"
+  }
 
   spec.required_ruby_version = ">= 3.0"
 
