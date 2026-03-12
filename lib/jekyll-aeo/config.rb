@@ -23,6 +23,16 @@ module JekyllAeo
         "enabled" => false,
         "output_filepath" => "docs/Url-Map.md",
         "columns" => %w[page_id url lang layout path redirects markdown_copy skipped]
+      },
+      "domain_profile" => {
+        "enabled" => false,
+        "name" => nil,
+        "description" => nil,
+        "website" => nil,
+        "contact" => nil,
+        "logo" => nil,
+        "entity_type" => nil,
+        "jsonld" => nil
       }
     }.freeze
 

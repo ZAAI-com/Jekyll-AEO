@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "json"
+
 module JekyllAeo
   module Commands
     class Validate < Jekyll::Command
@@ -35,6 +37,7 @@ module JekyllAeo
           validate_llms_txt(dest, errors)
           validate_llms_full_txt(dest, errors)
           validate_md_references(dest, baseurl, errors)
+          validate_domain_profile(dest, errors, warnings)
           [errors, warnings]
         end
 
@@ -80,6 +83,30 @@ module JekyllAeo
                            end
             file_path = File.join(dest, relative_url)
             errors << "Referenced file not found: #{url} (expected at #{file_path})" unless File.exist?(file_path)
+          end
+        end
+
+        def validate_domain_profile(dest, errors, warnings)
+          path = File.join(dest, ".well-known", "domain-profile.json")
+          return unless File.exist?(path)
+
+          begin
+            data = JSON.parse(File.read(path, encoding: "utf-8"))
+          rescue JSON::ParserError => e
+            errors << "domain-profile.json is not valid JSON: #{e.message}"
+            return
+          end
+
+          %w[spec name description website contact].each do |field|
+            value = data[field]
+            if value.nil? || (value.is_a?(String) && value.empty?)
+              errors << "domain-profile.json missing required field: #{field}"
+            end
+          end
+
+          entity_type = data["entity_type"]
+          if entity_type && !JekyllAeo::Generators::DomainProfile::VALID_ENTITY_TYPES.include?(entity_type)
+            warnings << "domain-profile.json has invalid entity_type: #{entity_type}"
           end
         end
 
