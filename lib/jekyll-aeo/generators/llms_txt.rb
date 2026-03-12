@@ -133,7 +133,7 @@ module JekyllAeo
           section[:items].each do |item|
             url_md = md_url(item[:url], config, site.config["baseurl"])
             entry = "- [#{item[:title]}](#{url_md})"
-            entry += ": #{item[:description]}" unless item[:description].empty?
+            entry += ": #{item[:description]}" if llms_config["include_descriptions"] != false && !item[:description].empty?
             lines << entry
           end
 

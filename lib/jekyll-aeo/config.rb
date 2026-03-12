@@ -11,18 +11,30 @@ module JekyllAeo
       "exclude" => [],
       "include" => [],
       "html_fallback" => false,
+      "include_last_modified" => true,
+      "md_metadata" => false,
       "llms_txt" => {
         "enabled" => true,
         "description" => nil,
         "full_txt_mode" => "all",
         "sections" => nil,
         "front_matter_keys" => [],
-        "show_lastmod" => false
+        "show_lastmod" => false,
+        "include_descriptions" => true
       },
       "url_map" => {
         "enabled" => false,
         "output_filepath" => "docs/Url-Map.md",
         "columns" => %w[page_id url lang layout path redirects markdown_copy skipped]
+      },
+      "robots_txt" => {
+        "enabled" => false,
+        "allow" => %w[Googlebot Bingbot OAI-SearchBot ChatGPT-User Claude-SearchBot
+                      Claude-User PerplexityBot Applebot-Extended],
+        "disallow" => %w[GPTBot ClaudeBot Google-Extended Meta-ExternalAgent Amazonbot],
+        "include_sitemap" => true,
+        "include_llms_txt" => true,
+        "custom_rules" => []
       },
       "domain_profile" => {
         "enabled" => false,

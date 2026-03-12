@@ -28,10 +28,20 @@ class MarkdownPageTest < Minitest::Test
     site
   end
 
+  def no_lastmod_site(extra = {})
+    mock_site({ "jekyll_aeo" => { "include_last_modified" => false }.merge(extra) })
+  end
+
   def mock_page(title: "Test Page", description: nil, source_file: "page.md",
-                dest_path: nil, url: "/page/")
+                dest_path: nil, url: "/page/", last_modified_at: nil, date: nil,
+                author: nil, lang: nil, canonical_url: nil)
     data = { "title" => title }
     data["description"] = description if description
+    data["last_modified_at"] = last_modified_at if last_modified_at
+    data["date"] = date if date
+    data["author"] = author if author
+    data["lang"] = lang if lang
+    data["canonical_url"] = canonical_url if canonical_url
 
     dest = dest_path || File.join(@dest_dir, "page", "index.html")
     rel_path = source_file
@@ -58,7 +68,7 @@ class MarkdownPageTest < Minitest::Test
   def test_generates_md_file_with_clean_path
     write_source("page.md", "---\ntitle: Test Page\n---\nSome content here.\n")
     page = mock_page
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     assert File.exist?(output_path), "Expected .md file at clean path"
@@ -71,18 +81,18 @@ class MarkdownPageTest < Minitest::Test
   def test_does_not_prepend_title_when_h1_exists
     write_source("page.md", "---\ntitle: Test Page\n---\n# My Custom Heading\n\nContent.\n")
     page = mock_page
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
-    refute content.start_with?("# Test Page\n"), "Should not prepend title when H1 exists"
-    assert content.start_with?("# My Custom Heading\n"), "Should keep original H1"
+    refute_includes content, "# Test Page\n"
+    assert_includes content, "# My Custom Heading"
   end
 
   def test_adds_description_blockquote
     write_source("page.md", "---\ntitle: Test Page\ndescription: A great page\n---\nContent.\n")
     page = mock_page(description: "A great page")
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -93,7 +103,7 @@ class MarkdownPageTest < Minitest::Test
     desc = "Line one\nLine two\nLine three"
     write_source("page.md", "---\ntitle: Test Page\n---\nContent.\n")
     page = mock_page(description: desc)
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -103,7 +113,7 @@ class MarkdownPageTest < Minitest::Test
   def test_strips_yaml_front_matter
     write_source("page.md", "---\ntitle: Test\nlayout: page\n---\nBody content.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -115,7 +125,7 @@ class MarkdownPageTest < Minitest::Test
   def test_strips_liquid_from_body
     write_source("page.md", "---\ntitle: Test\n---\nHello {% if true %}world{% endif %}.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -126,7 +136,7 @@ class MarkdownPageTest < Minitest::Test
   def test_collapses_blank_lines
     write_source("page.md", "---\ntitle: Test\n---\n\n\n\n\nContent.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -171,5 +181,179 @@ class MarkdownPageTest < Minitest::Test
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
     assert content.end_with?("\n"), "Should end with newline"
+  end
+
+  # --- Feature 2: Last-modified ---
+
+  def test_includes_last_modified_from_last_modified_at
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
+    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "> Last updated: 2025-06-15"
+  end
+
+  def test_includes_last_modified_from_date
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", date: Time.new(2024, 1, 1))
+    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "> Last updated: 2024-01-01"
+  end
+
+  def test_last_modified_at_takes_priority_over_date
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15), date: Time.new(2024, 1, 1))
+    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "> Last updated: 2025-06-15"
+    refute_includes content, "2024-01-01"
+  end
+
+  def test_last_modified_falls_back_to_mtime
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "> Last updated:"
+  end
+
+  def test_last_modified_disabled_via_config
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    refute_includes content, "Last updated"
+  end
+
+  def test_last_modified_after_description
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", description: "A page", last_modified_at: Time.new(2025, 6, 15))
+    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    desc_pos = content.index("> A page")
+    last_mod_pos = content.index("> Last updated:")
+    assert desc_pos < last_mod_pos, "Last updated should appear after description"
+  end
+
+  # --- Feature 4: Structured metadata header ---
+
+  def test_md_metadata_disabled_by_default
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    refute content.start_with?("---\n"), "Metadata block should not appear by default"
+  end
+
+  def test_md_metadata_block_when_enabled
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(
+      title: "Test Page", description: "A test", url: "/page/",
+      author: "Manuel", date: Time.new(2025, 3, 10), lang: "en"
+    )
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert content.start_with?("---\n"), "Should start with metadata block"
+    assert_includes content, "title: Test Page"
+    assert_includes content, "url: /page/"
+    assert_includes content, "description: A test"
+    assert_includes content, "author: Manuel"
+    assert_includes content, "date: 2025-03-10"
+    assert_includes content, "lang: en"
+  end
+
+  def test_md_metadata_includes_canonical
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", url: "/page/")
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "canonical: https://example.com/page/"
+  end
+
+  def test_md_metadata_uses_front_matter_canonical
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", url: "/page/", canonical_url: "https://other.com/page/")
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "canonical: https://other.com/page/"
+    refute_includes content, "canonical: https://example.com/page/"
+  end
+
+  def test_md_metadata_omits_empty_fields
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", url: "/page/")
+    site = mock_site("jekyll_aeo" => { "md_metadata" => true, "include_last_modified" => false })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    refute_includes content, "author:"
+    refute_includes content, "lang:"
+    refute_includes content, "date:"
+  end
+
+  def test_md_metadata_with_last_modified
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
+    site = mock_site("jekyll_aeo" => { "md_metadata" => true })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "last_modified: 2025-06-15"
+  end
+
+  def test_md_metadata_no_duplicate_last_modified
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
+    site = mock_site("jekyll_aeo" => { "md_metadata" => true })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    refute_includes content, "> Last updated:", "Should not have blockquote last_modified when metadata enabled"
+    assert_includes content, "last_modified: 2025-06-15"
+  end
+
+  def test_md_metadata_preserves_title_and_description
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test Page", description: "A test")
+    site = mock_site("jekyll_aeo" => { "md_metadata" => true, "include_last_modified" => false })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "# Test Page"
+    assert_includes content, "> A test"
   end
 end

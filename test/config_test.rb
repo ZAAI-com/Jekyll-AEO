@@ -32,6 +32,14 @@ class ConfigTest < Minitest::Test
     assert_nil config["llms_txt"]["sections"]
     assert_equal [], config["llms_txt"]["front_matter_keys"]
     assert_equal false, config["llms_txt"]["show_lastmod"]
+    assert_equal true, config["llms_txt"]["include_descriptions"]
+    assert_equal true, config["include_last_modified"]
+    assert_equal false, config["md_metadata"]
+    assert_equal false, config["robots_txt"]["enabled"]
+    assert_equal %w[GPTBot ClaudeBot Google-Extended Meta-ExternalAgent Amazonbot], config["robots_txt"]["disallow"]
+    assert_equal true, config["robots_txt"]["include_sitemap"]
+    assert_equal true, config["robots_txt"]["include_llms_txt"]
+    assert_equal [], config["robots_txt"]["custom_rules"]
   end
 
   def test_user_overrides_top_level

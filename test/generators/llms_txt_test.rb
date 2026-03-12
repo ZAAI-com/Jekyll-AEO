@@ -379,6 +379,39 @@ class LlmsTxtTest < Minitest::Test
     assert_includes content, "(/about.md)"
   end
 
+  def test_descriptions_omitted_when_disabled
+    write_source_and_md("_pages/about.md", "about/index.html", "# About\n")
+
+    doc = mock_document(
+      title: "About", description: "About us", url: "/about/",
+      collection_label: "pages", source_file: "_pages/about.md",
+      dest_html: "about/index.html"
+    )
+
+    source = @source_dir
+    dest = @dest_dir
+    site = Object.new
+    site.define_singleton_method(:source) { source }
+    site.define_singleton_method(:dest) { dest }
+    site.define_singleton_method(:config) do
+      {
+        "title" => "Test Site",
+        "description" => "A test site",
+        "jekyll_aeo" => {
+          "llms_txt" => { "include_descriptions" => false }
+        }
+      }
+    end
+    site.define_singleton_method(:documents) { [doc] }
+    site.define_singleton_method(:pages) { [] }
+
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    assert_includes content, "- [About](/about.md)"
+    refute_includes content, "About us"
+  end
+
   def test_baseurl_root_page
     write_source_and_md("_pages/home.md", "index.html", "# Home\n")
 
