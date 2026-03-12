@@ -1,0 +1,40 @@
+# frozen_string_literal: true
+
+module JekyllAeo
+  module Config
+    DEFAULTS = {
+      "enabled" => true,
+      "md_path_style" => "clean",
+      "strip_block_tags" => true,
+      "protect_indented_code" => false,
+      "exclude" => [],
+      "llms_txt" => {
+        "enabled" => true,
+        "description" => nil,
+        "full_txt_mode" => "all",
+        "sections" => nil
+      }
+    }.freeze
+
+    def self.from_site(site)
+      user_config = site.config["jekyll_aeo"] || {}
+      deep_merge(DEFAULTS, user_config)
+    end
+
+    def self.deep_merge(defaults, overrides)
+      defaults.each_with_object({}) do |(key, default_val), result|
+        override_val = overrides[key]
+
+        result[key] = if default_val.is_a?(Hash) && override_val.is_a?(Hash)
+                        deep_merge(default_val, override_val)
+                      elsif overrides.key?(key)
+                        override_val
+                      else
+                        default_val
+                      end
+      end
+    end
+
+    private_class_method :deep_merge
+  end
+end
