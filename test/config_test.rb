@@ -23,10 +23,14 @@ class ConfigTest < Minitest::Test
     assert_equal true, config["strip_block_tags"]
     assert_equal false, config["protect_indented_code"]
     assert_equal [], config["exclude"]
+    assert_equal [], config["include"]
+    assert_equal false, config["html_fallback"]
     assert_equal true, config["llms_txt"]["enabled"]
     assert_nil config["llms_txt"]["description"]
     assert_equal "all", config["llms_txt"]["full_txt_mode"]
     assert_nil config["llms_txt"]["sections"]
+    assert_equal [], config["llms_txt"]["front_matter_keys"]
+    assert_equal false, config["llms_txt"]["show_lastmod"]
   end
 
   def test_user_overrides_top_level

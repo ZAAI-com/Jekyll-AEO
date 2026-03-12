@@ -8,11 +8,15 @@ module JekyllAeo
       "strip_block_tags" => true,
       "protect_indented_code" => false,
       "exclude" => [],
+      "include" => [],
+      "html_fallback" => false,
       "llms_txt" => {
         "enabled" => true,
         "description" => nil,
         "full_txt_mode" => "all",
-        "sections" => nil
+        "sections" => nil,
+        "front_matter_keys" => [],
+        "show_lastmod" => false
       },
       "url_map" => {
         "enabled" => false,

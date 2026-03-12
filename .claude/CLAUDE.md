@@ -18,6 +18,7 @@ A RubyGem (`jekyll-aeo`) for Answer Engine Optimization — generates clean mark
 - `lib/jekyll-aeo/generators/` — `markdown_page.rb` (per-page .md), `llms_txt.rb` (site-wide index)
 - `lib/jekyll-aeo/utils/` — `content_stripper.rb` (Liquid/kramdown stripping), `skip_logic.rb`
 - `lib/jekyll-aeo/hooks.rb` — 3 Jekyll hooks (documents, pages, site post_write)
+- `lib/jekyll-aeo/commands/` — `validate.rb` (`jekyll aeo:validate` command)
 - `test/` — Minitest tests mirroring lib/ structure
 
 ## Conventions

@@ -122,6 +122,10 @@ module JekyllAeo
           lines << ""
         end
 
+        baseurl = site.config["baseurl"].to_s.chomp("/")
+        lines << "- [llms-full.txt](#{baseurl}/llms-full.txt): Complete contents of all pages"
+        lines << ""
+
         sections.each do |section|
           next if section[:items].empty?
 
@@ -129,7 +133,7 @@ module JekyllAeo
           lines << ""
 
           section[:items].each do |item|
-            url_md = md_url(item[:url], config)
+            url_md = md_url(item[:url], config, site.config["baseurl"])
             entry = "- [#{item[:title]}](#{url_md})"
             entry += ": #{item[:description]}" unless item[:description].empty?
             lines << entry
@@ -189,18 +193,20 @@ module JekyllAeo
         end
       end
 
-      def self.md_url(url, config)
-        if config["md_path_style"] == "spec"
-          url.end_with?("/") ? "#{url}index.html.md" : "#{url}.md"
-        else
-          if url == "/"
-            "/index.md"
-          elsif url.end_with?("/")
-            url.sub(%r{/\z}, ".md")
-          else
-            "#{url}.md"
-          end
-        end
+      def self.md_url(url, config, baseurl = "")
+        baseurl = baseurl.to_s.chomp("/")
+        md_path = if config["md_path_style"] == "spec"
+                    url.end_with?("/") ? "#{url}index.html.md" : "#{url}.md"
+                  else
+                    if url == "/"
+                      "/index.md"
+                    elsif url.end_with?("/")
+                      url.sub(%r{/\z}, ".md")
+                    else
+                      "#{url}.md"
+                    end
+                  end
+        "#{baseurl}#{md_path}"
       end
 
       private_class_method :collect_eligible, :build_sections, :build_custom_sections,

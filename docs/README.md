@@ -39,10 +39,14 @@ jekyll_aeo:
   exclude:                         # URL prefixes to skip
     - /privacy/
     - /error/
+  include: []                      # (coming soon) only process matching URL prefixes
+  html_fallback: false             # (coming soon) convert HTML to markdown for plugin-generated pages
   llms_txt:
     enabled: true                  # generate llms.txt + llms-full.txt (default: true)
     description: ""                # override site description in llms.txt
     full_txt_mode: "all"           # "all" or "linked" (default: "all")
+    front_matter_keys: []          # (coming soon) preserve these front matter keys in .md output
+    show_lastmod: false            # (coming soon) add last-modified dates to llms.txt entries
     sections:                      # custom sections (auto-generated if omitted)
       - title: "Pages"
         collection: "pages"
@@ -93,11 +97,16 @@ The `md_path_style` setting controls where `.md` files are written and how llms.
 
 The `"clean"` style follows the [llms.txt spec](https://llmstxt.org/) recommendation that markdown should be available at the "same URL as the original page, but with `.md` appended after removing any trailing slash." The `"spec"` style appends `.md` directly to the HTML file path.
 
+### Baseurl Support
+
+If your Jekyll site runs under a subpath (e.g., `baseurl: /docs`), all links in `llms.txt` will include the prefix automatically: `/docs/about.md` instead of `/about.md`. No additional configuration needed.
+
 ### llms.txt
 
 Generated at the site root with:
 - H1: site title
 - Blockquote: site description
+- Link to `llms-full.txt` for complete content
 - H2 sections grouping pages by collection, with links to `.md` files
 
 ### llms-full.txt
@@ -163,6 +172,21 @@ jekyll_aeo:
 ```
 
 Use `collection: null` to match standalone pages (those not in any collection).
+
+## Validation
+
+After building your site, verify AEO output with:
+
+```bash
+bundle exec jekyll aeo:validate
+```
+
+This checks:
+- `llms.txt` exists and starts with an H1 heading
+- `llms-full.txt` exists and is non-empty
+- All `.md` files referenced in `llms.txt` exist in the destination directory
+
+Respects `baseurl` when resolving file paths.
 
 ## Skipped Content
 

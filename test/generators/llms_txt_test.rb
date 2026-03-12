@@ -54,7 +54,7 @@ class LlmsTxtTest < Minitest::Test
     obj
   end
 
-  def mock_site(documents: [], pages: [], title: "Test Site", description: "A test site")
+  def mock_site(documents: [], pages: [], title: "Test Site", description: "A test site", baseurl: nil)
     source = @source_dir
     dest = @dest_dir
     docs = documents
@@ -64,7 +64,9 @@ class LlmsTxtTest < Minitest::Test
     site.define_singleton_method(:source) { source }
     site.define_singleton_method(:dest) { dest }
     site.define_singleton_method(:config) do
-      { "title" => title, "description" => description }
+      cfg = { "title" => title, "description" => description }
+      cfg["baseurl"] = baseurl if baseurl
+      cfg
     end
     site.define_singleton_method(:documents) { docs }
     site.define_singleton_method(:pages) { pgs }
@@ -306,5 +308,90 @@ class LlmsTxtTest < Minitest::Test
     content = File.read(File.join(@dest_dir, "llms.txt"))
     assert_includes content, "## Pages"
     assert_includes content, "[About]"
+  end
+
+  # --- llms-full.txt link ---
+
+  def test_llms_txt_links_to_llms_full_txt
+    site = mock_site
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    assert_includes content, "- [llms-full.txt](/llms-full.txt): Complete contents of all pages"
+  end
+
+  def test_llms_full_txt_link_respects_baseurl
+    site = mock_site(baseurl: "/docs")
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    assert_includes content, "- [llms-full.txt](/docs/llms-full.txt)"
+  end
+
+  # --- baseurl ---
+
+  def test_baseurl_prepended_to_links
+    write_source_and_md("_pages/about.md", "about/index.html", "# About\n")
+
+    doc = mock_document(
+      title: "About", description: "About us", url: "/about/",
+      collection_label: "pages", source_file: "_pages/about.md",
+      dest_html: "about/index.html"
+    )
+
+    site = mock_site(documents: [doc], baseurl: "/docs")
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    assert_includes content, "- [About](/docs/about.md): About us"
+  end
+
+  def test_baseurl_trailing_slash_normalized
+    write_source_and_md("_pages/about.md", "about/index.html", "# About\n")
+
+    doc = mock_document(
+      title: "About", url: "/about/",
+      collection_label: "pages", source_file: "_pages/about.md",
+      dest_html: "about/index.html"
+    )
+
+    site = mock_site(documents: [doc], baseurl: "/docs/")
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    assert_includes content, "(/docs/about.md)"
+    refute_includes content, "(/docs//about.md)"
+  end
+
+  def test_nil_baseurl_unchanged
+    write_source_and_md("_pages/about.md", "about/index.html", "# About\n")
+
+    doc = mock_document(
+      title: "About", url: "/about/",
+      collection_label: "pages", source_file: "_pages/about.md",
+      dest_html: "about/index.html"
+    )
+
+    site = mock_site(documents: [doc])
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    assert_includes content, "(/about.md)"
+  end
+
+  def test_baseurl_root_page
+    write_source_and_md("_pages/home.md", "index.html", "# Home\n")
+
+    doc = mock_document(
+      title: "Home", url: "/",
+      collection_label: "pages", source_file: "_pages/home.md",
+      dest_html: "index.html"
+    )
+
+    site = mock_site(documents: [doc], baseurl: "/docs")
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    assert_includes content, "(/docs/index.md)"
   end
 end
