@@ -23,7 +23,7 @@ class LlmsTxtTest < Minitest::Test
     col
   end
 
-  def mock_document(title:, description: "", url:, collection_label:, source_file:, dest_html:)
+  def mock_document(title:, url:, collection_label:, source_file:, dest_html:, description: "")
     data = { "title" => title, "description" => description }
     col = mock_collection(collection_label)
     src_dir = @source_dir
@@ -41,7 +41,7 @@ class LlmsTxtTest < Minitest::Test
     obj
   end
 
-  def mock_page(title:, description: "", url:, source_file:, dest_html:)
+  def mock_page(title:, url:, source_file:, dest_html:, description: "")
     data = { "title" => title, "description" => description }
     dst_dir = @dest_dir
 

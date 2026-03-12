@@ -36,11 +36,11 @@ class ConfigTest < Minitest::Test
 
   def test_user_overrides_top_level
     config = JekyllAeo::Config.from_site(mock_site({
-      "enabled" => false,
-      "strip_block_tags" => false,
-      "protect_indented_code" => true,
-      "exclude" => ["/privacy/"]
-    }))
+                                                     "enabled" => false,
+                                                     "strip_block_tags" => false,
+                                                     "protect_indented_code" => true,
+                                                     "exclude" => ["/privacy/"]
+                                                   }))
 
     assert_equal false, config["enabled"]
     assert_equal false, config["strip_block_tags"]
@@ -50,11 +50,11 @@ class ConfigTest < Minitest::Test
 
   def test_deep_merge_llms_txt
     config = JekyllAeo::Config.from_site(mock_site({
-      "llms_txt" => {
-        "description" => "Custom description",
-        "full_txt_mode" => "linked"
-      }
-    }))
+                                                     "llms_txt" => {
+                                                       "description" => "Custom description",
+                                                       "full_txt_mode" => "linked"
+                                                     }
+                                                   }))
 
     assert_equal "Custom description", config["llms_txt"]["description"]
     assert_equal "linked", config["llms_txt"]["full_txt_mode"]
@@ -65,8 +65,8 @@ class ConfigTest < Minitest::Test
 
   def test_deep_merge_preserves_defaults_for_missing_keys
     config = JekyllAeo::Config.from_site(mock_site({
-      "llms_txt" => { "enabled" => false }
-    }))
+                                                     "llms_txt" => { "enabled" => false }
+                                                   }))
 
     assert_equal false, config["llms_txt"]["enabled"]
     assert_equal "all", config["llms_txt"]["full_txt_mode"]
@@ -86,8 +86,8 @@ class ConfigTest < Minitest::Test
 
   def test_deep_merge_url_map
     config = JekyllAeo::Config.from_site(mock_site({
-      "url_map" => { "enabled" => true, "columns" => %w[url path] }
-    }))
+                                                     "url_map" => { "enabled" => true, "columns" => %w[url path] }
+                                                   }))
     assert_equal true, config["url_map"]["enabled"]
     assert_equal %w[url path], config["url_map"]["columns"]
     assert_equal "docs/Url-Map.md", config["url_map"]["output_filepath"]

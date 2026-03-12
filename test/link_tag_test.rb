@@ -41,7 +41,10 @@ class LinkTagTest < Minitest::Test
     obj.define_singleton_method(:destination) { |_| dest }
     obj.define_singleton_method(:relative_path) { rel_path }
     obj.define_singleton_method(:output) { output }
-    obj.define_singleton_method(:output=) { |val| output = val; obj.define_singleton_method(:output) { output } }
+    obj.define_singleton_method(:output=) do |val|
+      output = val
+      obj.define_singleton_method(:output) { output }
+    end
     obj
   end
 

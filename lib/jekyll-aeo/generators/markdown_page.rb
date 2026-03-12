@@ -5,7 +5,7 @@ require "fileutils"
 module JekyllAeo
   module Generators
     module MarkdownPage
-      YAML_FRONT_MATTER_REGEXP = %r!\A(---\s*\n.*?\n?)^(---\s*$\n?)!m
+      YAML_FRONT_MATTER_REGEXP = /\A(---\s*\n.*?\n?)^(---\s*$\n?)/m
 
       def self.process(obj, site)
         config = JekyllAeo::Config.from_site(site)
@@ -19,7 +19,7 @@ module JekyllAeo
         header = build_header(obj, body)
         result = header + body.lstrip
         result = result.gsub(/\n{3,}/, "\n\n")
-        result = result.rstrip + "\n"
+        result = "#{result.rstrip}\n"
 
         FileUtils.mkdir_p(File.dirname(dest_path))
         File.write(dest_path, result)
@@ -29,18 +29,16 @@ module JekyllAeo
         header = ""
         title = obj.data["title"]
 
-        if title && !title.to_s.empty? && !body.lstrip.start_with?("# ")
-          header += "# #{title}\n\n"
-        end
+        header += "# #{title}\n\n" if title && !title.to_s.empty? && !body.lstrip.start_with?("# ")
 
         description = obj.data["description"]
         if description && !description.to_s.empty?
           lines = description.to_s.split("\n")
-          if lines.length > 1
-            header += lines.map { |l| "> #{l}" }.join("\n") + "\n\n"
-          else
-            header += "> #{description}\n\n"
-          end
+          header += if lines.length > 1
+                      "#{lines.map { |l| "> #{l}" }.join("\n")}\n\n"
+                    else
+                      "> #{description}\n\n"
+                    end
         end
 
         header
@@ -49,12 +47,12 @@ module JekyllAeo
       def self.md_dest_path(obj, site, config)
         html_path = obj.destination(site.dest)
         if config["md_path_style"] == "spec"
-          html_path + ".md"
+          "#{html_path}.md"
         else
           dir = File.dirname(html_path)
           base = File.basename(html_path)
           if base == "index.html" && dir != site.dest
-            File.join(File.dirname(dir), File.basename(dir) + ".md")
+            File.join(File.dirname(dir), "#{File.basename(dir)}.md")
           else
             html_path.sub(/\.html\z/, ".md")
           end

@@ -118,8 +118,8 @@ class UrlMapTest < Minitest::Test
     write_source("about.md")
     page = mock_page(url: "/about/", source_file: "about.md")
     site = mock_site(pages: [page], aeo_config: {
-      "url_map" => { "enabled" => true, "output_filepath" => "custom/map.md" }
-    })
+                       "url_map" => { "enabled" => true, "output_filepath" => "custom/map.md" }
+                     })
     JekyllAeo::Generators::UrlMap.generate(site)
 
     custom_path = File.join(@source_dir, "custom/map.md")
@@ -149,8 +149,8 @@ class UrlMapTest < Minitest::Test
     write_source("about.md")
     page = mock_page(url: "/about/", source_file: "about.md", data: { "layout" => "page" })
     site = mock_site(pages: [page], aeo_config: {
-      "url_map" => { "enabled" => true, "columns" => %w[url path] }
-    })
+                       "url_map" => { "enabled" => true, "columns" => %w[url path] }
+                     })
     JekyllAeo::Generators::UrlMap.generate(site)
 
     content = File.read(output_path)
@@ -211,8 +211,8 @@ class UrlMapTest < Minitest::Test
   def test_page_id_and_lang_from_frontmatter
     write_source("about.md")
     page = mock_page(url: "/about/", source_file: "about.md", data: {
-      "page_id" => "about_page", "lang" => "en", "layout" => "page"
-    })
+                       "page_id" => "about_page", "lang" => "en", "layout" => "page"
+                     })
     site = mock_site(pages: [page])
     JekyllAeo::Generators::UrlMap.generate(site)
 
@@ -224,8 +224,8 @@ class UrlMapTest < Minitest::Test
   def test_redirect_from_displayed
     write_source("about.md")
     page = mock_page(url: "/about/", source_file: "about.md", data: {
-      "redirect_from" => ["/about-us/", "/old-about/"]
-    })
+                       "redirect_from" => ["/about-us/", "/old-about/"]
+                     })
     site = mock_site(pages: [page])
     JekyllAeo::Generators::UrlMap.generate(site)
 
@@ -282,8 +282,8 @@ class UrlMapTest < Minitest::Test
   def test_pipe_characters_escaped
     write_source("about.md")
     page = mock_page(url: "/about/", source_file: "about.md", data: {
-      "page_id" => "about|page", "layout" => "default"
-    })
+                       "page_id" => "about|page", "layout" => "default"
+                     })
     site = mock_site(pages: [page])
     JekyllAeo::Generators::UrlMap.generate(site)
 

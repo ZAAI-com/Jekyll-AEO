@@ -63,7 +63,7 @@ class ValidateTest < Minitest::Test
     write_file("llms-full.txt", "content")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
-    assert errors.any? { |e| e.include?("H1 heading") }
+    assert(errors.any? { |e| e.include?("H1 heading") })
   end
 
   def test_missing_referenced_md

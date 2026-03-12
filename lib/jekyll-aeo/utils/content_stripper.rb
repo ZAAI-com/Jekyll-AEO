@@ -110,8 +110,7 @@ module JekyllAeo
         stripped = line
         stripped = stripped.gsub(LIQUID_BLOCK_TAG, "")
         stripped = stripped.gsub(LIQUID_OUTPUT_TAG, "")
-        stripped = stripped.gsub(KRAMDOWN_IAL, "")
-        stripped
+        stripped.gsub(KRAMDOWN_IAL, "")
       end
 
       private_class_method :strip_line

@@ -83,9 +83,7 @@ module JekyllAeo
         grouped = items.group_by { |item| item[:collection] }
         sections = []
 
-        if grouped.key?(nil)
-          sections << { title: "Pages", items: grouped.delete(nil).sort_by { |i| i[:url] } }
-        end
+        sections << { title: "Pages", items: grouped.delete(nil).sort_by { |i| i[:url] } } if grouped.key?(nil)
 
         sorted_keys = grouped.keys.compact.sort
         sorted_keys.each do |key|
@@ -115,7 +113,7 @@ module JekyllAeo
           lines << ""
         end
 
-        lines.join("\n").rstrip + "\n"
+        "#{lines.join("\n").rstrip}\n"
       end
 
       def self.table_header(columns)

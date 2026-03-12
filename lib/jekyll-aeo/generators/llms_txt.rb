@@ -86,9 +86,7 @@ module JekyllAeo
         sections = []
 
         # Standalone pages first
-        if grouped.key?(nil)
-          sections << { title: "Pages", items: grouped.delete(nil) }
-        end
+        sections << { title: "Pages", items: grouped.delete(nil) } if grouped.key?(nil)
 
         # Collections alphabetically, "Optional" last
         sorted_keys = grouped.keys.compact.sort_by do |key|
@@ -142,7 +140,7 @@ module JekyllAeo
           lines << ""
         end
 
-        lines.join("\n").rstrip + "\n"
+        "#{lines.join("\n").rstrip}\n"
       end
 
       def self.build_llms_full_txt(site, sections, eligible, llms_config)
@@ -168,25 +166,25 @@ module JekyllAeo
           lines << "---"
           lines << ""
 
-          if File.exist?(item[:dest_md])
-            content = File.read(item[:dest_md], encoding: "utf-8")
-            lines << content.strip
-            lines << ""
-          end
+          next unless File.exist?(item[:dest_md])
+
+          content = File.read(item[:dest_md], encoding: "utf-8")
+          lines << content.strip
+          lines << ""
         end
 
-        lines.join("\n").rstrip + "\n"
+        "#{lines.join("\n").rstrip}\n"
       end
 
       def self.md_dest_path(obj, site, config)
         html_path = obj.destination(site.dest)
         if config["md_path_style"] == "spec"
-          html_path + ".md"
+          "#{html_path}.md"
         else
           dir = File.dirname(html_path)
           base = File.basename(html_path)
           if base == "index.html" && dir != site.dest
-            File.join(File.dirname(dir), File.basename(dir) + ".md")
+            File.join(File.dirname(dir), "#{File.basename(dir)}.md")
           else
             html_path.sub(/\.html\z/, ".md")
           end

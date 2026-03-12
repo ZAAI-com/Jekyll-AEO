@@ -48,9 +48,9 @@ module JekyllAeo
           end
 
           content = File.read(path, encoding: "utf-8")
-          unless content.start_with?("# ")
-            errors << "llms.txt does not start with an H1 heading (# )"
-          end
+          return if content.start_with?("# ")
+
+          errors << "llms.txt does not start with an H1 heading (# )"
         end
 
         def validate_llms_full_txt(dest, errors)
@@ -60,9 +60,9 @@ module JekyllAeo
             return
           end
 
-          if File.zero?(path)
-            errors << "llms-full.txt is empty"
-          end
+          return unless File.empty?(path)
+
+          errors << "llms-full.txt is empty"
         end
 
         def validate_md_references(dest, baseurl, errors)
@@ -79,9 +79,7 @@ module JekyllAeo
                              url
                            end
             file_path = File.join(dest, relative_url)
-            unless File.exist?(file_path)
-              errors << "Referenced file not found: #{url} (expected at #{file_path})"
-            end
+            errors << "Referenced file not found: #{url} (expected at #{file_path})" unless File.exist?(file_path)
           end
         end
 
