@@ -3,17 +3,21 @@
 module JekyllAeo
   module Utils
     module SkipLogic
-      def self.skip?(obj, site, config)
-        return true if config["enabled"] == false
-        return true unless html_output?(obj)
-        return true if obj.data["markdown_copy"] == false
-        return true if obj.data["redirect_to"]
-        return true if assets_collection?(obj)
-        return true if llms_file?(obj, site)
-        return true if excluded?(obj, config)
-        return true unless source_file_exists?(obj, site)
+      def self.skip_reason(obj, site, config)
+        return "plugin disabled" if config["enabled"] == false
+        return "non-HTML output" unless html_output?(obj)
+        return "markdown_copy: false" if obj.data["markdown_copy"] == false
+        return "redirect" if obj.data["redirect_to"]
+        return "assets collection" if assets_collection?(obj)
+        return "llms file" if llms_file?(obj, site)
+        return "excluded" if excluded?(obj, config)
+        return "no source file" unless source_file_exists?(obj, site)
 
-        false
+        nil
+      end
+
+      def self.skip?(obj, site, config)
+        !skip_reason(obj, site, config).nil?
       end
 
       def self.resolve_source_path(obj, site)

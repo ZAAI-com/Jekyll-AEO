@@ -10,4 +10,5 @@ end
 
 Jekyll::Hooks.register :site, :post_write do |site|
   JekyllAeo::Generators::LlmsTxt.generate(site)
+  JekyllAeo::Generators::UrlMap.generate(site)
 end

@@ -71,4 +71,20 @@ class ConfigTest < Minitest::Test
     config = JekyllAeo::Config.from_site(mock_site({ "enabled" => false }))
     assert_equal false, config["enabled"]
   end
+
+  def test_defaults_include_url_map
+    config = JekyllAeo::Config.from_site(mock_site_no_config)
+    assert_equal false, config["url_map"]["enabled"]
+    assert_equal "url-map.md", config["url_map"]["output_path"]
+    assert_equal %w[page_id url lang layout path redirects markdown_copy skipped], config["url_map"]["columns"]
+  end
+
+  def test_deep_merge_url_map
+    config = JekyllAeo::Config.from_site(mock_site({
+      "url_map" => { "enabled" => true, "columns" => %w[url path] }
+    }))
+    assert_equal true, config["url_map"]["enabled"]
+    assert_equal %w[url path], config["url_map"]["columns"]
+    assert_equal "url-map.md", config["url_map"]["output_path"]
+  end
 end

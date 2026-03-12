@@ -13,6 +13,11 @@ module JekyllAeo
         "description" => nil,
         "full_txt_mode" => "all",
         "sections" => nil
+      },
+      "url_map" => {
+        "enabled" => false,
+        "output_path" => "url-map.md",
+        "columns" => %w[page_id url lang layout path redirects markdown_copy skipped]
       }
     }.freeze
 

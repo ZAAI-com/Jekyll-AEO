@@ -106,4 +106,43 @@ class SkipLogicTest < Minitest::Test
 
     assert_equal "/src/about.md", JekyllAeo::Utils::SkipLogic.resolve_source_path(obj, site)
   end
+
+  # --- skip_reason tests ---
+
+  def test_skip_reason_returns_nil_for_normal_page
+    obj = mock_obj(relative_path: File.basename(__FILE__))
+    site = mock_site(source: File.dirname(__FILE__))
+    assert_nil JekyllAeo::Utils::SkipLogic.skip_reason(obj, site, default_config)
+  end
+
+  def test_skip_reason_plugin_disabled
+    config = default_config.merge("enabled" => false)
+    reason = JekyllAeo::Utils::SkipLogic.skip_reason(mock_obj, mock_site, config)
+    assert_equal "plugin disabled", reason
+  end
+
+  def test_skip_reason_non_html
+    obj = mock_obj(output_ext: ".css")
+    reason = JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, default_config)
+    assert_equal "non-HTML output", reason
+  end
+
+  def test_skip_reason_redirect
+    obj = mock_obj(data: { "redirect_to" => "/other/" })
+    reason = JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, default_config)
+    assert_equal "redirect", reason
+  end
+
+  def test_skip_reason_excluded
+    config = default_config.merge("exclude" => ["/privacy/"])
+    obj = mock_obj(url: "/privacy/policy/")
+    reason = JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, config)
+    assert_equal "excluded", reason
+  end
+
+  def test_skip_reason_assets_collection
+    obj = mock_obj(collection_label: "assets")
+    reason = JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, default_config)
+    assert_equal "assets collection", reason
+  end
 end
