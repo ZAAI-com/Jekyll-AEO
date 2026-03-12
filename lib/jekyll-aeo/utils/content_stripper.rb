@@ -36,12 +36,14 @@ module JekyllAeo
             if line.rstrip =~ fence_close_pattern
               state = :normal
               fence_close_pattern = nil
+              prev_blank = false
             end
 
           when :in_raw
             if line =~ LIQUID_RAW_CLOSE
               result_lines << line.sub(LIQUID_RAW_CLOSE, "")
               state = :normal
+              prev_blank = false
             else
               result_lines << line
             end
@@ -50,6 +52,7 @@ module JekyllAeo
             if line =~ silent_close_pattern
               state = :normal
               silent_close_pattern = nil
+              prev_blank = false
             end
             # discard all lines (including closing tag)
 
