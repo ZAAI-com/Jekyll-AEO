@@ -41,11 +41,11 @@ module JekyllAeo
 
         profile = {
           "spec" => SPEC_URL,
-          "name" => name.to_s,
-          "description" => description.to_s,
-          "website" => website.to_s,
           "contact" => contact.to_s
         }
+        { "name" => name, "description" => description, "website" => website }.each do |key, val|
+          profile[key] = val.to_s unless val.nil? || val.to_s.empty?
+        end
 
         add_optional_fields(profile, dp_config)
         profile

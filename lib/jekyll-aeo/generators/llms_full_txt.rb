@@ -42,12 +42,11 @@ module JekyllAeo
         end
 
         items_to_include.each do |item|
-          lines << "---"
-          lines << ""
-
           next unless File.exist?(item[:dest_md])
 
           content = File.read(item[:dest_md], encoding: "utf-8")
+          lines << "---"
+          lines << ""
           lines << content.strip
           lines << ""
         end

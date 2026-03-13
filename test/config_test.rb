@@ -114,4 +114,18 @@ class ConfigTest < Minitest::Test
     assert_equal %w[url path], config["url_map"]["columns"]
     assert_equal "docs/Url-Map.md", config["url_map"]["output_filepath"]
   end
+
+  def test_deep_merge_drops_unknown_keys
+    config = JekyllAeo::Config.from_site(mock_site({
+                                                     "bogus_key" => "should be dropped",
+                                                     "llms_txt" => {
+                                                       "enabled" => true,
+                                                       "unknown_nested" => "also dropped"
+                                                     }
+                                                   }))
+
+    assert_nil config["bogus_key"], "Unknown top-level keys should be filtered out"
+    assert_nil config["llms_txt"]["unknown_nested"], "Unknown nested keys should be filtered out"
+    assert_equal true, config["llms_txt"]["enabled"]
+  end
 end

@@ -168,4 +168,11 @@ class SkipLogicTest < Minitest::Test
     obj = mock_obj(relative_path: "nonexistent_file_xyz.md")
     assert_nil JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, config)
   end
+
+  def test_no_false_positive_for_similar_filename
+    obj = mock_obj(dest_path: "/dest/about-llms.txt", relative_path: File.basename(__FILE__))
+    site = mock_site(source: File.dirname(__FILE__))
+    refute JekyllAeo::Utils::SkipLogic.skip?(obj, site, default_config),
+           "about-llms.txt should not be treated as an llms file"
+  end
 end

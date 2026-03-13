@@ -24,7 +24,7 @@ systems become the primary way people discover and consume information.
 
 - A Jekyll site
 - The jekyll-aeo gem
-- A basic understanding of markdown
+- A basic understanding of Markdown
 
 ## Next Steps
 
@@ -101,9 +101,11 @@ canonical: https://example.com/faq/
 description: Common questions about Answer Engine Optimization
 last_modified: 2026-03-14
 ---
+# Frequently Asked Questions
+
 > Common questions about Answer Engine Optimization
 
-# Frequently Asked Questions
+## Frequently Asked Questions
 
 Find answers to common questions about AEO below.
 
@@ -116,9 +118,11 @@ canonical: https://example.com/howto/
 description: Step-by-step guide to adding AEO to your Jekyll site
 last_modified: 2026-03-14
 ---
+# How to Install jekyll-aeo
+
 > Step-by-step guide to adding AEO to your Jekyll site
 
-# How to Install jekyll-aeo
+## How to Install jekyll-aeo
 
 Follow these steps to get started.
 

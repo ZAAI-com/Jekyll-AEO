@@ -5,9 +5,11 @@ canonical: https://example.com/howto/
 description: Step-by-step guide to adding AEO to your Jekyll site
 last_modified: 2026-03-14
 ---
+# How to Install jekyll-aeo
+
 > Step-by-step guide to adding AEO to your Jekyll site
 
-# How to Install jekyll-aeo
+## How to Install jekyll-aeo
 
 Follow these steps to get started.
 

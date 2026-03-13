@@ -12,7 +12,7 @@ echo "==> Tests passed."
 
 echo ""
 echo "==> Building demo site..."
-rake site:build
+bundle exec rake site:build
 echo "==> Demo site built."
 
 echo ""

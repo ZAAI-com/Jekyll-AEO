@@ -18,7 +18,7 @@ howto:
       text: "Run jekyll build and check the generated files"
 ---
 
-# How to Install jekyll-aeo
+## How to Install jekyll-aeo
 
 Follow these steps to get started.
 
