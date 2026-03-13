@@ -146,23 +146,25 @@ class SkipLogicTest < Minitest::Test
     assert_equal "assets collection", reason
   end
 
-  # --- html_fallback tests ---
+  # --- html2dotmd tests ---
 
-  def test_no_source_file_not_skipped_with_html_fallback
-    mp = default_config["markdown_pages"].merge("html_fallback" => true)
-    config = default_config.merge("markdown_pages" => mp)
+  def test_no_source_file_not_skipped_with_html2dotmd
+    html2dotmd = default_config["dotmd"]["html2dotmd"].merge("enabled" => true)
+    dotmd = default_config["dotmd"].merge("html2dotmd" => html2dotmd)
+    config = default_config.merge("dotmd" => dotmd)
     obj = mock_obj(relative_path: "nonexistent_file_xyz.md")
     refute JekyllAeo::Utils::SkipLogic.skip?(obj, mock_site, config)
   end
 
-  def test_no_source_file_still_skipped_without_html_fallback
+  def test_no_source_file_still_skipped_without_html2dotmd
     obj = mock_obj(relative_path: "nonexistent_file_xyz.md")
     assert JekyllAeo::Utils::SkipLogic.skip?(obj, mock_site, default_config)
   end
 
-  def test_skip_reason_nil_with_html_fallback_and_no_source
-    mp = default_config["markdown_pages"].merge("html_fallback" => true)
-    config = default_config.merge("markdown_pages" => mp)
+  def test_skip_reason_nil_with_html2dotmd_and_no_source
+    html2dotmd = default_config["dotmd"]["html2dotmd"].merge("enabled" => true)
+    dotmd = default_config["dotmd"].merge("html2dotmd" => html2dotmd)
+    config = default_config.merge("dotmd" => dotmd)
     obj = mock_obj(relative_path: "nonexistent_file_xyz.md")
     assert_nil JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, config)
   end

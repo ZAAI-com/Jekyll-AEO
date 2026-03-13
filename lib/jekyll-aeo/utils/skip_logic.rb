@@ -52,8 +52,8 @@ module JekyllAeo
       end
 
       def self.source_available?(obj, site, config)
-        mp = config["markdown_pages"] || {}
-        source_file_exists?(obj, site) || mp["html_fallback"]
+        html2dotmd = config.dig("dotmd", "html2dotmd") || {}
+        source_file_exists?(obj, site) || html2dotmd["enabled"]
       end
 
       private_class_method :html_output?, :assets_collection?, :llms_file?,

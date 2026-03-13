@@ -20,12 +20,12 @@ class ConfigTest < Minitest::Test
 
     assert_equal true, config["enabled"]
     assert_equal [], config["exclude"]
-    assert_equal "auto", config["markdown_pages"]["link_tag"]
-    assert_equal true, config["markdown_pages"]["strip_block_tags"]
-    assert_equal false, config["markdown_pages"]["protect_indented_code"]
-    assert_equal true, config["markdown_pages"]["include_last_modified"]
-    assert_equal false, config["markdown_pages"]["md_metadata"]
-    assert_equal false, config["markdown_pages"]["html_fallback"]
+    assert_equal "auto", config["dotmd"]["link_tag"]
+    assert_equal true, config["dotmd"]["md2dotmd"]["strip_block_tags"]
+    assert_equal false, config["dotmd"]["md2dotmd"]["protect_indented_code"]
+    assert_equal true, config["dotmd"]["include_last_modified"]
+    assert_equal false, config["dotmd"]["dotmd_metadata"]
+    assert_equal false, config["dotmd"]["html2dotmd"]["enabled"]
     assert_equal true, config["llms_txt"]["enabled"]
     assert_nil config["llms_txt"]["description"]
     assert_equal "all", config["llms_txt"]["full_txt_mode"]
@@ -44,16 +44,18 @@ class ConfigTest < Minitest::Test
     config = JekyllAeo::Config.from_site(mock_site({
                                                      "enabled" => false,
                                                      "exclude" => ["/privacy/"],
-                                                     "markdown_pages" => {
-                                                       "strip_block_tags" => false,
-                                                       "protect_indented_code" => true
+                                                     "dotmd" => {
+                                                       "md2dotmd" => {
+                                                         "strip_block_tags" => false,
+                                                         "protect_indented_code" => true
+                                                       }
                                                      }
                                                    }))
 
     assert_equal false, config["enabled"]
     assert_equal ["/privacy/"], config["exclude"]
-    assert_equal false, config["markdown_pages"]["strip_block_tags"]
-    assert_equal true, config["markdown_pages"]["protect_indented_code"]
+    assert_equal false, config["dotmd"]["md2dotmd"]["strip_block_tags"]
+    assert_equal true, config["dotmd"]["md2dotmd"]["protect_indented_code"]
   end
 
   def test_deep_merge_llms_txt

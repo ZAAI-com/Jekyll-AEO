@@ -48,14 +48,16 @@ Jekyll-AEO works with zero configuration. The defaults below are already active 
 ```
 enabled: true
 exclude: []
-markdown_pages:
+dotmd:
   link_tag: "auto"
-  strip_block_tags: true
-  protect_indented_code: false
   include_last_modified: true
-  md_metadata: false
-  html_fallback: false
-  html_fallback_selector: null
+  dotmd_metadata: false
+  md2dotmd:
+    strip_block_tags: true
+    protect_indented_code: false
+  html2dotmd:
+    enabled: false
+    selector: null
 llms_txt:
   enabled: true
   description: null
@@ -72,7 +74,7 @@ domain_profile:
 
 ### What's already enabled with zero config
 
-- `.md` companion file for every HTML page
+- `.md` companion file for every HTML page (via `dotmd` / `md2dotmd`)
 - `llms.txt` + `llms-full.txt` generation
 - `<link rel="alternate" type="text/markdown">` tag injection into every HTML page
 
@@ -93,11 +95,11 @@ First check if a `robots.txt` file already exists in the source directory. Then 
 **Q4 — URL Map**
 "Would you like to generate a URL map table at `docs/Url-Map.md` in your source directory? Useful as a development reference. (yes/no)"
 
-**Q5 — Markdown metadata**
+**Q5 — Dotmd metadata**
 "Should generated `.md` files include a YAML front matter block with title, url, and description? (yes/no)"
 
-**Q6 — HTML fallback**
-"Do you use Jekyll plugins that generate pages without source files (e.g., jekyll-paginate, jekyll-archives)? Enabling HTML fallback converts their rendered HTML to markdown. (yes/no)"
+**Q6 — html2dotmd (HTML fallback)**
+"Do you use Jekyll plugins that generate pages without source files (e.g., jekyll-paginate, jekyll-archives)? Enabling html2dotmd converts their rendered HTML to markdown. (yes/no)"
 
 ### Build and insert the config
 
@@ -108,6 +110,7 @@ Based on the user's answers, construct a `jekyll_aeo:` YAML block containing **o
 # Docs: https://zaai.com/jekyll-aeo
 jekyll_aeo:
   # ... only non-default settings here ...
+  # dotmd settings nest under: dotmd.md2dotmd / dotmd.html2dotmd
 ```
 
 If the user accepted all defaults (no exclusions, no opt-in features), you can skip this step entirely — the gem works without any config entry.

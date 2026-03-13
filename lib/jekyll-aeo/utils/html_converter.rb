@@ -21,7 +21,7 @@ module JekyllAeo
       end
 
       def self.extract_content(doc, config)
-        selector = config["html_fallback_selector"]
+        selector = config["selector"]
         if selector
           doc.at_css(selector)
         else

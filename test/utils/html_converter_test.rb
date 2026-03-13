@@ -66,7 +66,7 @@ class HtmlConverterTest < Minitest::Test
         </div>
       </body></html>
     HTML
-    config = { "html_fallback_selector" => ".content" }
+    config = { "selector" => ".content" }
     result = JekyllAeo::Utils::HtmlConverter.convert(html, config)
     assert_includes result, "Custom Content"
     assert_includes result, "Selected text."
@@ -154,7 +154,7 @@ class HtmlConverterTest < Minitest::Test
 
   def test_custom_selector_returns_empty_when_not_found
     html = "<html><body><p>Content</p></body></html>"
-    config = { "html_fallback_selector" => ".nonexistent" }
+    config = { "selector" => ".nonexistent" }
     result = JekyllAeo::Utils::HtmlConverter.convert(html, config)
     assert_equal "", result
   end

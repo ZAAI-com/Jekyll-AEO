@@ -29,7 +29,7 @@ class MarkdownPageTest < Minitest::Test
   end
 
   def no_lastmod_site(extra = {})
-    mock_site({ "jekyll_aeo" => { "markdown_pages" => { "include_last_modified" => false }.merge(extra) } })
+    mock_site({ "jekyll_aeo" => { "dotmd" => { "include_last_modified" => false }.merge(extra) } })
   end
 
   def mock_page(title: "Test Page", description: nil, source_file: "page.md",
@@ -240,7 +240,7 @@ class MarkdownPageTest < Minitest::Test
 
   # --- Feature 4: Structured metadata header ---
 
-  def test_md_metadata_disabled_by_default
+  def test_dotmd_metadata_disabled_by_default
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test")
     JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
@@ -250,14 +250,14 @@ class MarkdownPageTest < Minitest::Test
     refute content.start_with?("---\n"), "Metadata block should not appear by default"
   end
 
-  def test_md_metadata_block_when_enabled
+  def test_dotmd_metadata_block_when_enabled
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(
       title: "Test Page", description: "A test", url: "/page/",
       author: "Manuel", date: Time.new(2025, 3, 10), lang: "en"
     )
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -272,11 +272,11 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "lang: en"
   end
 
-  def test_md_metadata_includes_canonical
+  def test_dotmd_metadata_includes_canonical
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -285,11 +285,11 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "canonical: https://example.com/page/"
   end
 
-  def test_md_metadata_uses_front_matter_canonical
+  def test_dotmd_metadata_uses_front_matter_canonical
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/", canonical_url: "https://other.com/page/")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -299,11 +299,11 @@ class MarkdownPageTest < Minitest::Test
     refute_includes content, "canonical: https://example.com/page/"
   end
 
-  def test_md_metadata_omits_empty_fields
+  def test_dotmd_metadata_omits_empty_fields
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
-    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true,
-                                                             "include_last_modified" => false } })
+    site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true,
+                                                    "include_last_modified" => false } })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -313,10 +313,10 @@ class MarkdownPageTest < Minitest::Test
     refute_includes content, "date:"
   end
 
-  def test_md_metadata_with_last_modified
+  def test_dotmd_metadata_with_last_modified
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
-    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true } })
+    site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true } })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -324,23 +324,23 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "last_modified: 2025-06-15"
   end
 
-  def test_md_metadata_no_duplicate_last_modified
+  def test_dotmd_metadata_no_duplicate_last_modified
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
-    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true } })
+    site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true } })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
-    refute_includes content, "> Last updated:", "Should not have blockquote last_modified when metadata enabled"
+    refute_includes content, "> Last updated:", "Should not have blockquote last_modified when dotmd_metadata enabled"
     assert_includes content, "last_modified: 2025-06-15"
   end
 
-  def test_md_metadata_preserves_title_and_description
+  def test_dotmd_metadata_preserves_title_and_description
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test Page", description: "A test")
-    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true,
-                                                             "include_last_modified" => false } })
+    site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true,
+                                                    "include_last_modified" => false } })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -351,11 +351,11 @@ class MarkdownPageTest < Minitest::Test
 
   # --- Bug fix: YAML-safe quoting for metadata scalars ---
 
-  def test_md_metadata_quotes_title_with_colon
+  def test_dotmd_metadata_quotes_title_with_colon
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "FAQ: Setup Guide")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -364,11 +364,11 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, 'title: "FAQ: Setup Guide"'
   end
 
-  def test_md_metadata_quotes_description_with_hash
+  def test_dotmd_metadata_quotes_description_with_hash
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", description: "Use # for headings")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -377,11 +377,11 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, 'description: "Use # for headings"'
   end
 
-  def test_md_metadata_quotes_author_with_special_chars
+  def test_dotmd_metadata_quotes_author_with_special_chars
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", author: "Name: Alias")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -390,11 +390,11 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, 'author: "Name: Alias"'
   end
 
-  def test_md_metadata_plain_values_unquoted
+  def test_dotmd_metadata_plain_values_unquoted
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "My Simple Title", author: "Manuel", lang: "en")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -407,11 +407,11 @@ class MarkdownPageTest < Minitest::Test
 
   # --- Bug fix: canonical URL includes baseurl ---
 
-  def test_md_metadata_canonical_includes_baseurl
+  def test_dotmd_metadata_canonical_includes_baseurl
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "baseurl" => "/docs", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -420,11 +420,11 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "canonical: https://example.com/docs/page/"
   end
 
-  def test_md_metadata_canonical_nil_baseurl
+  def test_dotmd_metadata_canonical_nil_baseurl
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -433,11 +433,11 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "canonical: https://example.com/page/"
   end
 
-  def test_md_metadata_canonical_baseurl_trailing_slash
+  def test_dotmd_metadata_canonical_baseurl_trailing_slash
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "baseurl" => "/docs/", "jekyll_aeo" => {
-                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                       "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -446,36 +446,37 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "canonical: https://example.com/docs/page/"
   end
 
-  # --- HTML fallback ---
+  # --- html2dotmd ---
 
-  def test_html_fallback_generates_md_from_html_output
+  def test_html2dotmd_generates_md_from_html_output
     html = "<html><body><main><h1>Generated Page</h1><p>Plugin content.</p></main></body></html>"
     page = mock_page(
       title: "Generated Page", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-                       "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
+                       "dotmd" => { "include_last_modified" => false,
+                                    "html2dotmd" => { "enabled" => true } }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
-    assert File.exist?(output_path), "Expected .md file from HTML fallback"
+    assert File.exist?(output_path), "Expected .md file from html2dotmd"
 
     content = read_output(output_path)
     assert_includes content, "Plugin content."
   end
 
-  def test_html_fallback_disabled_skips_no_source_page
+  def test_html2dotmd_disabled_skips_no_source_page
     html = "<html><body><p>Content</p></body></html>"
     page = mock_page(title: "Test", source_file: "nonexistent_xyz.md", output: html)
     site = no_lastmod_site
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
-    refute File.exist?(output_path), "Should not generate .md when html_fallback is disabled"
+    refute File.exist?(output_path), "Should not generate .md when html2dotmd is disabled"
   end
 
-  def test_html_fallback_extracts_main_content
+  def test_html2dotmd_extracts_main_content
     html = <<~HTML
       <!DOCTYPE html>
       <html>
@@ -496,7 +497,8 @@ class MarkdownPageTest < Minitest::Test
       title: "Test", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-                       "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
+                       "dotmd" => { "include_last_modified" => false,
+                                    "html2dotmd" => { "enabled" => true } }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -508,14 +510,15 @@ class MarkdownPageTest < Minitest::Test
     refute_includes content, "alert"
   end
 
-  def test_html_fallback_adds_title_and_description
+  def test_html2dotmd_adds_title_and_description
     html = "<html><body><main><p>Plugin content.</p></main></body></html>"
     page = mock_page(
       title: "My Title", description: "My desc",
       source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-                       "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
+                       "dotmd" => { "include_last_modified" => false,
+                                    "html2dotmd" => { "enabled" => true } }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
@@ -526,22 +529,22 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "Plugin content."
   end
 
-  def test_html_fallback_no_last_modified_from_mtime
+  def test_html2dotmd_no_last_modified_from_mtime
     html = "<html><body><main><p>Content.</p></main></body></html>"
     page = mock_page(
       title: "Test", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-                       "markdown_pages" => { "html_fallback" => true }
+                       "dotmd" => { "html2dotmd" => { "enabled" => true } }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
-    refute_includes content, "Last updated:", "Should not have mtime-based last_modified for fallback pages"
+    refute_includes content, "Last updated:", "Should not have mtime-based last_modified for html2dotmd pages"
   end
 
-  def test_html_fallback_with_custom_selector
+  def test_html2dotmd_with_custom_selector
     html = <<~HTML
       <html><body>
         <div class="sidebar">Side content</div>
@@ -554,10 +557,9 @@ class MarkdownPageTest < Minitest::Test
       title: "Test", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-                       "markdown_pages" => {
-                         "html_fallback" => true,
-                         "html_fallback_selector" => ".main-content",
-                         "include_last_modified" => false
+                       "dotmd" => {
+                         "include_last_modified" => false,
+                         "html2dotmd" => { "enabled" => true, "selector" => ".main-content" }
                        }
                      })
     JekyllAeo::Generators::MarkdownPage.process(page, site)

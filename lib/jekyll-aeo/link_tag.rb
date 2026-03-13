@@ -4,8 +4,8 @@ module JekyllAeo
   module LinkTag
     def self.inject(obj, site)
       config = JekyllAeo::Config.from_site(site)
-      mp_config = config["markdown_pages"]
-      return unless mp_config["link_tag"] == "auto"
+      dotmd_config = config["dotmd"]
+      return unless dotmd_config["link_tag"] == "auto"
       return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
 
       md_url = JekyllAeo::Utils::MdUrl.for(obj.url, site.config["baseurl"])
@@ -15,8 +15,8 @@ module JekyllAeo
 
     def self.set_data(obj, site)
       config = JekyllAeo::Config.from_site(site)
-      mp_config = config["markdown_pages"]
-      return unless mp_config["link_tag"] == "data"
+      dotmd_config = config["dotmd"]
+      return unless dotmd_config["link_tag"] == "data"
       return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
 
       md_url = JekyllAeo::Utils::MdUrl.for(obj.url, site.config["baseurl"])

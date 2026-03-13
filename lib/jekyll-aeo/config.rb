@@ -5,14 +5,18 @@ module JekyllAeo
     DEFAULTS = {
       "enabled" => true,
       "exclude" => [],
-      "markdown_pages" => {
+      "dotmd" => {
         "link_tag" => "auto",
-        "strip_block_tags" => true,
-        "protect_indented_code" => false,
         "include_last_modified" => true,
-        "md_metadata" => false,
-        "html_fallback" => false,
-        "html_fallback_selector" => nil
+        "dotmd_metadata" => false,
+        "md2dotmd" => {
+          "strip_block_tags" => true,
+          "protect_indented_code" => false
+        },
+        "html2dotmd" => {
+          "enabled" => false,
+          "selector" => nil
+        }
       },
       "llms_txt" => {
         "enabled" => true,

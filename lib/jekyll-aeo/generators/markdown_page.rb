@@ -9,18 +9,18 @@ module JekyllAeo
 
       def self.process(obj, site)
         config = JekyllAeo::Config.from_site(site)
-        mp_config = config["markdown_pages"]
+        dotmd_config = config["dotmd"]
         source_path = JekyllAeo::Utils::SkipLogic.resolve_source_path(obj, site)
         return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
 
         dest_path = md_dest_path(obj, site)
-        body = extract_body(source_path, obj, mp_config)
+        body = extract_body(source_path, obj, dotmd_config)
 
-        if mp_config["include_last_modified"] && File.exist?(source_path)
+        if dotmd_config["include_last_modified"] && File.exist?(source_path)
           last_modified = resolve_last_modified(obj, source_path)
         end
 
-        if mp_config["md_metadata"]
+        if dotmd_config["dotmd_metadata"]
           metadata = build_metadata_block(obj, site, config, last_modified)
           header = build_header(obj, body, config, last_modified: nil)
           result = metadata + header + body.lstrip
@@ -36,13 +36,13 @@ module JekyllAeo
         File.write(dest_path, result)
       end
 
-      def self.extract_body(source_path, obj, mp_config)
+      def self.extract_body(source_path, obj, dotmd_config)
         if File.exist?(source_path)
           raw = File.read(source_path, encoding: "utf-8")
           body = raw.sub(YAML_FRONT_MATTER_REGEXP, "")
-          JekyllAeo::Utils::ContentStripper.strip(body, mp_config)
+          JekyllAeo::Utils::ContentStripper.strip(body, dotmd_config["md2dotmd"])
         else
-          JekyllAeo::Utils::HtmlConverter.convert(obj.output, mp_config)
+          JekyllAeo::Utils::HtmlConverter.convert(obj.output, dotmd_config["html2dotmd"])
         end
       end
 

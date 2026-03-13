@@ -26,12 +26,13 @@ plugins:
 
 jekyll_aeo:
   enabled: true
-  markdown_pages:
+  dotmd:
     link_tag: "auto"
-    strip_block_tags: true
-    protect_indented_code: true
     include_last_modified: true
-    md_metadata: true
+    dotmd_metadata: true
+    md2dotmd:
+      strip_block_tags: true
+      protect_indented_code: true
   llms_txt:
     enabled: true
     description: "Documentation and resources for Example.com"
