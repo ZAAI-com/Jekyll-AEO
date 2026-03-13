@@ -152,7 +152,7 @@ class ExampleSiteTest < Minitest::Test
 
   def test_howto_markdown_preserves_code_fence
     content = File.read(File.join(DEST_DIR, "howto.md"))
-    assert_includes content, '```ruby'
+    assert_includes content, "```ruby"
     assert_includes content, 'gem "jekyll-aeo"'
   end
 

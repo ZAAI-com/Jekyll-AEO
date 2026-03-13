@@ -13,6 +13,11 @@ RuboCop::RakeTask.new
 task default: %i[rubocop test]
 
 namespace :site do
+  desc "Run example site integration tests"
+  task :test do
+    sh "bundle exec ruby -Ilib:test test/integration/example_site_test.rb"
+  end
+
   desc "Build the test site"
   task :build do
     Dir.chdir("test/example.com") do
