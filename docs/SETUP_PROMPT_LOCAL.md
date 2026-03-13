@@ -1,10 +1,10 @@
-# Jekyll-AEO — Setup Prompt
+# Jekyll-AEO — Local Development Setup Prompt
 
-> Copy this entire document and paste it into your AI coding agent to install and configure [Jekyll-AEO](https://zaai.com/jekyll-aeo) in your Jekyll site.
+> Copy this entire document and paste it into your AI coding agent to install and configure a **local development copy** of [Jekyll-AEO](https://zaai.com/jekyll-aeo) in your Jekyll site.
 
 ---
 
-You are helping the user install and configure **Jekyll-AEO**, a RubyGem for Answer Engine Optimization that generates clean markdown copies of Jekyll pages, `llms.txt`/`llms-full.txt` index files, `robots.txt`, `domain-profile.json`, and JSON-LD structured data for LLM consumption.
+You are helping the user install and configure **Jekyll-AEO** from a local path, for development and testing. Jekyll-AEO is a RubyGem for Answer Engine Optimization that generates clean markdown copies of Jekyll pages, `llms.txt`/`llms-full.txt` index files, `robots.txt`, `domain-profile.json`, and JSON-LD structured data for LLM consumption.
 
 - Docs: <https://zaai.com/jekyll-aeo>
 - Source: <https://github.com/ZAAI-com/Jekyll-AEO>
@@ -27,19 +27,33 @@ If any check fails, inform the user and stop.
 
 ---
 
-## Step 1 — Install the Gem
+## Step 1 — Locate the Local Gem
+
+Ask the user:
+
+**"What is the absolute path to your local Jekyll-AEO checkout?"**
+
+For example: `/Users/you/projects/Jekyll-AEO`
+
+Verify that `jekyll-aeo.gemspec` exists at the given path. If it does not, inform the user and ask again.
+
+---
+
+## Step 2 — Install the Gem
 
 1. Read the `Gemfile`. If it contains a `group :jekyll_plugins` block, add the gem inside that group. Otherwise, add it as a standalone line after other gem declarations.
 
 ```ruby
-gem "jekyll-aeo"
+gem "jekyll-aeo", path: "<path-from-step-1>"
 ```
 
 2. Run `bundle install` and confirm it succeeds.
 
+> **Note:** After making changes to the local Jekyll-AEO source code, run `bundle install` again in your site directory to pick up the changes.
+
 ---
 
-## Step 2 — Configure `_config.yml`
+## Step 3 — Configure `_config.yml`
 
 Jekyll-AEO works with zero configuration. The defaults below are already active — you only need to add settings the user explicitly opts into.
 
@@ -57,7 +71,7 @@ dotmd:
     protect_indented_code: false
   html2dotmd:
     enabled: false
-    selector: null  # (auto-detects main > article > body)
+    selector: null
 llms_txt:
   enabled: true
   description: null
@@ -133,7 +147,7 @@ If the user accepted all defaults (no exclusions, no opt-in features), you can s
 
 ---
 
-## Step 3 — Add the JSON-LD Liquid Tag
+## Step 4 — Add the JSON-LD Liquid Tag
 
 The `{% aeo_json_ld %}` tag renders structured data (BreadcrumbList, Organization, FAQPage, HowTo, Speakable, Article) as `<script type="application/ld+json">` blocks.
 
@@ -145,7 +159,7 @@ If you cannot find a `<head>` section, ask the user which layout file to edit.
 
 ---
 
-## Step 4 — Build and Validate
+## Step 5 — Build and Validate
 
 1. Run `bundle exec jekyll build`.
 2. Run `bundle exec jekyll aeo:validate`.
@@ -159,10 +173,11 @@ If you cannot find a `<head>` section, ask the user which layout file to edit.
 
 ---
 
-## Step 5 — Summary and Next Steps
+## Step 6 — Summary and Next Steps
 
 Tell the user what was installed and configured, then share these next steps:
 
+- **Re-sync after gem changes**: Run `bundle install` in this site directory after modifying the local Jekyll-AEO source.
 - **FAQPage schema**: Add `faq:` front matter with `q:`/`a:` pairs to generate FAQ structured data.
 - **HowTo schema**: Add `howto:` front matter with `steps:` to generate HowTo structured data.
 - **Speakable schema**: Add `speakable: true` to front matter for voice-assistant-friendly pages.

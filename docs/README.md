@@ -46,7 +46,7 @@ jekyll_aeo:
       protect_indented_code: false # protect 4-space indented code blocks (default: false)
     html2dotmd:                    # rendered HTML → .md settings (for plugin-generated pages)
       enabled: false               # convert rendered HTML to markdown (default: false)
-      selector: null               # CSS selector for content extraction (default: auto-detect main/article/body)
+      selector: null               # CSS selector (default: null — auto-detects main > article > body)
   llms_txt:
     enabled: true                  # generate llms.txt + llms-full.txt (default: true)
     description: ""                # override site description in llms.txt

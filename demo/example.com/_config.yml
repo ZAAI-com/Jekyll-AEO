@@ -35,7 +35,7 @@ jekyll_aeo:
       protect_indented_code: true
     html2dotmd:
       enabled: false
-      selector: null
+      selector: null  # auto-detects main > article > body
   llms_txt:
     enabled: true
     description: "Documentation and resources for Example.com"
