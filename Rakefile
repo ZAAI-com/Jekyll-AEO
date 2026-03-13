@@ -11,3 +11,28 @@ end
 RuboCop::RakeTask.new
 
 task default: %i[rubocop test]
+
+namespace :site do
+  desc "Build the test site"
+  task :build do
+    Dir.chdir("test/example.com") do
+      sh "bundle install --quiet"
+      sh "bundle exec jekyll build"
+    end
+  end
+
+  desc "Serve the test site locally"
+  task :serve do
+    Dir.chdir("test/example.com") do
+      sh "bundle install --quiet"
+      sh "bundle exec jekyll serve"
+    end
+  end
+
+  desc "Clean the test site build"
+  task :clean do
+    Dir.chdir("test/example.com") do
+      sh "bundle exec jekyll clean"
+    end
+  end
+end

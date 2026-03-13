@@ -2,3 +2,11 @@
 .context/
 pkg/
 tmp/
+
+# Test site build artifacts
+test/example.com/_site/
+test/example.com/.jekyll-cache/
+test/example.com/.jekyll-metadata
+test/example.com/Gemfile.lock
+test/example.com/.sass-cache/
+test/example.com/source/docs/

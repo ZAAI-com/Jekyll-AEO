@@ -1,0 +1,52 @@
+title: "Example.com"
+description: "A test site for the jekyll-aeo gem"
+url: "https://example.com"
+baseurl: ""
+
+source: source
+destination: _site
+
+theme: minima
+permalink: /blog/:slug/
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+
+plugins:
+  - jekyll-aeo
+
+jekyll_aeo:
+  enabled: true
+  markdown_pages:
+    link_tag: "auto"
+    strip_block_tags: true
+    protect_indented_code: true
+    include_last_modified: true
+    md_metadata: true
+  llms_txt:
+    enabled: true
+    description: "Documentation and resources for Example.com"
+    full_txt_mode: "all"
+    show_lastmod: true
+    include_descriptions: true
+  url_map:
+    enabled: true
+    output_filepath: "docs/Url-Map.md"
+  robots_txt:
+    enabled: true
+  domain_profile:
+    enabled: true
+    name: "Example.com"
+    description: "A test site for the jekyll-aeo gem"
+    website: "https://example.com"
+    contact: "hello@example.com"
+    entity_type: "Organization"
