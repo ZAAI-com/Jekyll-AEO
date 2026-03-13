@@ -18,6 +18,7 @@ Metrics/AbcSize:
 
 Metrics/BlockLength:
   Exclude:
+    - "Rakefile"
     - "lib/jekyll-aeo/utils/content_stripper.rb"
 
 Metrics/CyclomaticComplexity:

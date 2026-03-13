@@ -23,40 +23,70 @@ defaults:
 
 plugins:
   - jekyll-aeo
-  - jekyll-feed
+
+# Jekyll-AEO: Answer Engine Optimization
+# Docs: https://zaai.com/jekyll-aeo
+# Source: https://github.com/ZAAI-com/Jekyll-AEO
+#
+# Settings marked (default) match built-in defaults — omit them for zero-config usage.
+# Settings marked (override) differ from defaults — these opt into extra features.
+jekyll_aeo:
+  enabled: true                       # (default) master switch for the entire plugin
+
+  # --- Markdown copy generation (.md companion files) ---
+  dotmd:
+    link_tag: "auto"                  # (default) inject <link rel="alternate" type="text/markdown"> into HTML <head>
+    include_last_modified: true       # (default) add Last-Modified header to .md files
+    dotmd_metadata: true              # (override | default: false) prepend YAML front matter (title, url, description) to .md files
+    md2dotmd:                         # source markdown → .md conversion
+      strip_block_tags: true          # (default) strip comment/capture Liquid blocks (tags + content)
+      protect_indented_code: true     # (override | default: false) preserve indented code blocks from stripping
+    html2dotmd:                       # rendered HTML → .md fallback (for plugin-generated pages)
+      enabled: false                  # (default) enable HTML-to-markdown conversion via reverse_markdown
+      selector: null                  # (default) CSS selector for content extraction; null auto-detects main > article > body
+
+  # --- llms.txt index file ---
+  llms_txt:
+    enabled: true                     # (default) generate /llms.txt with page listings
+    description: "Documentation and resources for Example.com"  # (override | default: null) site description in llms.txt header
+    # sections: null                  # (default) auto-generated from Jekyll collections; set explicitly to customize
+    # front_matter_keys: []           # (default) extra front matter keys to include in listings
+    show_lastmod: true                # (override | default: false) show last-modified dates in listings
+    include_descriptions: true        # (default) include page descriptions in listings
+
+  # --- llms-full.txt concatenated file ---
+  llms_full_txt:
+    enabled: true                     # (default) generate /llms-full.txt with all page content
+    # description: null               # (default) description in llms-full.txt header
+    full_txt_mode: "all"              # (default) "all" = include every page; alternative modes filter content
+
+  # --- URL map (development reference) ---
+  url_map:
+    enabled: true                     # (override | default: false) generate a markdown table of all pages
+    output_filepath: "docs/Url-Map.md"  # (default) path relative to source directory
+    # columns: [page_id, url, lang, layout, path, redirects, markdown_copy, skipped]  # (default)
+    # show_created_at: true           # (default)
+
+  # --- robots.txt (crawler policy) ---
+  robots_txt:
+    enabled: true                     # (override | default: false) generate /robots.txt
+    # allow: [Googlebot, Bingbot, OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Applebot-Extended]  # (default)
+    # disallow: [GPTBot, ClaudeBot, Google-Extended, Meta-ExternalAgent, Amazonbot]  # (default)
+    # include_sitemap: true           # (default)
+    # include_llms_txt: true          # (default)
+    # custom_rules: []                # (default)
+
+  # --- Domain profile (/.well-known/domain-profile.json) ---
+  domain_profile:
+    enabled: true                     # (override | default: false) generate /.well-known/domain-profile.json
+    name: "Example.com"               # (override | default: null) organization/site name
+    description: "A test site for the jekyll-aeo gem"  # (override | default: null) site description
+    website: "https://example.com"    # (override | default: null) canonical site URL
+    contact: "hello@example.com"      # (override | default: null) contact email (required when enabled)
+    # logo: null                      # (default) URL to logo image
+    entity_type: "Organization"       # (override | default: null) Organization, Person, Blog, NGO, etc.
+    # jsonld: null                    # (default) custom JSON-LD to merge into the profile
+
 
 feed:
   disable_in_development: true
-
-jekyll_aeo:
-  enabled: true
-  dotmd:
-    link_tag: "auto"
-    include_last_modified: true
-    dotmd_metadata: true
-    md2dotmd:
-      strip_block_tags: true
-      protect_indented_code: true
-    html2dotmd:
-      enabled: false
-      selector: null  # auto-detects main > article > body
-  llms_txt:
-    enabled: true
-    description: "Documentation and resources for Example.com"
-    show_lastmod: true
-    include_descriptions: true
-  llms_full_txt:
-    enabled: true
-    full_txt_mode: "all"
-  url_map:
-    enabled: true
-    output_filepath: "docs/Url-Map.md"
-  robots_txt:
-    enabled: true
-  domain_profile:
-    enabled: true
-    name: "Example.com"
-    description: "A test site for the jekyll-aeo gem"
-    website: "https://example.com"
-    contact: "hello@example.com"
-    entity_type: "Organization"

@@ -57,50 +57,15 @@ gem "jekyll-aeo", path: "<path-from-step-1>"
 
 Jekyll-AEO works with zero configuration. The defaults below are already active — you only need to add settings the user explicitly opts into.
 
-### Default Configuration (do NOT add these unless overriding)
+### Configuration Reference
 
-```
-enabled: true
-exclude: []
-dotmd:
-  link_tag: "auto"
-  include_last_modified: true
-  dotmd_metadata: false
-  md2dotmd:
-    strip_block_tags: true
-    protect_indented_code: false
-  html2dotmd:
-    enabled: false
-    selector: null
-llms_txt:
-  enabled: true
-  description: null
-  full_txt_mode: "all"
-  sections: null  (auto-generated from collections)
-  front_matter_keys: []
-  show_lastmod: false
-  include_descriptions: true
-url_map:
-  enabled: false
-  output_filepath: "docs/Url-Map.md"
-  columns: [page_id, url, lang, layout, path, redirects, markdown_copy, skipped]
-robots_txt:
-  enabled: false
-  allow: [Googlebot, Bingbot, OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Applebot-Extended]
-  disallow: [GPTBot, ClaudeBot, Google-Extended, Meta-ExternalAgent, Amazonbot]
-  include_sitemap: true
-  include_llms_txt: true
-  custom_rules: []
-domain_profile:
-  enabled: false
-  name: null
-  description: null
-  website: null
-  contact: null
-  logo: null
-  entity_type: null
-  jsonld: null
-```
+For a fully commented example showing every available setting, read the example config from the local gem checkout:
+
+`<gem-path>/demo/example.com/_config.yml`
+
+(where `<gem-path>` is the path from Step 1)
+
+In that file, settings marked `(default)` are active without any config — you can omit them. Settings marked `(override)` show opt-in features that differ from defaults.
 
 ### What's already enabled with zero config
 
