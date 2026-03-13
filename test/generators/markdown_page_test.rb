@@ -257,8 +257,8 @@ class MarkdownPageTest < Minitest::Test
       author: "Manuel", date: Time.new(2025, 3, 10), lang: "en"
     )
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -276,8 +276,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -289,8 +289,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/", canonical_url: "https://other.com/page/")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -302,7 +302,8 @@ class MarkdownPageTest < Minitest::Test
   def test_md_metadata_omits_empty_fields
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
-    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false } })
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true,
+                                                             "include_last_modified" => false } })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -338,7 +339,8 @@ class MarkdownPageTest < Minitest::Test
   def test_md_metadata_preserves_title_and_description
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test Page", description: "A test")
-    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false } })
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "md_metadata" => true,
+                                                             "include_last_modified" => false } })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -353,8 +355,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "FAQ: Setup Guide")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -366,8 +368,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", description: "Use # for headings")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -379,8 +381,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", author: "Name: Alias")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -392,8 +394,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "My Simple Title", author: "Manuel", lang: "en")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -409,8 +411,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "baseurl" => "/docs", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -422,8 +424,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -435,8 +437,8 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("url" => "https://example.com", "baseurl" => "/docs/", "jekyll_aeo" => {
-      "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "md_metadata" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -452,8 +454,8 @@ class MarkdownPageTest < Minitest::Test
       title: "Generated Page", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-      "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -494,8 +496,8 @@ class MarkdownPageTest < Minitest::Test
       title: "Test", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-      "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -513,8 +515,8 @@ class MarkdownPageTest < Minitest::Test
       source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-      "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
-    })
+                       "markdown_pages" => { "html_fallback" => true, "include_last_modified" => false }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -530,8 +532,8 @@ class MarkdownPageTest < Minitest::Test
       title: "Test", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-      "markdown_pages" => { "html_fallback" => true }
-    })
+                       "markdown_pages" => { "html_fallback" => true }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
@@ -552,12 +554,12 @@ class MarkdownPageTest < Minitest::Test
       title: "Test", source_file: "nonexistent_xyz.md", output: html
     )
     site = mock_site("jekyll_aeo" => {
-      "markdown_pages" => {
-        "html_fallback" => true,
-        "html_fallback_selector" => ".main-content",
-        "include_last_modified" => false
-      }
-    })
+                       "markdown_pages" => {
+                         "html_fallback" => true,
+                         "html_fallback_selector" => ".main-content",
+                         "include_last_modified" => false
+                       }
+                     })
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")

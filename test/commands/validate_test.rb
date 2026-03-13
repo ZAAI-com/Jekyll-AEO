@@ -110,10 +110,11 @@ class ValidateTest < Minitest::Test
   def test_valid_domain_profile_passes
     write_file("llms.txt", valid_llms_txt(links: []))
     write_file("llms-full.txt", "content")
-    write_file(".well-known/domain-profile.json", JSON.generate({
-      "spec" => "https://ai-domain-data.org/spec/v0.1",
-      "name" => "Test", "description" => "A test", "website" => "https://example.com", "contact" => "hi@example.com"
-    }))
+    write_file(".well-known/domain-profile.json", JSON.generate(
+                                                    "spec" => "https://ai-domain-data.org/spec/v0.1",
+                                                    "name" => "Test", "description" => "A test",
+                                                    "website" => "https://example.com", "contact" => "hi@example.com"
+                                                  ))
 
     errors, warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
     assert_empty errors
@@ -123,10 +124,10 @@ class ValidateTest < Minitest::Test
   def test_domain_profile_missing_required_field
     write_file("llms.txt", valid_llms_txt(links: []))
     write_file("llms-full.txt", "content")
-    write_file(".well-known/domain-profile.json", JSON.generate({
-      "spec" => "https://ai-domain-data.org/spec/v0.1",
-      "name" => "Test"
-    }))
+    write_file(".well-known/domain-profile.json", JSON.generate(
+                                                    "spec" => "https://ai-domain-data.org/spec/v0.1",
+                                                    "name" => "Test"
+                                                  ))
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
     missing = errors.select { |e| e.include?("domain-profile.json missing required field") }
@@ -145,11 +146,12 @@ class ValidateTest < Minitest::Test
   def test_domain_profile_invalid_entity_type
     write_file("llms.txt", valid_llms_txt(links: []))
     write_file("llms-full.txt", "content")
-    write_file(".well-known/domain-profile.json", JSON.generate({
-      "spec" => "https://ai-domain-data.org/spec/v0.1",
-      "name" => "Test", "description" => "A test", "website" => "https://example.com",
-      "contact" => "hi@example.com", "entity_type" => "BadType"
-    }))
+    write_file(".well-known/domain-profile.json", JSON.generate(
+                                                    "spec" => "https://ai-domain-data.org/spec/v0.1",
+                                                    "name" => "Test", "description" => "A test",
+                                                    "website" => "https://example.com",
+                                                    "contact" => "hi@example.com", "entity_type" => "BadType"
+                                                  ))
 
     _errors, warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
     assert(warnings.any? { |w| w.include?("invalid entity_type") })

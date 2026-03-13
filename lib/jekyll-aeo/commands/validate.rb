@@ -105,9 +105,9 @@ module JekyllAeo
           end
 
           entity_type = data["entity_type"]
-          if entity_type && !JekyllAeo::Generators::DomainProfile::VALID_ENTITY_TYPES.include?(entity_type)
-            warnings << "domain-profile.json has invalid entity_type: #{entity_type}"
-          end
+          return unless entity_type && !JekyllAeo::Generators::DomainProfile::VALID_ENTITY_TYPES.include?(entity_type)
+
+          warnings << "domain-profile.json has invalid entity_type: #{entity_type}"
         end
 
         def report(errors, warnings)
@@ -116,19 +116,13 @@ module JekyllAeo
             return
           end
 
-          warnings.each do |warning|
-            Jekyll.logger.warn "AEO Warning:", warning
-          end
-
-          errors.each do |error|
-            Jekyll.logger.error "AEO Error:", error
-          end
+          warnings.each { |w| Jekyll.logger.warn "AEO Warning:", w }
+          errors.each { |e| Jekyll.logger.error "AEO Error:", e }
 
           summary_parts = []
           summary_parts << "#{errors.size} error(s)" unless errors.empty?
           summary_parts << "#{warnings.size} warning(s)" unless warnings.empty?
           Jekyll.logger.info "AEO Validate:", summary_parts.join(", ")
-
           abort if errors.any?
         end
       end

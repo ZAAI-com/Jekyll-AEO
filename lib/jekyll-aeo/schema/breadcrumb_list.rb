@@ -9,18 +9,21 @@ module JekyllAeo
 
         base_url = site_config["url"].to_s.chomp("/")
         baseurl = site_config["baseurl"].to_s.chomp("/")
-
         segments = url.split("/").reject(&:empty?)
         return nil if segments.empty?
 
-        items = []
-        items << {
-          "@type" => "ListItem",
-          "position" => 1,
-          "name" => "Home",
-          "item" => "#{base_url}#{baseurl}/"
+        {
+          "@context" => "https://schema.org",
+          "@type" => "BreadcrumbList",
+          "itemListElement" => build_items(page, segments, base_url, baseurl)
         }
+      end
 
+      def self.build_items(page, segments, base_url, baseurl)
+        items = [{
+          "@type" => "ListItem", "position" => 1,
+          "name" => "Home", "item" => "#{base_url}#{baseurl}/"
+        }]
         accumulated = ""
         segments.each_with_index do |segment, index|
           accumulated += "/#{segment}"
@@ -30,19 +33,14 @@ module JekyllAeo
                    segment.split(/[_-]/).map(&:capitalize).join(" ")
                  end
           items << {
-            "@type" => "ListItem",
-            "position" => index + 2,
-            "name" => name,
-            "item" => "#{base_url}#{baseurl}#{accumulated}/"
+            "@type" => "ListItem", "position" => index + 2,
+            "name" => name, "item" => "#{base_url}#{baseurl}#{accumulated}/"
           }
         end
-
-        {
-          "@context" => "https://schema.org",
-          "@type" => "BreadcrumbList",
-          "itemListElement" => items
-        }
+        items
       end
+
+      private_class_method :build_items
     end
   end
 end

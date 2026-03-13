@@ -29,45 +29,38 @@ module JekyllAeo
 
       def build_content(robots_config, site)
         lines = []
-
-        allow_bots = robots_config["allow"] || []
-        allow_bots.each do |bot|
-          lines << "User-agent: #{bot}"
-          lines << "Allow: /"
-          lines << ""
-        end
-
-        disallow_bots = robots_config["disallow"] || []
-        disallow_bots.each do |bot|
-          lines << "User-agent: #{bot}"
-          lines << "Disallow: /"
-          lines << ""
-        end
-
+        bot_rules(lines, robots_config["allow"] || [], "Allow")
+        bot_rules(lines, robots_config["disallow"] || [], "Disallow")
         lines << "User-agent: *"
         lines << "Allow: /"
         lines << ""
+        custom_rules(lines, robots_config["custom_rules"] || [])
+        append_metadata_lines(lines, robots_config, site)
+        "#{lines.join("\n")}\n"
+      end
 
-        custom_rules = robots_config["custom_rules"] || []
-        custom_rules.each do |rule|
+      def bot_rules(lines, bots, directive)
+        bots.each do |bot|
+          lines << "User-agent: #{bot}"
+          lines << "#{directive}: /"
+          lines << ""
+        end
+      end
+
+      def custom_rules(lines, rules)
+        rules.each do |rule|
           lines << "User-agent: #{rule['user_agent']}"
           lines << "Allow: #{rule['allow']}" if rule["allow"]
           lines << "Disallow: #{rule['disallow']}" if rule["disallow"]
           lines << ""
         end
+      end
 
+      def append_metadata_lines(lines, robots_config, site)
         base_url = site.config["url"].to_s.chomp("/")
         baseurl = site.config["baseurl"].to_s.chomp("/")
-
-        if robots_config["include_sitemap"] != false
-          lines << "Sitemap: #{base_url}#{baseurl}/sitemap.xml"
-        end
-
-        if robots_config["include_llms_txt"] != false
-          lines << "Llms-txt: #{base_url}#{baseurl}/llms.txt"
-        end
-
-        lines.join("\n") + "\n"
+        lines << "Sitemap: #{base_url}#{baseurl}/sitemap.xml" if robots_config["include_sitemap"] != false
+        lines << "Llms-txt: #{base_url}#{baseurl}/llms.txt" if robots_config["include_llms_txt"] != false
       end
     end
   end

@@ -115,10 +115,7 @@ module JekyllAeo
         lines << ""
 
         description = llms_config["description"] || site.config["description"]
-        if description && !description.to_s.empty?
-          lines << "> #{description}"
-          lines << ""
-        end
+        lines.push("> #{description}", "") if description && !description.to_s.empty?
 
         baseurl = site.config["baseurl"].to_s.chomp("/")
         lines << "- [llms-full.txt](#{baseurl}/llms-full.txt): Complete contents of all pages"
@@ -133,7 +130,9 @@ module JekyllAeo
           section[:items].each do |item|
             url_md = md_url(item[:url], site.config["baseurl"])
             entry = "- [#{item[:title]}](#{url_md})"
-            entry += ": #{item[:description]}" if llms_config["include_descriptions"] != false && !item[:description].empty?
+            if llms_config["include_descriptions"] != false && !item[:description].empty?
+              entry += ": #{item[:description]}"
+            end
             lines << entry
           end
 

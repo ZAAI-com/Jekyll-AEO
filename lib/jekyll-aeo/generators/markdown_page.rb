@@ -14,16 +14,11 @@ module JekyllAeo
         return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
 
         dest_path = md_dest_path(obj, site)
+        body = extract_body(source_path, obj, mp_config)
 
-        if File.exist?(source_path)
-          raw = File.read(source_path, encoding: "utf-8")
-          body = raw.sub(YAML_FRONT_MATTER_REGEXP, "")
-          body = JekyllAeo::Utils::ContentStripper.strip(body, mp_config)
-        else
-          body = JekyllAeo::Utils::HtmlConverter.convert(obj.output, mp_config)
+        if mp_config["include_last_modified"] && File.exist?(source_path)
+          last_modified = resolve_last_modified(obj, source_path)
         end
-
-        last_modified = resolve_last_modified(obj, source_path) if mp_config["include_last_modified"] && File.exist?(source_path)
 
         if mp_config["md_metadata"]
           metadata = build_metadata_block(obj, site, config, last_modified)
@@ -39,6 +34,16 @@ module JekyllAeo
 
         FileUtils.mkdir_p(File.dirname(dest_path))
         File.write(dest_path, result)
+      end
+
+      def self.extract_body(source_path, obj, mp_config)
+        if File.exist?(source_path)
+          raw = File.read(source_path, encoding: "utf-8")
+          body = raw.sub(YAML_FRONT_MATTER_REGEXP, "")
+          JekyllAeo::Utils::ContentStripper.strip(body, mp_config)
+        else
+          JekyllAeo::Utils::HtmlConverter.convert(obj.output, mp_config)
+        end
       end
 
       def self.build_header(obj, body, _config = nil, last_modified: nil)
@@ -78,56 +83,54 @@ module JekyllAeo
         case value
         when Time, DateTime
           value.strftime("%Y-%m-%d")
-        when Date
-          value.to_s
         when String
-          (Date.parse(value).to_s rescue value)
+          begin
+            Date.parse(value).to_s
+          rescue StandardError
+            value
+          end
         else
           value.to_s
         end
       end
 
-      YAML_NEEDS_QUOTING = /[:\#"'{}\[\],&*?|<>=!%@`\n\r]/.freeze
+      YAML_NEEDS_QUOTING = /[:\#"'{}\[\],&*?|<>=!%@`\n\r]/
 
       def self.yaml_safe_scalar(value)
         str = value.to_s
         return str unless str.match?(YAML_NEEDS_QUOTING) || str.strip != str
 
-        escaped = str.gsub('\\', '\\\\\\\\').gsub('"', '\\"').gsub("\n", '\n')
+        escaped = str.gsub("\\", "\\\\\\\\").gsub('"', '\\"').gsub("\n", '\n')
         "\"#{escaped}\""
       end
 
+      SCALAR_FIELDS = %w[title description author lang].freeze
+
       def self.build_metadata_block(obj, site, _config, last_modified)
-        lines = []
-        lines << "---"
+        lines = ["---"]
+        metadata_fields(obj, site, last_modified).each do |key, value|
+          next if value.nil? || value.to_s.empty?
 
-        title = obj.data["title"]
-        lines << "title: #{yaml_safe_scalar(title)}" if title && !title.to_s.empty?
-
-        lines << "url: #{obj.url}" if obj.url
-
-        canonical = obj.data["canonical_url"] ||
-                    "#{site.config['url']}#{site.config['baseurl'].to_s.chomp('/')}#{obj.url}"
-        lines << "canonical: #{canonical}" if canonical && !canonical.to_s.empty?
-
-        description = obj.data["description"]
-        lines << "description: #{yaml_safe_scalar(description)}" if description && !description.to_s.empty?
-
-        author = obj.data["author"]
-        lines << "author: #{yaml_safe_scalar(author)}" if author && !author.to_s.empty?
-
-        date = obj.data["date"]
-        lines << "date: #{format_date(date)}" if date
-
-        lines << "last_modified: #{last_modified}" if last_modified
-
-        lang = obj.data["lang"] || obj.data["language"]
-        lines << "lang: #{yaml_safe_scalar(lang)}" if lang && !lang.to_s.empty?
-
+          lines << "#{key}: #{SCALAR_FIELDS.include?(key) ? yaml_safe_scalar(value) : value}"
+        end
         lines << "---"
         lines << ""
-
         lines.join("\n")
+      end
+
+      def self.metadata_fields(obj, site, last_modified)
+        canonical = obj.data["canonical_url"] ||
+                    "#{site.config['url']}#{site.config['baseurl'].to_s.chomp('/')}#{obj.url}"
+        [
+          ["title", obj.data["title"]],
+          ["url", obj.url],
+          ["canonical", canonical],
+          ["description", obj.data["description"]],
+          ["author", obj.data["author"]],
+          ["date", obj.data["date"] ? format_date(obj.data["date"]) : nil],
+          ["last_modified", last_modified],
+          ["lang", obj.data["lang"] || obj.data["language"]]
+        ]
       end
 
       def self.md_dest_path(obj, site)
@@ -136,7 +139,7 @@ module JekyllAeo
 
       private_class_method :build_header, :md_dest_path, :resolve_last_modified,
                            :format_date, :build_metadata_block,
-                           :yaml_safe_scalar
+                           :yaml_safe_scalar, :extract_body, :metadata_fields
     end
   end
 end

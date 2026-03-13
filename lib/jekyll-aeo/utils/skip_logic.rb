@@ -11,8 +11,7 @@ module JekyllAeo
         return "assets collection" if assets_collection?(obj)
         return "llms file" if llms_file?(obj, site)
         return "excluded" if excluded?(obj, config)
-        mp = config["markdown_pages"] || {}
-        return "no source file" unless source_file_exists?(obj, site) || mp["html_fallback"]
+        return "no source file" unless source_available?(obj, site, config)
 
         nil
       end
@@ -52,8 +51,13 @@ module JekyllAeo
         File.exist?(path)
       end
 
+      def self.source_available?(obj, site, config)
+        mp = config["markdown_pages"] || {}
+        source_file_exists?(obj, site) || mp["html_fallback"]
+      end
+
       private_class_method :html_output?, :assets_collection?, :llms_file?,
-                           :excluded?, :source_file_exists?
+                           :excluded?, :source_file_exists?, :source_available?
     end
   end
 end

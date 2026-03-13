@@ -118,7 +118,7 @@ class AeoJsonLdTagTest < Minitest::Test
   def test_escapes_script_closing_tag_in_json_ld
     page = {
       "url" => "/",
-      "faq" => [{ "q" => "Is this safe?", "a" => '</script><script>alert(1)</script>' }]
+      "faq" => [{ "q" => "Is this safe?", "a" => "</script><script>alert(1)</script>" }]
     }
     result = render_tag(page)
 
@@ -129,7 +129,7 @@ class AeoJsonLdTagTest < Minitest::Test
 
     # The escaped JSON should still parse correctly
     parsed = JSON.parse(json_body.gsub("\\/", "/"))
-    assert_equal '</script><script>alert(1)</script>',
+    assert_equal "</script><script>alert(1)</script>",
                  parsed["mainEntity"].first["acceptedAnswer"]["text"]
   end
 

@@ -128,8 +128,8 @@ class RobotsTxtTest < Minitest::Test
 
   def test_omits_sitemap_when_disabled
     site = mock_site(aeo_config: {
-      "robots_txt" => { "enabled" => true, "include_sitemap" => false }
-    })
+                       "robots_txt" => { "enabled" => true, "include_sitemap" => false }
+                     })
     generate(site)
     content = site.pages.first.content
 
@@ -138,8 +138,8 @@ class RobotsTxtTest < Minitest::Test
 
   def test_omits_llms_txt_when_disabled
     site = mock_site(aeo_config: {
-      "robots_txt" => { "enabled" => true, "include_llms_txt" => false }
-    })
+                       "robots_txt" => { "enabled" => true, "include_llms_txt" => false }
+                     })
     generate(site)
     content = site.pages.first.content
 
@@ -148,8 +148,8 @@ class RobotsTxtTest < Minitest::Test
 
   def test_custom_allow_bots
     site = mock_site(aeo_config: {
-      "robots_txt" => { "enabled" => true, "allow" => %w[MyBot], "disallow" => [] }
-    })
+                       "robots_txt" => { "enabled" => true, "allow" => %w[MyBot], "disallow" => [] }
+                     })
     generate(site)
     content = site.pages.first.content
 
@@ -159,13 +159,13 @@ class RobotsTxtTest < Minitest::Test
 
   def test_custom_rules
     site = mock_site(aeo_config: {
-      "robots_txt" => {
-        "enabled" => true,
-        "custom_rules" => [
-          { "user_agent" => "SpecialBot", "disallow" => "/private/" }
-        ]
-      }
-    })
+                       "robots_txt" => {
+                         "enabled" => true,
+                         "custom_rules" => [
+                           { "user_agent" => "SpecialBot", "disallow" => "/private/" }
+                         ]
+                       }
+                     })
     generate(site)
     content = site.pages.first.content
 

@@ -25,7 +25,7 @@ module JekyllAeo
 
         output_path = File.join(site.dest, ".well-known", "domain-profile.json")
         FileUtils.mkdir_p(File.dirname(output_path))
-        File.write(output_path, JSON.pretty_generate(profile) + "\n")
+        File.write(output_path, "#{JSON.pretty_generate(profile)}\n")
       end
 
       def self.build_profile(dp_config, site)
@@ -47,6 +47,11 @@ module JekyllAeo
           "contact" => contact.to_s
         }
 
+        add_optional_fields(profile, dp_config)
+        profile
+      end
+
+      def self.add_optional_fields(profile, dp_config)
         entity_type = dp_config["entity_type"]
         if entity_type
           if VALID_ENTITY_TYPES.include?(entity_type)
@@ -57,16 +62,12 @@ module JekyllAeo
                                "Valid: #{VALID_ENTITY_TYPES.join(', ')}"
           end
         end
-
         profile["logo"] = dp_config["logo"] if dp_config["logo"]
-
         jsonld = dp_config["jsonld"]
         profile["jsonld"] = jsonld if jsonld.is_a?(Hash)
-
-        profile
       end
 
-      private_class_method :build_profile
+      private_class_method :build_profile, :add_optional_fields
     end
   end
 end

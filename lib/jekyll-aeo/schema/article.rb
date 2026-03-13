@@ -45,10 +45,6 @@ module JekyllAeo
         case value
         when Time, DateTime
           value.iso8601
-        when Date
-          value.to_s
-        when String
-          value
         else
           value.to_s
         end
