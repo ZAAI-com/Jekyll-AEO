@@ -74,7 +74,7 @@ module JekyllAeo
         }
 
         item[:skipped] = JekyllAeo::Utils::SkipLogic.skip_reason(obj, site, config) || "" if needs_skip
-        item[:markdown_copy] = md_url(obj.url, config, baseurl) if needs_md && (!needs_skip || item[:skipped].empty?)
+        item[:markdown_copy] = md_url(obj.url, baseurl) if needs_md && (!needs_skip || item[:skipped].empty?)
         item[:markdown_copy] ||= "" if needs_md
 
         item
@@ -136,8 +136,8 @@ module JekyllAeo
         value.gsub("|", "\\|")
       end
 
-      def self.md_url(url, config, baseurl = "")
-        JekyllAeo::Utils::MdUrl.for(url, config, baseurl)
+      def self.md_url(url, baseurl = "")
+        JekyllAeo::Utils::MdUrl.for(url, baseurl)
       end
 
       def self.titleize(label)

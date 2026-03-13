@@ -9,17 +9,23 @@ module JekyllAeo
 
       def self.process(obj, site)
         config = JekyllAeo::Config.from_site(site)
+        mp_config = config["markdown_pages"]
         source_path = JekyllAeo::Utils::SkipLogic.resolve_source_path(obj, site)
         return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
 
-        dest_path = md_dest_path(obj, site, config)
-        raw = File.read(source_path, encoding: "utf-8")
-        body = raw.sub(YAML_FRONT_MATTER_REGEXP, "")
-        body = JekyllAeo::Utils::ContentStripper.strip(body, config)
+        dest_path = md_dest_path(obj, site)
 
-        last_modified = resolve_last_modified(obj, source_path) if config["include_last_modified"]
+        if File.exist?(source_path)
+          raw = File.read(source_path, encoding: "utf-8")
+          body = raw.sub(YAML_FRONT_MATTER_REGEXP, "")
+          body = JekyllAeo::Utils::ContentStripper.strip(body, mp_config)
+        else
+          body = JekyllAeo::Utils::HtmlConverter.convert(obj.output, mp_config)
+        end
 
-        if config["md_metadata"]
+        last_modified = resolve_last_modified(obj, source_path) if mp_config["include_last_modified"] && File.exist?(source_path)
+
+        if mp_config["md_metadata"]
           metadata = build_metadata_block(obj, site, config, last_modified)
           header = build_header(obj, body, config, last_modified: nil)
           result = metadata + header + body.lstrip
@@ -124,8 +130,8 @@ module JekyllAeo
         lines.join("\n")
       end
 
-      def self.md_dest_path(obj, site, config)
-        JekyllAeo::Utils::MdUrl.dest_path(obj, site, config)
+      def self.md_dest_path(obj, site)
+        JekyllAeo::Utils::MdUrl.dest_path(obj, site)
       end
 
       private_class_method :build_header, :md_dest_path, :resolve_last_modified,

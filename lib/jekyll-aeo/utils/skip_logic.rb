@@ -11,7 +11,8 @@ module JekyllAeo
         return "assets collection" if assets_collection?(obj)
         return "llms file" if llms_file?(obj, site)
         return "excluded" if excluded?(obj, config)
-        return "no source file" unless source_file_exists?(obj, site)
+        mp = config["markdown_pages"] || {}
+        return "no source file" unless source_file_exists?(obj, site) || mp["html_fallback"]
 
         nil
       end

@@ -64,15 +64,6 @@ class LinkTagTest < Minitest::Test
     assert_includes page.output, %(<link rel="alternate" type="text/markdown" href="/about.md">\n</head>)
   end
 
-  def test_auto_uses_spec_path_style
-    write_source("about.md")
-    page = mock_page
-    site = mock_site("jekyll_aeo" => { "md_path_style" => "spec" })
-    JekyllAeo::LinkTag.inject(page, site)
-
-    assert_includes page.output, '<link rel="alternate" type="text/markdown" href="/about/index.html.md">'
-  end
-
   def test_auto_includes_baseurl
     write_source("about.md")
     page = mock_page
@@ -85,7 +76,7 @@ class LinkTagTest < Minitest::Test
   def test_auto_skips_when_mode_is_data
     write_source("about.md")
     page = mock_page
-    site = mock_site("jekyll_aeo" => { "link_tag" => "data" })
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "link_tag" => "data" } })
     original_output = page.output
     JekyllAeo::LinkTag.inject(page, site)
 
@@ -95,7 +86,7 @@ class LinkTagTest < Minitest::Test
   def test_auto_skips_when_mode_is_false
     write_source("about.md")
     page = mock_page
-    site = mock_site("jekyll_aeo" => { "link_tag" => false })
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "link_tag" => false } })
     original_output = page.output
     JekyllAeo::LinkTag.inject(page, site)
 
@@ -127,7 +118,7 @@ class LinkTagTest < Minitest::Test
   def test_data_sets_md_url
     write_source("about.md")
     page = mock_page
-    site = mock_site("jekyll_aeo" => { "link_tag" => "data" })
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "link_tag" => "data" } })
     JekyllAeo::LinkTag.set_data(page, site)
 
     assert_equal "/about.md", page.data["md_url"]
@@ -136,7 +127,7 @@ class LinkTagTest < Minitest::Test
   def test_data_sets_md_link_tag
     write_source("about.md")
     page = mock_page
-    site = mock_site("jekyll_aeo" => { "link_tag" => "data" })
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "link_tag" => "data" } })
     JekyllAeo::LinkTag.set_data(page, site)
 
     assert_equal '<link rel="alternate" type="text/markdown" href="/about.md">', page.data["md_link_tag"]
@@ -145,20 +136,11 @@ class LinkTagTest < Minitest::Test
   def test_data_includes_baseurl
     write_source("about.md")
     page = mock_page
-    site = mock_site("jekyll_aeo" => { "link_tag" => "data" }, "baseurl" => "/blog")
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "link_tag" => "data" } }, "baseurl" => "/blog")
     JekyllAeo::LinkTag.set_data(page, site)
 
     assert_equal "/blog/about.md", page.data["md_url"]
     assert_includes page.data["md_link_tag"], "/blog/about.md"
-  end
-
-  def test_data_uses_spec_path_style
-    write_source("about.md")
-    page = mock_page
-    site = mock_site("jekyll_aeo" => { "link_tag" => "data", "md_path_style" => "spec" })
-    JekyllAeo::LinkTag.set_data(page, site)
-
-    assert_equal "/about/index.html.md", page.data["md_url"]
   end
 
   def test_data_skips_when_mode_is_auto
@@ -174,7 +156,7 @@ class LinkTagTest < Minitest::Test
   def test_data_skips_when_mode_is_false
     write_source("about.md")
     page = mock_page
-    site = mock_site("jekyll_aeo" => { "link_tag" => false })
+    site = mock_site("jekyll_aeo" => { "markdown_pages" => { "link_tag" => false } })
     JekyllAeo::LinkTag.set_data(page, site)
 
     assert_nil page.data["md_url"]

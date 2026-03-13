@@ -4,20 +4,22 @@ module JekyllAeo
   module LinkTag
     def self.inject(obj, site)
       config = JekyllAeo::Config.from_site(site)
-      return unless config["link_tag"] == "auto"
+      mp_config = config["markdown_pages"]
+      return unless mp_config["link_tag"] == "auto"
       return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
 
-      md_url = JekyllAeo::Utils::MdUrl.for(obj.url, config, site.config["baseurl"])
+      md_url = JekyllAeo::Utils::MdUrl.for(obj.url, site.config["baseurl"])
       tag = %(<link rel="alternate" type="text/markdown" href="#{md_url}">)
       obj.output = obj.output.sub("</head>", "#{tag}\n</head>")
     end
 
     def self.set_data(obj, site)
       config = JekyllAeo::Config.from_site(site)
-      return unless config["link_tag"] == "data"
+      mp_config = config["markdown_pages"]
+      return unless mp_config["link_tag"] == "data"
       return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
 
-      md_url = JekyllAeo::Utils::MdUrl.for(obj.url, config, site.config["baseurl"])
+      md_url = JekyllAeo::Utils::MdUrl.for(obj.url, site.config["baseurl"])
       obj.data["md_url"] = md_url
       obj.data["md_link_tag"] = %(<link rel="alternate" type="text/markdown" href="#{md_url}">)
     end

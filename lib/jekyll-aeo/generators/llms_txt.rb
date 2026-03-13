@@ -15,7 +15,7 @@ module JekyllAeo
         eligible = collect_eligible(site, config)
         sections = build_sections(eligible, llms_config)
 
-        llms_txt = build_llms_txt(site, sections, llms_config, config)
+        llms_txt = build_llms_txt(site, sections, llms_config)
         File.write(File.join(site.dest, "llms.txt"), llms_txt)
 
         llms_full = build_llms_full_txt(site, sections, eligible, llms_config)
@@ -34,7 +34,7 @@ module JekyllAeo
             description: doc.data["description"] || "",
             url: doc.url,
             collection: doc.collection&.label,
-            dest_md: md_dest_path(doc, site, config)
+            dest_md: md_dest_path(doc, site)
           }
         end
 
@@ -47,7 +47,7 @@ module JekyllAeo
             description: page.data["description"] || "",
             url: page.url,
             collection: nil,
-            dest_md: md_dest_path(page, site, config)
+            dest_md: md_dest_path(page, site)
           }
         end
 
@@ -109,7 +109,7 @@ module JekyllAeo
         end
       end
 
-      def self.build_llms_txt(site, sections, llms_config, config)
+      def self.build_llms_txt(site, sections, llms_config)
         lines = []
         lines << "# #{site.config['title']}"
         lines << ""
@@ -131,7 +131,7 @@ module JekyllAeo
           lines << ""
 
           section[:items].each do |item|
-            url_md = md_url(item[:url], config, site.config["baseurl"])
+            url_md = md_url(item[:url], site.config["baseurl"])
             entry = "- [#{item[:title]}](#{url_md})"
             entry += ": #{item[:description]}" if llms_config["include_descriptions"] != false && !item[:description].empty?
             lines << entry
@@ -176,12 +176,12 @@ module JekyllAeo
         "#{lines.join("\n").rstrip}\n"
       end
 
-      def self.md_dest_path(obj, site, config)
-        JekyllAeo::Utils::MdUrl.dest_path(obj, site, config)
+      def self.md_dest_path(obj, site)
+        JekyllAeo::Utils::MdUrl.dest_path(obj, site)
       end
 
-      def self.md_url(url, config, baseurl = "")
-        JekyllAeo::Utils::MdUrl.for(url, config, baseurl)
+      def self.md_url(url, baseurl = "")
+        JekyllAeo::Utils::MdUrl.for(url, baseurl)
       end
 
       private_class_method :collect_eligible, :build_sections, :build_custom_sections,

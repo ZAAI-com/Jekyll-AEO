@@ -4,15 +4,16 @@ module JekyllAeo
   module Config
     DEFAULTS = {
       "enabled" => true,
-      "md_path_style" => "clean",
-      "strip_block_tags" => true,
-      "protect_indented_code" => false,
-      "link_tag" => "auto",
       "exclude" => [],
-      "include" => [],
-      "html_fallback" => false,
-      "include_last_modified" => true,
-      "md_metadata" => false,
+      "markdown_pages" => {
+        "link_tag" => "auto",
+        "strip_block_tags" => true,
+        "protect_indented_code" => false,
+        "include_last_modified" => true,
+        "md_metadata" => false,
+        "html_fallback" => false,
+        "html_fallback_selector" => nil
+      },
       "llms_txt" => {
         "enabled" => true,
         "description" => nil,

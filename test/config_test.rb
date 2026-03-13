@@ -19,13 +19,13 @@ class ConfigTest < Minitest::Test
     config = JekyllAeo::Config.from_site(mock_site_no_config)
 
     assert_equal true, config["enabled"]
-    assert_equal "clean", config["md_path_style"]
-    assert_equal true, config["strip_block_tags"]
-    assert_equal false, config["protect_indented_code"]
-    assert_equal "auto", config["link_tag"]
     assert_equal [], config["exclude"]
-    assert_equal [], config["include"]
-    assert_equal false, config["html_fallback"]
+    assert_equal "auto", config["markdown_pages"]["link_tag"]
+    assert_equal true, config["markdown_pages"]["strip_block_tags"]
+    assert_equal false, config["markdown_pages"]["protect_indented_code"]
+    assert_equal true, config["markdown_pages"]["include_last_modified"]
+    assert_equal false, config["markdown_pages"]["md_metadata"]
+    assert_equal false, config["markdown_pages"]["html_fallback"]
     assert_equal true, config["llms_txt"]["enabled"]
     assert_nil config["llms_txt"]["description"]
     assert_equal "all", config["llms_txt"]["full_txt_mode"]
@@ -33,8 +33,6 @@ class ConfigTest < Minitest::Test
     assert_equal [], config["llms_txt"]["front_matter_keys"]
     assert_equal false, config["llms_txt"]["show_lastmod"]
     assert_equal true, config["llms_txt"]["include_descriptions"]
-    assert_equal true, config["include_last_modified"]
-    assert_equal false, config["md_metadata"]
     assert_equal false, config["robots_txt"]["enabled"]
     assert_equal %w[GPTBot ClaudeBot Google-Extended Meta-ExternalAgent Amazonbot], config["robots_txt"]["disallow"]
     assert_equal true, config["robots_txt"]["include_sitemap"]
@@ -45,15 +43,17 @@ class ConfigTest < Minitest::Test
   def test_user_overrides_top_level
     config = JekyllAeo::Config.from_site(mock_site({
                                                      "enabled" => false,
-                                                     "strip_block_tags" => false,
-                                                     "protect_indented_code" => true,
-                                                     "exclude" => ["/privacy/"]
+                                                     "exclude" => ["/privacy/"],
+                                                     "markdown_pages" => {
+                                                       "strip_block_tags" => false,
+                                                       "protect_indented_code" => true
+                                                     }
                                                    }))
 
     assert_equal false, config["enabled"]
-    assert_equal false, config["strip_block_tags"]
-    assert_equal true, config["protect_indented_code"]
     assert_equal ["/privacy/"], config["exclude"]
+    assert_equal false, config["markdown_pages"]["strip_block_tags"]
+    assert_equal true, config["markdown_pages"]["protect_indented_code"]
   end
 
   def test_deep_merge_llms_txt
