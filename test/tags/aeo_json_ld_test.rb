@@ -86,12 +86,13 @@ class AeoJsonLdTagTest < Minitest::Test
     config = { "url" => "https://example.com" }
     result = render_tag(page, config)
 
-    # Extract JSON from script blocks
+    # Extract JSON from script blocks (JSON body may contain <\/ escapes)
     json_blocks = result.scan(%r{<script type="application/ld\+json">\n(.*?)\n</script>}m)
     refute_empty json_blocks
 
     json_blocks.each do |block|
-      parsed = JSON.parse(block.first)
+      json_str = block.first.gsub("\\/", "/")
+      parsed = JSON.parse(json_str)
       assert parsed.key?("@context"), "Each block should have @context"
       assert parsed.key?("@type"), "Each block should have @type"
     end
@@ -112,6 +113,24 @@ class AeoJsonLdTagTest < Minitest::Test
     result = render_tag(page, config)
 
     assert_includes result, '"SpeakableSpecification"'
+  end
+
+  def test_escapes_script_closing_tag_in_json_ld
+    page = {
+      "url" => "/",
+      "faq" => [{ "q" => "Is this safe?", "a" => '</script><script>alert(1)</script>' }]
+    }
+    result = render_tag(page)
+
+    # The raw </script> must NOT appear inside the JSON-LD block
+    json_body = result.match(%r{<script type="application/ld\+json">\n(.*?)\n</script>}m)[1]
+    refute_includes json_body, "</script>", "JSON-LD body must not contain literal </script>"
+    assert_includes json_body, '<\\/script>', "Forward slashes after < should be escaped"
+
+    # The escaped JSON should still parse correctly
+    parsed = JSON.parse(json_body.gsub("\\/", "/"))
+    assert_equal '</script><script>alert(1)</script>',
+                 parsed["mainEntity"].first["acceptedAnswer"]["text"]
   end
 
   def test_renders_howto_schema

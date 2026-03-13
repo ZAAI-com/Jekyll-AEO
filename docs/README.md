@@ -38,6 +38,8 @@ jekyll_aeo:
   strip_block_tags: true           # strip comment/capture block content (default: true)
   protect_indented_code: false     # protect 4-space indented code blocks (default: false)
   link_tag: "auto"                 # "auto", "data", or omit to disable (default: "auto")
+  include_last_modified: true      # add "Last updated" date to .md files (default: true)
+  md_metadata: false               # add YAML front matter block to .md files (default: false)
   exclude:                         # URL prefixes to skip
     - /privacy/
     - /error/
@@ -47,6 +49,7 @@ jekyll_aeo:
     enabled: true                  # generate llms.txt + llms-full.txt (default: true)
     description: ""                # override site description in llms.txt
     full_txt_mode: "all"           # "all" or "linked" (default: "all")
+    include_descriptions: true     # include page descriptions in llms.txt entries (default: true)
     front_matter_keys: []          # (reserved) preserve these front matter keys in .md output
     show_lastmod: false            # (reserved) add last-modified dates to llms.txt entries
     sections:                      # custom sections (auto-generated if omitted)
@@ -70,6 +73,26 @@ jekyll_aeo:
       - redirects
       - markdown_copy
       - skipped
+  robots_txt:
+    enabled: false                 # generate robots.txt with crawler policy (default: false)
+    allow:                         # search/retrieval bots to allow
+      - Googlebot
+      - Bingbot
+      - OAI-SearchBot
+      - ChatGPT-User
+      - Claude-SearchBot
+      - Claude-User
+      - PerplexityBot
+      - Applebot-Extended
+    disallow:                      # training bots to block
+      - GPTBot
+      - ClaudeBot
+      - Google-Extended
+      - Meta-ExternalAgent
+      - Amazonbot
+    include_sitemap: true          # add Sitemap: directive (default: true)
+    include_llms_txt: true         # add Llms-txt: directive (default: true)
+    custom_rules: []               # additional bot-specific rules
   domain_profile:
     enabled: false                 # generate /.well-known/domain-profile.json (default: false)
     name: null                     # falls back to site.title or site.name
@@ -221,6 +244,105 @@ jekyll_aeo:
       "@type": "Organization"
       name: "Example Corp"
 ```
+
+## robots.txt
+
+Generate a `robots.txt` that separates search bots (allowed) from training bots (blocked). Disabled by default.
+
+```yaml
+jekyll_aeo:
+  robots_txt:
+    enabled: true
+```
+
+Default behavior: allows search bots (Googlebot, Bingbot, OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Applebot-Extended) and blocks training bots (GPTBot, ClaudeBot, Google-Extended, Meta-ExternalAgent, Amazonbot). Includes `Sitemap:` and `Llms-txt:` directives automatically.
+
+If you already have a `robots.txt` file in your source directory, the generator skips and uses yours instead. Integrates with jekyll-sitemap — no conflicts.
+
+Add custom rules for specific bots:
+
+```yaml
+jekyll_aeo:
+  robots_txt:
+    enabled: true
+    custom_rules:
+      - user_agent: "SpecialBot"
+        allow: "/public/"
+        disallow: "/private/"
+```
+
+## JSON-LD Schema (`{% aeo_json_ld %}`)
+
+Add the `{% aeo_json_ld %}` Liquid tag to your layout to output structured data as `<script type="application/ld+json">` blocks:
+
+```liquid
+<head>
+  ...
+  {% aeo_json_ld %}
+</head>
+```
+
+The tag automatically renders JSON-LD for 6 schema types based on your page's front matter and site config:
+
+| Schema | Trigger | Auto? |
+|---|---|---|
+| BreadcrumbList | URL path (every page except homepage) | Yes |
+| Organization | Homepage, when `site.title` is set | Yes |
+| FAQPage | `faq:` array in front matter | No (front matter) |
+| HowTo | `howto:` object in front matter | No (front matter) |
+| Speakable | `speakable: true` in front matter | No (front matter) |
+| Article | Page has `date` and jekyll-seo-tag is NOT installed | Auto (skips when seo-tag present) |
+
+### FAQPage
+
+Add a `faq:` array with `q:` and `a:` pairs to your front matter:
+
+```yaml
+---
+title: FAQ
+faq:
+  - q: "What is Jekyll-AEO?"
+    a: "A Ruby gem for Answer Engine Optimization."
+  - q: "Does it work with jekyll-seo-tag?"
+    a: "Yes, they cover different layers and don't conflict."
+---
+```
+
+### HowTo
+
+Add a `howto:` object with `steps:` to your front matter:
+
+```yaml
+---
+title: How to Install
+howto:
+  name: "Install Jekyll-AEO"
+  description: "Steps to add Jekyll-AEO to your site"
+  totalTime: "PT5M"
+  steps:
+    - name: "Add to Gemfile"
+      text: "Add gem 'jekyll-aeo' to your Gemfile"
+    - name: "Install"
+      text: "Run bundle install"
+    - name: "Build"
+      text: "Run bundle exec jekyll build"
+---
+```
+
+### Speakable
+
+Add `speakable: true` to mark a page's title and first paragraph as voice-assistant-friendly:
+
+```yaml
+---
+title: About Us
+speakable: true
+---
+```
+
+### jekyll-seo-tag Compatibility
+
+The Article schema automatically skips when jekyll-seo-tag is installed, since seo-tag already outputs BlogPosting (a subtype of Article). All other schema types (FAQPage, HowTo, BreadcrumbList, Organization, Speakable) are always safe — they output different types that don't conflict. Multiple `<script type="application/ld+json">` blocks per page are valid per the JSON-LD spec.
 
 ## `strip_block_tags`
 

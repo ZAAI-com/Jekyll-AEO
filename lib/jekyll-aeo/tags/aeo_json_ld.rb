@@ -21,7 +21,8 @@ module JekyllAeo
         results = BUILDERS.filter_map { |builder| builder.build(page, site.config) }
 
         results.map do |schema|
-          "<script type=\"application/ld+json\">\n#{JSON.pretty_generate(schema)}\n</script>"
+          json = JSON.pretty_generate(schema).gsub("</", "<\\/")
+          "<script type=\"application/ld+json\">\n#{json}\n</script>"
         end.join("\n")
       end
     end
