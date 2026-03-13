@@ -3,7 +3,7 @@
 module JekyllAeo
   module Schema
     module Speakable
-      def self.build(page, site_config)
+      def self.build(page, site_config, _aeo_config = {})
         return nil unless page["speakable"] == true
 
         base_url = site_config["url"].to_s.chomp("/")

@@ -3,7 +3,7 @@
 module JekyllAeo
   module Schema
     module BreadcrumbList
-      def self.build(page, site_config)
+      def self.build(page, site_config, _aeo_config = {})
         url = page["url"]
         return nil if url.nil? || url == "/"
 

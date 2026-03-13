@@ -3,7 +3,7 @@
 module JekyllAeo
   module Schema
     module Organization
-      def self.build(page, site_config)
+      def self.build(page, site_config, aeo_config = {})
         return nil unless page["url"] == "/"
 
         name = site_config["title"] || site_config["name"]
@@ -21,10 +21,10 @@ module JekyllAeo
         description = site_config["description"]
         schema["description"] = description if description && !description.to_s.empty?
 
-        logo = site_config.dig("jekyll_aeo", "domain_profile", "logo")
+        logo = aeo_config.dig("domain_profile", "logo")
         schema["logo"] = logo if logo
 
-        same_as = site_config.dig("jekyll_aeo", "domain_profile", "jsonld", "sameAs")
+        same_as = aeo_config.dig("domain_profile", "jsonld", "sameAs")
         schema["sameAs"] = same_as if same_as.is_a?(Array) && same_as.any?
 
         schema
