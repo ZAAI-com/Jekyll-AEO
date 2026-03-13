@@ -54,7 +54,8 @@ class LlmsTxtTest < Minitest::Test
     obj
   end
 
-  def mock_site(documents: [], pages: [], title: "Test Site", description: "A test site", baseurl: nil)
+  def mock_site(documents: [], pages: [], title: "Test Site", description: "A test site", baseurl: nil,
+                jekyll_aeo: nil)
     source = @source_dir
     dest = @dest_dir
     docs = documents
@@ -66,6 +67,7 @@ class LlmsTxtTest < Minitest::Test
     site.define_singleton_method(:config) do
       cfg = { "title" => title, "description" => description }
       cfg["baseurl"] = baseurl if baseurl
+      cfg["jekyll_aeo"] = jekyll_aeo if jekyll_aeo
       cfg
     end
     site.define_singleton_method(:documents) { docs }
@@ -108,27 +110,6 @@ class LlmsTxtTest < Minitest::Test
     assert_includes content, "- [About](/about.md): About us"
   end
 
-  def test_generates_llms_full_txt
-    write_source_and_md("_pages/about.md", "about/index.html", "# About\n\nAbout content.\n")
-
-    doc = mock_document(
-      title: "About", description: "", url: "/about/",
-      collection_label: "pages", source_file: "_pages/about.md",
-      dest_html: "about/index.html"
-    )
-
-    site = mock_site(documents: [doc])
-    JekyllAeo::Generators::LlmsTxt.generate(site)
-
-    full_path = File.join(@dest_dir, "llms-full.txt")
-    assert File.exist?(full_path), "llms-full.txt should be created"
-
-    content = File.read(full_path)
-    assert content.start_with?("# Test Site\n")
-    assert_includes content, "---"
-    assert_includes content, "About content."
-  end
-
   def test_auto_sections_grouped_by_collection
     write_source_and_md("_pages/home.md", "index.html", "# Home\n")
     write_source_and_md("_products/widget.md", "products/widget/index.html", "# Widget\n")
@@ -158,26 +139,16 @@ class LlmsTxtTest < Minitest::Test
       source_file: "_pages/home.md", dest_html: "index.html"
     )
 
-    source = @source_dir
-    dest = @dest_dir
-    site = Object.new
-    site.define_singleton_method(:source) { source }
-    site.define_singleton_method(:dest) { dest }
-    site.define_singleton_method(:config) do
-      {
-        "title" => "Test Site",
-        "description" => "A test site",
-        "jekyll_aeo" => {
-          "llms_txt" => {
-            "sections" => [
-              { "title" => "Main Pages", "collection" => "pages" }
-            ]
-          }
+    site = mock_site(
+      documents: [doc],
+      jekyll_aeo: {
+        "llms_txt" => {
+          "sections" => [
+            { "title" => "Main Pages", "collection" => "pages" }
+          ]
         }
       }
-    end
-    site.define_singleton_method(:documents) { [doc] }
-    site.define_singleton_method(:pages) { [] }
+    )
 
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
@@ -186,41 +157,21 @@ class LlmsTxtTest < Minitest::Test
   end
 
   def test_description_override_in_config
-    source = @source_dir
-    dest = @dest_dir
-    site = Object.new
-    site.define_singleton_method(:source) { source }
-    site.define_singleton_method(:dest) { dest }
-    site.define_singleton_method(:config) do
-      {
-        "title" => "Test Site",
-        "description" => "Original",
-        "jekyll_aeo" => {
-          "llms_txt" => { "description" => "Custom override" }
-        }
+    site = mock_site(
+      jekyll_aeo: {
+        "llms_txt" => { "description" => "Custom override" }
       }
-    end
-    site.define_singleton_method(:documents) { [] }
-    site.define_singleton_method(:pages) { [] }
+    )
 
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
     assert_includes content, "> Custom override"
-    refute_includes content, "Original"
+    refute_includes content, "A test site"
   end
 
   def test_disabled_via_master_switch
-    source = @source_dir
-    dest = @dest_dir
-    site = Object.new
-    site.define_singleton_method(:source) { source }
-    site.define_singleton_method(:dest) { dest }
-    site.define_singleton_method(:config) do
-      { "title" => "Test", "jekyll_aeo" => { "enabled" => false } }
-    end
-    site.define_singleton_method(:documents) { [] }
-    site.define_singleton_method(:pages) { [] }
+    site = mock_site(jekyll_aeo: { "enabled" => false })
 
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
@@ -228,62 +179,11 @@ class LlmsTxtTest < Minitest::Test
   end
 
   def test_disabled_via_llms_txt_switch
-    source = @source_dir
-    dest = @dest_dir
-    site = Object.new
-    site.define_singleton_method(:source) { source }
-    site.define_singleton_method(:dest) { dest }
-    site.define_singleton_method(:config) do
-      { "title" => "Test", "jekyll_aeo" => { "llms_txt" => { "enabled" => false } } }
-    end
-    site.define_singleton_method(:documents) { [] }
-    site.define_singleton_method(:pages) { [] }
+    site = mock_site(jekyll_aeo: { "llms_txt" => { "enabled" => false } })
 
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     refute File.exist?(File.join(@dest_dir, "llms.txt"))
-  end
-
-  def test_full_txt_mode_linked
-    write_source_and_md("_pages/home.md", "index.html", "# Home\n\nHome content.\n")
-    write_source_and_md("_pages/extra.md", "extra/index.html", "# Extra\n\nExtra content.\n")
-
-    doc1 = mock_document(
-      title: "Home", url: "/", collection_label: "pages",
-      source_file: "_pages/home.md", dest_html: "index.html"
-    )
-    doc2 = mock_document(
-      title: "Extra", url: "/extra/", collection_label: "pages",
-      source_file: "_pages/extra.md", dest_html: "extra/index.html"
-    )
-
-    source = @source_dir
-    dest = @dest_dir
-    site = Object.new
-    site.define_singleton_method(:source) { source }
-    site.define_singleton_method(:dest) { dest }
-    site.define_singleton_method(:config) do
-      {
-        "title" => "Test",
-        "description" => "Desc",
-        "jekyll_aeo" => {
-          "llms_txt" => {
-            "full_txt_mode" => "linked",
-            "sections" => [
-              { "title" => "Main", "collection" => "pages" }
-            ]
-          }
-        }
-      }
-    end
-    site.define_singleton_method(:documents) { [doc1, doc2] }
-    site.define_singleton_method(:pages) { [] }
-
-    JekyllAeo::Generators::LlmsTxt.generate(site)
-
-    full_content = File.read(File.join(@dest_dir, "llms-full.txt"))
-    assert_includes full_content, "Home content."
-    assert_includes full_content, "Extra content."
   end
 
   def test_empty_site
@@ -326,6 +226,15 @@ class LlmsTxtTest < Minitest::Test
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
     assert_includes content, "- [llms-full.txt](/docs/llms-full.txt)"
+  end
+
+  def test_llms_txt_omits_full_txt_link_when_disabled
+    site = mock_site(jekyll_aeo: { "llms_full_txt" => { "enabled" => false } })
+
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+    refute_includes content, "llms-full.txt"
   end
 
   # --- baseurl ---
@@ -388,22 +297,10 @@ class LlmsTxtTest < Minitest::Test
       dest_html: "about/index.html"
     )
 
-    source = @source_dir
-    dest = @dest_dir
-    site = Object.new
-    site.define_singleton_method(:source) { source }
-    site.define_singleton_method(:dest) { dest }
-    site.define_singleton_method(:config) do
-      {
-        "title" => "Test Site",
-        "description" => "A test site",
-        "jekyll_aeo" => {
-          "llms_txt" => { "include_descriptions" => false }
-        }
-      }
-    end
-    site.define_singleton_method(:documents) { [doc] }
-    site.define_singleton_method(:pages) { [] }
+    site = mock_site(
+      documents: [doc],
+      jekyll_aeo: { "llms_txt" => { "include_descriptions" => false } }
+    )
 
     JekyllAeo::Generators::LlmsTxt.generate(site)
 

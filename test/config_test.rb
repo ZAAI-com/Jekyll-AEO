@@ -28,11 +28,13 @@ class ConfigTest < Minitest::Test
     assert_equal false, config["dotmd"]["html2dotmd"]["enabled"]
     assert_equal true, config["llms_txt"]["enabled"]
     assert_nil config["llms_txt"]["description"]
-    assert_equal "all", config["llms_txt"]["full_txt_mode"]
     assert_nil config["llms_txt"]["sections"]
     assert_equal [], config["llms_txt"]["front_matter_keys"]
     assert_equal false, config["llms_txt"]["show_lastmod"]
     assert_equal true, config["llms_txt"]["include_descriptions"]
+    assert_equal true, config["llms_full_txt"]["enabled"]
+    assert_nil config["llms_full_txt"]["description"]
+    assert_equal "all", config["llms_full_txt"]["full_txt_mode"]
     assert_equal false, config["robots_txt"]["enabled"]
     assert_equal %w[GPTBot ClaudeBot Google-Extended Meta-ExternalAgent Amazonbot], config["robots_txt"]["disallow"]
     assert_equal true, config["robots_txt"]["include_sitemap"]
@@ -61,16 +63,26 @@ class ConfigTest < Minitest::Test
   def test_deep_merge_llms_txt
     config = JekyllAeo::Config.from_site(mock_site({
                                                      "llms_txt" => {
-                                                       "description" => "Custom description",
-                                                       "full_txt_mode" => "linked"
+                                                       "description" => "Custom description"
                                                      }
                                                    }))
 
     assert_equal "Custom description", config["llms_txt"]["description"]
-    assert_equal "linked", config["llms_txt"]["full_txt_mode"]
     # Defaults preserved for unset keys
     assert_equal true, config["llms_txt"]["enabled"]
     assert_nil config["llms_txt"]["sections"]
+  end
+
+  def test_deep_merge_llms_full_txt
+    config = JekyllAeo::Config.from_site(mock_site({
+                                                     "llms_full_txt" => {
+                                                       "full_txt_mode" => "linked"
+                                                     }
+                                                   }))
+
+    assert_equal "linked", config["llms_full_txt"]["full_txt_mode"]
+    assert_equal true, config["llms_full_txt"]["enabled"]
+    assert_nil config["llms_full_txt"]["description"]
   end
 
   def test_deep_merge_preserves_defaults_for_missing_keys
@@ -79,7 +91,7 @@ class ConfigTest < Minitest::Test
                                                    }))
 
     assert_equal false, config["llms_txt"]["enabled"]
-    assert_equal "all", config["llms_txt"]["full_txt_mode"]
+    assert_equal "all", config["llms_full_txt"]["full_txt_mode"]
   end
 
   def test_enabled_false_propagated

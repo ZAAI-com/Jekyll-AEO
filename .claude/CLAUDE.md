@@ -18,7 +18,7 @@ A RubyGem (`jekyll-aeo`) for Answer Engine Optimization — generates clean mark
 - `lib/jekyll-aeo/config.rb` — centralized config with defaults (`JekyllAeo::Config`)
 - `lib/jekyll-aeo/hooks.rb` — 7 Jekyll hooks (pre_render, post_render, post_write for documents + pages; site post_write)
 - `lib/jekyll-aeo/link_tag.rb` — injects/sets `<link rel="alternate" type="text/markdown">` tags
-- `lib/jekyll-aeo/generators/` — `markdown_page.rb` (per-page .md), `llms_txt.rb` (site-wide index), `url_map.rb` (page metadata table), `domain_profile.rb` (/.well-known/domain-profile.json), `robots_txt.rb` (crawler policy — search bots vs training bots)
+- `lib/jekyll-aeo/generators/` — `markdown_page.rb` (per-page .md), `llms_txt.rb` (site-wide index), `llms_full_txt.rb` (concatenated full content), `url_map.rb` (page metadata table), `domain_profile.rb` (/.well-known/domain-profile.json), `robots_txt.rb` (crawler policy — search bots vs training bots)
 - `lib/jekyll-aeo/schema/` — `faq_page.rb`, `how_to.rb`, `breadcrumb_list.rb`, `organization.rb`, `speakable.rb`, `article.rb` (JSON-LD schema builders)
 - `lib/jekyll-aeo/tags/` — `aeo_json_ld.rb` (`{% aeo_json_ld %}` Liquid tag, renders schema builders as `<script type="application/ld+json">`)
 - `lib/jekyll-aeo/utils/` — `content_stripper.rb` (Liquid/kramdown stripping), `skip_logic.rb`, `md_url.rb` (markdown URL path logic), `html_converter.rb` (HTML-to-markdown via reverse_markdown for html2dotmd)
@@ -45,7 +45,8 @@ Top-level config (`jekyll_aeo`):
   - `link_tag`, `include_last_modified`, `dotmd_metadata` (shared settings)
   - `md2dotmd` — `strip_block_tags`, `protect_indented_code` (source markdown → .md)
   - `html2dotmd` — `enabled`, `selector` (rendered HTML → .md)
-- `llms_txt` — llms.txt/llms-full.txt generation settings
+- `llms_txt` — llms.txt generation settings (sections config shared with llms_full_txt)
+- `llms_full_txt` — llms-full.txt generation settings (`enabled`, `description`, `full_txt_mode`)
 - `url_map` — URL map generation settings
 - `robots_txt` — robots.txt generation settings
 - `domain_profile` — /.well-known/domain-profile.json settings

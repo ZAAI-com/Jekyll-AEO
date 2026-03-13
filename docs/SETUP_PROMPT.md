@@ -61,11 +61,14 @@ dotmd:
 llms_txt:
   enabled: true
   description: null
-  full_txt_mode: "all"
   sections: null  (auto-generated from collections)
   front_matter_keys: []
   show_lastmod: false
   include_descriptions: true
+llms_full_txt:
+  enabled: true
+  description: null
+  full_txt_mode: "all"
 url_map:
   enabled: false
   output_filepath: "docs/Url-Map.md"

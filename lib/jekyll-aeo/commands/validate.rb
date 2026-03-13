@@ -58,10 +58,7 @@ module JekyllAeo
 
         def validate_llms_full_txt(dest, errors)
           path = File.join(dest, "llms-full.txt")
-          unless File.exist?(path)
-            errors << "llms-full.txt not found at #{path}"
-            return
-          end
+          return unless File.exist?(path)
 
           return unless File.empty?(path)
 

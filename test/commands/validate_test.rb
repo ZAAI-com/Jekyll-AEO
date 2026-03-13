@@ -41,12 +41,11 @@ class ValidateTest < Minitest::Test
     assert_match(/llms\.txt not found/, errors.first)
   end
 
-  def test_missing_llms_full_txt
+  def test_missing_llms_full_txt_is_acceptable
     write_file("llms.txt", valid_llms_txt(links: []))
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
-    assert_equal 1, errors.size
-    assert_match(/llms-full\.txt not found/, errors.first)
+    assert_empty errors
   end
 
   def test_empty_llms_full_txt

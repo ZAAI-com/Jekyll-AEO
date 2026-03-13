@@ -39,9 +39,11 @@ jekyll_aeo:
   llms_txt:
     enabled: true
     description: "Documentation and resources for Example.com"
-    full_txt_mode: "all"
     show_lastmod: true
     include_descriptions: true
+  llms_full_txt:
+    enabled: true
+    full_txt_mode: "all"
   url_map:
     enabled: true
     output_filepath: "docs/Url-Map.md"

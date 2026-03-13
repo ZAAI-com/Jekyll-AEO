@@ -21,11 +21,15 @@ module JekyllAeo
       "llms_txt" => {
         "enabled" => true,
         "description" => nil,
-        "full_txt_mode" => "all",
         "sections" => nil,
         "front_matter_keys" => [],
         "show_lastmod" => false,
         "include_descriptions" => true
+      },
+      "llms_full_txt" => {
+        "enabled" => true,
+        "description" => nil,
+        "full_txt_mode" => "all"
       },
       "url_map" => {
         "enabled" => false,

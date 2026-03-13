@@ -15,11 +15,8 @@ module JekyllAeo
         eligible = collect_eligible(site, config)
         sections = build_sections(eligible, llms_config)
 
-        llms_txt = build_llms_txt(site, sections, llms_config)
+        llms_txt = build_llms_txt(site, sections, llms_config, config)
         File.write(File.join(site.dest, "llms.txt"), llms_txt)
-
-        llms_full = build_llms_full_txt(site, sections, eligible, llms_config)
-        File.write(File.join(site.dest, "llms-full.txt"), llms_full)
       end
 
       def self.collect_eligible(site, config)
@@ -62,6 +59,14 @@ module JekyllAeo
         else
           build_auto_sections(eligible)
         end
+      end
+
+      def self.md_dest_path(obj, site)
+        JekyllAeo::Utils::MdUrl.dest_path(obj, site)
+      end
+
+      def self.md_url(url, baseurl = "")
+        JekyllAeo::Utils::MdUrl.for(url, baseurl)
       end
 
       def self.build_custom_sections(eligible, section_defs)
@@ -109,7 +114,7 @@ module JekyllAeo
         end
       end
 
-      def self.build_llms_txt(site, sections, llms_config)
+      def self.build_llms_txt(site, sections, llms_config, config)
         lines = []
         lines << "# #{site.config['title']}"
         lines << ""
@@ -117,10 +122,22 @@ module JekyllAeo
         description = llms_config["description"] || site.config["description"]
         lines.push("> #{description}", "") if description && !description.to_s.empty?
 
+        append_full_txt_link(lines, site, config)
+        append_sections(lines, sections, llms_config, site)
+
+        "#{lines.join("\n").rstrip}\n"
+      end
+
+      def self.append_full_txt_link(lines, site, config)
+        full_txt_config = config["llms_full_txt"] || {}
+        return if full_txt_config["enabled"] == false
+
         baseurl = site.config["baseurl"].to_s.chomp("/")
         lines << "- [llms-full.txt](#{baseurl}/llms-full.txt): Complete contents of all pages"
         lines << ""
+      end
 
+      def self.append_sections(lines, sections, llms_config, site)
         sections.each do |section|
           next if section[:items].empty?
 
@@ -138,54 +155,11 @@ module JekyllAeo
 
           lines << ""
         end
-
-        "#{lines.join("\n").rstrip}\n"
       end
 
-      def self.build_llms_full_txt(site, sections, eligible, llms_config)
-        mode = llms_config.fetch("full_txt_mode", "all")
-
-        items_to_include = if mode == "linked"
-                             sections.flat_map { |s| s[:items] }
-                           else
-                             eligible
-                           end
-
-        lines = []
-        lines << "# #{site.config['title']}"
-        lines << ""
-
-        description = site.config["description"]
-        if description && !description.to_s.empty?
-          lines << "> #{description}"
-          lines << ""
-        end
-
-        items_to_include.each do |item|
-          lines << "---"
-          lines << ""
-
-          next unless File.exist?(item[:dest_md])
-
-          content = File.read(item[:dest_md], encoding: "utf-8")
-          lines << content.strip
-          lines << ""
-        end
-
-        "#{lines.join("\n").rstrip}\n"
-      end
-
-      def self.md_dest_path(obj, site)
-        JekyllAeo::Utils::MdUrl.dest_path(obj, site)
-      end
-
-      def self.md_url(url, baseurl = "")
-        JekyllAeo::Utils::MdUrl.for(url, baseurl)
-      end
-
-      private_class_method :collect_eligible, :build_sections, :build_custom_sections,
-                           :build_auto_sections, :titleize, :build_llms_txt,
-                           :build_llms_full_txt, :md_dest_path, :md_url
+      private_class_method :build_custom_sections, :build_auto_sections,
+                           :titleize, :build_llms_txt, :append_full_txt_link,
+                           :append_sections
     end
   end
 end
