@@ -48,6 +48,13 @@ class ExampleSiteTest < Minitest::Test
     end
   end
 
+  def test_root_index_html_md_exists
+    assert File.exist?(File.join(DEST_DIR, "index.html.md")), "index.html.md should be generated"
+    assert_equal File.read(File.join(DEST_DIR, "index.md")),
+                 File.read(File.join(DEST_DIR, "index.html.md")),
+                 "index.html.md should have same content as index.md"
+  end
+
   def test_post_markdown_copies_exist
     %w[blog/getting-started-with-aeo.md blog/structured-data-guide.md].each do |md|
       assert File.exist?(File.join(DEST_DIR, md)), "#{md} should be generated"

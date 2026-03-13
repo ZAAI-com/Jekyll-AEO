@@ -34,6 +34,9 @@ module JekyllAeo
 
         FileUtils.mkdir_p(File.dirname(dest_path))
         File.write(dest_path, result)
+
+        root_index = File.basename(dest_path) == "index.md" && File.dirname(dest_path) == site.dest
+        File.write(File.join(site.dest, "index.html.md"), result) if root_index
       end
 
       def self.extract_body(source_path, obj, dotmd_config)
