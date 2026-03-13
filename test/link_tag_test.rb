@@ -28,23 +28,21 @@ class LinkTagTest < Minitest::Test
     site
   end
 
-  def mock_page(url: "/about/", source_file: "about.md")
+  def mock_page(url: "/about/", source_file: "about.md", output_ext: ".html", dest_file: "about/index.html")
     data = { "title" => "About" }
-    dest = File.join(@dest_dir, "about", "index.html")
+    dest = File.join(@dest_dir, dest_file)
     rel_path = source_file
     output = "<html><head><title>About</title></head><body>Hello</body></html>"
 
     obj = Object.new
     obj.define_singleton_method(:data) { data }
-    obj.define_singleton_method(:output_ext) { ".html" }
+    obj.define_singleton_method(:output_ext) { output_ext }
     obj.define_singleton_method(:url) { url }
     obj.define_singleton_method(:destination) { |_| dest }
     obj.define_singleton_method(:relative_path) { rel_path }
-    obj.define_singleton_method(:output) { output }
-    obj.define_singleton_method(:output=) do |val|
-      output = val
-      obj.define_singleton_method(:output) { output }
-    end
+    obj.instance_variable_set(:@output, output)
+    obj.define_singleton_method(:output) { @output }
+    obj.define_singleton_method(:output=) { |val| @output = val }
     obj
   end
 
@@ -104,8 +102,7 @@ class LinkTagTest < Minitest::Test
   end
 
   def test_auto_skips_non_html
-    page = mock_page
-    page.define_singleton_method(:output_ext) { ".css" }
+    page = mock_page(output_ext: ".css")
     site = mock_site
     original_output = page.output
     JekyllAeo::LinkTag.inject(page, site)
@@ -166,9 +163,7 @@ class LinkTagTest < Minitest::Test
 
   def test_auto_root_page
     write_source("index.md")
-    page = mock_page(url: "/", source_file: "index.md")
-    dest_dir = @dest_dir
-    page.define_singleton_method(:destination) { |_| File.join(dest_dir, "index.html") }
+    page = mock_page(url: "/", source_file: "index.md", dest_file: "index.html")
     site = mock_site
     JekyllAeo::LinkTag.inject(page, site)
 
