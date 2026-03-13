@@ -18,7 +18,8 @@ module JekyllAeo
         site = context.registers[:site]
         page = context.registers[:page]
 
-        results = BUILDERS.filter_map { |builder| builder.build(page, site.config) }
+        aeo_config = JekyllAeo::Config.from_site(site)
+        results = BUILDERS.filter_map { |builder| builder.build(page, site.config, aeo_config) }
 
         results.map do |schema|
           json = JSON.pretty_generate(schema).gsub("</", "<\\/")

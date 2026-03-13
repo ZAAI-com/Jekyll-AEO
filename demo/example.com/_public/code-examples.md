@@ -3,7 +3,7 @@ title: Code Examples
 url: /code-examples/
 canonical: https://example.com/code-examples/
 description: Testing content stripping with various code and Liquid constructs
-last_modified: 2026-03-13
+last_modified: 2026-03-14
 ---
 > Testing content stripping with various code and Liquid constructs
 

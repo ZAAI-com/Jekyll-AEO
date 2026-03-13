@@ -3,7 +3,7 @@ title: How to Install jekyll-aeo
 url: /howto/
 canonical: https://example.com/howto/
 description: Step-by-step guide to adding AEO to your Jekyll site
-last_modified: 2026-03-13
+last_modified: 2026-03-14
 ---
 > Step-by-step guide to adding AEO to your Jekyll site
 

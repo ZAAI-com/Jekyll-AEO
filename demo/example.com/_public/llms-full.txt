@@ -59,7 +59,7 @@ title: Code Examples
 url: /code-examples/
 canonical: https://example.com/code-examples/
 description: Testing content stripping with various code and Liquid constructs
-last_modified: 2026-03-13
+last_modified: 2026-03-14
 ---
 > Testing content stripping with various code and Liquid constructs
 
@@ -99,7 +99,7 @@ title: Frequently Asked Questions
 url: /faq/
 canonical: https://example.com/faq/
 description: Common questions about Answer Engine Optimization
-last_modified: 2026-03-13
+last_modified: 2026-03-14
 ---
 > Common questions about Answer Engine Optimization
 
@@ -114,7 +114,7 @@ title: How to Install jekyll-aeo
 url: /howto/
 canonical: https://example.com/howto/
 description: Step-by-step guide to adding AEO to your Jekyll site
-last_modified: 2026-03-13
+last_modified: 2026-03-14
 ---
 > Step-by-step guide to adding AEO to your Jekyll site
 
@@ -149,7 +149,7 @@ title: Example.com
 url: /
 canonical: https://example.com/
 description: A test site for the jekyll-aeo gem — exercises all features
-last_modified: 2026-03-13
+last_modified: 2026-03-14
 ---
 # Example.com
 
