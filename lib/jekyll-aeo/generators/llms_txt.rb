@@ -177,18 +177,7 @@ module JekyllAeo
       end
 
       def self.md_dest_path(obj, site, config)
-        html_path = obj.destination(site.dest)
-        if config["md_path_style"] == "spec"
-          "#{html_path}.md"
-        else
-          dir = File.dirname(html_path)
-          base = File.basename(html_path)
-          if base == "index.html" && dir != site.dest
-            File.join(File.dirname(dir), "#{File.basename(dir)}.md")
-          else
-            html_path.sub(/\.html\z/, ".md")
-          end
-        end
+        JekyllAeo::Utils::MdUrl.dest_path(obj, site, config)
       end
 
       def self.md_url(url, config, baseurl = "")

@@ -37,24 +37,25 @@ module JekyllAeo
         items = []
         needs_skip = columns.include?("skipped")
         needs_md = columns.include?("markdown_copy")
+        baseurl = site.config["baseurl"].to_s.chomp("/")
 
         site.documents.each do |doc|
           next unless doc.output_ext == ".html"
           next if doc.respond_to?(:collection) && doc.collection&.label == "assets"
 
-          items << build_item(doc, doc.collection&.label, site, config, needs_skip, needs_md)
+          items << build_item(doc, doc.collection&.label, site, config, needs_skip, needs_md, baseurl)
         end
 
         site.pages.each do |page|
           next unless page.output_ext == ".html"
 
-          items << build_item(page, nil, site, config, needs_skip, needs_md)
+          items << build_item(page, nil, site, config, needs_skip, needs_md, baseurl)
         end
 
         items
       end
 
-      def self.build_item(obj, collection_label, site, config, needs_skip, needs_md)
+      def self.build_item(obj, collection_label, site, config, needs_skip, needs_md, baseurl = "")
         redirect_from = obj.data["redirect_from"]
         redirects_str = case redirect_from
                         when Array then redirect_from.join(", ")
@@ -73,7 +74,7 @@ module JekyllAeo
         }
 
         item[:skipped] = JekyllAeo::Utils::SkipLogic.skip_reason(obj, site, config) || "" if needs_skip
-        item[:markdown_copy] = md_url(obj.url, config) if needs_md && (!needs_skip || item[:skipped].empty?)
+        item[:markdown_copy] = md_url(obj.url, config, baseurl) if needs_md && (!needs_skip || item[:skipped].empty?)
         item[:markdown_copy] ||= "" if needs_md
 
         item
@@ -135,16 +136,8 @@ module JekyllAeo
         value.gsub("|", "\\|")
       end
 
-      def self.md_url(url, config)
-        if config["md_path_style"] == "spec"
-          url.end_with?("/") ? "#{url}index.html.md" : "#{url}.md"
-        elsif url == "/"
-          "/index.md"
-        elsif url.end_with?("/")
-          url.sub(%r{/\z}, ".md")
-        else
-          "#{url}.md"
-        end
+      def self.md_url(url, config, baseurl = "")
+        JekyllAeo::Utils::MdUrl.for(url, config, baseurl)
       end
 
       def self.titleize(label)

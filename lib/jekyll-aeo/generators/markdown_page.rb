@@ -81,23 +81,34 @@ module JekyllAeo
         end
       end
 
+      YAML_NEEDS_QUOTING = /[:\#"'{}\[\],&*?|<>=!%@`\n\r]/.freeze
+
+      def self.yaml_safe_scalar(value)
+        str = value.to_s
+        return str unless str.match?(YAML_NEEDS_QUOTING) || str.strip != str
+
+        escaped = str.gsub('\\', '\\\\\\\\').gsub('"', '\\"').gsub("\n", '\n')
+        "\"#{escaped}\""
+      end
+
       def self.build_metadata_block(obj, site, _config, last_modified)
         lines = []
         lines << "---"
 
         title = obj.data["title"]
-        lines << "title: #{title}" if title && !title.to_s.empty?
+        lines << "title: #{yaml_safe_scalar(title)}" if title && !title.to_s.empty?
 
         lines << "url: #{obj.url}" if obj.url
 
-        canonical = obj.data["canonical_url"] || "#{site.config['url']}#{obj.url}"
+        canonical = obj.data["canonical_url"] ||
+                    "#{site.config['url']}#{site.config['baseurl'].to_s.chomp('/')}#{obj.url}"
         lines << "canonical: #{canonical}" if canonical && !canonical.to_s.empty?
 
         description = obj.data["description"]
-        lines << "description: #{description}" if description && !description.to_s.empty?
+        lines << "description: #{yaml_safe_scalar(description)}" if description && !description.to_s.empty?
 
         author = obj.data["author"]
-        lines << "author: #{author}" if author && !author.to_s.empty?
+        lines << "author: #{yaml_safe_scalar(author)}" if author && !author.to_s.empty?
 
         date = obj.data["date"]
         lines << "date: #{format_date(date)}" if date
@@ -105,7 +116,7 @@ module JekyllAeo
         lines << "last_modified: #{last_modified}" if last_modified
 
         lang = obj.data["lang"] || obj.data["language"]
-        lines << "lang: #{lang}" if lang && !lang.to_s.empty?
+        lines << "lang: #{yaml_safe_scalar(lang)}" if lang && !lang.to_s.empty?
 
         lines << "---"
         lines << ""
@@ -114,22 +125,12 @@ module JekyllAeo
       end
 
       def self.md_dest_path(obj, site, config)
-        html_path = obj.destination(site.dest)
-        if config["md_path_style"] == "spec"
-          "#{html_path}.md"
-        else
-          dir = File.dirname(html_path)
-          base = File.basename(html_path)
-          if base == "index.html" && dir != site.dest
-            File.join(File.dirname(dir), "#{File.basename(dir)}.md")
-          else
-            html_path.sub(/\.html\z/, ".md")
-          end
-        end
+        JekyllAeo::Utils::MdUrl.dest_path(obj, site, config)
       end
 
       private_class_method :build_header, :md_dest_path, :resolve_last_modified,
-                           :format_date, :build_metadata_block
+                           :format_date, :build_metadata_block,
+                           :yaml_safe_scalar
     end
   end
 end

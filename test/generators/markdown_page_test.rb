@@ -356,4 +356,101 @@ class MarkdownPageTest < Minitest::Test
     assert_includes content, "# Test Page"
     assert_includes content, "> A test"
   end
+
+  # --- Bug fix: YAML-safe quoting for metadata scalars ---
+
+  def test_md_metadata_quotes_title_with_colon
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "FAQ: Setup Guide")
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, 'title: "FAQ: Setup Guide"'
+  end
+
+  def test_md_metadata_quotes_description_with_hash
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", description: "Use # for headings")
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, 'description: "Use # for headings"'
+  end
+
+  def test_md_metadata_quotes_author_with_special_chars
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", author: "Name: Alias")
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, 'author: "Name: Alias"'
+  end
+
+  def test_md_metadata_plain_values_unquoted
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "My Simple Title", author: "Manuel", lang: "en")
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "title: My Simple Title"
+    assert_includes content, "author: Manuel"
+    assert_includes content, "lang: en"
+  end
+
+  # --- Bug fix: canonical URL includes baseurl ---
+
+  def test_md_metadata_canonical_includes_baseurl
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", url: "/page/")
+    site = mock_site("url" => "https://example.com", "baseurl" => "/docs", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "canonical: https://example.com/docs/page/"
+  end
+
+  def test_md_metadata_canonical_nil_baseurl
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", url: "/page/")
+    site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "canonical: https://example.com/page/"
+  end
+
+  def test_md_metadata_canonical_baseurl_trailing_slash
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test", url: "/page/")
+    site = mock_site("url" => "https://example.com", "baseurl" => "/docs/", "jekyll_aeo" => {
+      "md_metadata" => true, "include_last_modified" => false
+    })
+    JekyllAeo::Generators::MarkdownPage.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+    assert_includes content, "canonical: https://example.com/docs/page/"
+  end
 end

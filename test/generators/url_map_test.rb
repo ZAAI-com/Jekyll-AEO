@@ -318,4 +318,28 @@ class UrlMapTest < Minitest::Test
     content = File.read(output_path)
     refute_includes content, "logo"
   end
+
+  # --- Bug fix: .html URLs produce correct markdown copy ---
+
+  def test_markdown_copy_for_html_url
+    write_source("about.html")
+    page = mock_page(url: "/about.html", source_file: "about.html", dest_html: "/about.html")
+    site = mock_site(pages: [page])
+    JekyllAeo::Generators::UrlMap.generate(site)
+
+    content = File.read(output_path)
+    assert_includes content, "/about.md"
+    refute_includes content, "/about.html.md"
+  end
+
+  def test_markdown_copy_for_404_html
+    write_source("404.html")
+    page = mock_page(url: "/404.html", source_file: "404.html", dest_html: "/404.html")
+    site = mock_site(pages: [page])
+    JekyllAeo::Generators::UrlMap.generate(site)
+
+    content = File.read(output_path)
+    assert_includes content, "/404.md"
+    refute_includes content, "/404.html.md"
+  end
 end
