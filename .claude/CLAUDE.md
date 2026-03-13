@@ -30,7 +30,7 @@ A RubyGem (`jekyll-aeo`) for Answer Engine Optimization — generates clean mark
 - All Ruby files start with `# frozen_string_literal: true`
 - Config is always read via `JekyllAeo::Config.from_site(site)`, never directly from `site.config`
 - Tests use Minitest (not RSpec), located in `test/` mirroring `lib/` structure
-- `test/integration/example_site_test.rb` — integration tests that build `test/example.com/` and assert on output
+- `test/integration/example_site_test.rb` — integration tests that build `demo/example.com/` and assert on output
 - Run unit tests: `rake test`
 - Run all tests (unit + integration): `rake` (default task runs rubocop + all tests)
 - Build/serve the example site: `rake site:build` / `rake site:serve`

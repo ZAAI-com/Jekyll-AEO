@@ -4,7 +4,7 @@ url: "https://example.com"
 baseurl: ""
 
 source: source
-destination: _site
+destination: _public
 
 theme: minima
 permalink: /blog/:slug/
@@ -23,6 +23,10 @@ defaults:
 
 plugins:
   - jekyll-aeo
+  - jekyll-feed
+
+feed:
+  disable_in_development: true
 
 jekyll_aeo:
   enabled: true

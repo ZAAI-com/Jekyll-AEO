@@ -463,7 +463,7 @@ Serve the example site locally:
 rake site:serve
 ```
 
-The integration tests build a full Jekyll site from `test/example.com/` and verify all generated outputs (llms.txt, robots.txt, domain-profile.json, markdown copies, JSON-LD schemas, link tags).
+The integration tests build a full Jekyll site from `demo/example.com/` and verify all generated outputs (llms.txt, robots.txt, domain-profile.json, markdown copies, JSON-LD schemas, link tags).
 
 ## License
 

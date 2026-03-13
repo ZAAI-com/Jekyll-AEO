@@ -11,6 +11,11 @@ bundle exec rake test
 echo "==> Tests passed."
 
 echo ""
+echo "==> Building demo site..."
+rake site:build
+echo "==> Demo site built."
+
+echo ""
 echo "==> Building gem..."
 gem build jekyll-aeo.gemspec
 echo "==> Gem built."

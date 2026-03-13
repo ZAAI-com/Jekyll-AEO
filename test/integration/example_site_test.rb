@@ -4,8 +4,8 @@ require "minitest/autorun"
 require "json"
 
 class ExampleSiteTest < Minitest::Test
-  SITE_DIR = File.expand_path("../example.com", __dir__)
-  DEST_DIR = File.join(SITE_DIR, "_site")
+  SITE_DIR = File.expand_path("../../demo/example.com", __dir__)
+  DEST_DIR = File.join(SITE_DIR, "_public")
 
   def self.build_site
     return if @built

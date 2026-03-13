@@ -1,0 +1,17 @@
+# Example.com
+
+> Documentation and resources for Example.com
+
+- [llms-full.txt](/llms-full.txt): Complete contents of all pages
+
+## Pages
+
+- [Code Examples](/code-examples.md): Testing content stripping with various code and Liquid constructs
+- [Frequently Asked Questions](/faq.md): Common questions about Answer Engine Optimization
+- [How to Install jekyll-aeo](/howto.md): Step-by-step guide to adding AEO to your Jekyll site
+- [Example.com](/index.md): A test site for the jekyll-aeo gem — exercises all features
+
+## Blog Posts
+
+- [Getting Started with AEO](/blog/getting-started-with-aeo.md): A beginner's guide to Answer Engine Optimization
+- [Structured Data Guide](/blog/structured-data-guide.md): How to use JSON-LD structured data with jekyll-aeo

@@ -18,26 +18,32 @@ namespace :site do
     sh "bundle exec ruby -Ilib:test test/integration/example_site_test.rb"
   end
 
-  desc "Build the test site"
+  desc "Build the demo site"
   task :build do
-    Dir.chdir("test/example.com") do
-      sh "bundle install --quiet"
-      sh "bundle exec jekyll build"
+    Bundler.with_unbundled_env do
+      Dir.chdir("demo/example.com") do
+        sh "bundle install --quiet"
+        sh "bundle exec jekyll build"
+      end
     end
   end
 
-  desc "Serve the test site locally"
+  desc "Serve the demo site locally"
   task :serve do
-    Dir.chdir("test/example.com") do
-      sh "bundle install --quiet"
-      sh "bundle exec jekyll serve"
+    Bundler.with_unbundled_env do
+      Dir.chdir("demo/example.com") do
+        sh "bundle install --quiet"
+        sh "bundle exec jekyll serve"
+      end
     end
   end
 
-  desc "Clean the test site build"
+  desc "Clean the demo site build"
   task :clean do
-    Dir.chdir("test/example.com") do
-      sh "bundle exec jekyll clean"
+    Bundler.with_unbundled_env do
+      Dir.chdir("demo/example.com") do
+        sh "bundle exec jekyll clean"
+      end
     end
   end
 end
