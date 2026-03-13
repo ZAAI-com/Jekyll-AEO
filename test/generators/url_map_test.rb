@@ -112,6 +112,28 @@ class UrlMapTest < Minitest::Test
     assert content.start_with?("# URL Map\n")
   end
 
+  def test_created_at_shown_by_default
+    write_source("about.md")
+    page = mock_page(url: "/about/", source_file: "about.md")
+    site = mock_site(pages: [page])
+    JekyllAeo::Generators::UrlMap.generate(site)
+
+    content = File.read(output_path)
+    assert_match(/Created by Jekyll-AEO Gem at \d{4}-\d{2}-\d{2} on \d{2}:\d{2}:\d{2}/, content)
+  end
+
+  def test_created_at_hidden_when_disabled
+    write_source("about.md")
+    page = mock_page(url: "/about/", source_file: "about.md")
+    site = mock_site(pages: [page], aeo_config: {
+                       "url_map" => { "enabled" => true, "show_created_at" => false }
+                     })
+    JekyllAeo::Generators::UrlMap.generate(site)
+
+    content = File.read(output_path)
+    refute_includes content, "Created by Jekyll-AEO Gem"
+  end
+
   # --- Output path ---
 
   def test_custom_output_file
@@ -276,6 +298,7 @@ class UrlMapTest < Minitest::Test
 
     content = File.read(output_path)
     assert content.start_with?("# URL Map\n")
+    assert_match(/Created by Jekyll-AEO Gem at/, content)
     refute_includes content, "##"
   end
 

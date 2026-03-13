@@ -26,7 +26,7 @@ module JekyllAeo
         columns = url_map_config["columns"] || COLUMN_HEADERS.keys
         items = collect_all_items(site, config, columns)
         sections = build_sections(items)
-        markdown = build_markdown(sections, columns, config)
+        markdown = build_markdown(sections, columns, url_map_config)
 
         output_file = File.join(site.source, url_map_config["output_filepath"] || "docs/Url-Map.md")
         FileUtils.mkdir_p(File.dirname(output_file))
@@ -94,9 +94,12 @@ module JekyllAeo
         sections
       end
 
-      def self.build_markdown(sections, columns, _config)
+      def self.build_markdown(sections, columns, url_map_config)
         lines = []
         lines << "# URL Map"
+        if url_map_config["show_created_at"] != false
+          lines << "Created by Jekyll-AEO Gem at #{Time.now.strftime('%Y-%m-%d on %H:%M:%S')}"
+        end
         lines << ""
 
         sections.each do |section|
