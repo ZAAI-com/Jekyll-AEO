@@ -63,13 +63,29 @@ llms_txt:
   description: null
   full_txt_mode: "all"
   sections: null  (auto-generated from collections)
+  front_matter_keys: []
+  show_lastmod: false
   include_descriptions: true
 url_map:
   enabled: false
+  output_filepath: "docs/Url-Map.md"
+  columns: [page_id, url, lang, layout, path, redirects, markdown_copy, skipped]
 robots_txt:
   enabled: false
+  allow: [Googlebot, Bingbot, OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User, PerplexityBot, Applebot-Extended]
+  disallow: [GPTBot, ClaudeBot, Google-Extended, Meta-ExternalAgent, Amazonbot]
+  include_sitemap: true
+  include_llms_txt: true
+  custom_rules: []
 domain_profile:
   enabled: false
+  name: null
+  description: null
+  website: null
+  contact: null
+  logo: null
+  entity_type: null
+  jsonld: null
 ```
 
 ### What's already enabled with zero config

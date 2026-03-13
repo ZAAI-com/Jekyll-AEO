@@ -33,6 +33,9 @@ jekyll_aeo:
     md2dotmd:
       strip_block_tags: true
       protect_indented_code: true
+    html2dotmd:
+      enabled: false
+      selector: null
   llms_txt:
     enabled: true
     description: "Documentation and resources for Example.com"
