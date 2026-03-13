@@ -1,0 +1,168 @@
+# Example.com
+
+> A test site for the jekyll-aeo gem
+
+---
+
+---
+title: Getting Started with AEO
+url: /blog/getting-started-with-aeo/
+canonical: https://example.com/blog/getting-started-with-aeo/
+description: "A beginner's guide to Answer Engine Optimization"
+author: Manuel Gruber
+date: 2025-01-15
+last_modified: 2025-02-01
+---
+# Getting Started with AEO
+
+> A beginner's guide to Answer Engine Optimization
+
+Answer Engine Optimization is becoming increasingly important as AI-powered
+systems become the primary way people discover and consume information.
+
+## What You Need
+
+- A Jekyll site
+- The jekyll-aeo gem
+- A basic understanding of markdown
+
+## Next Steps
+
+Read our [FAQ](/faq/) for common questions.
+
+---
+
+---
+title: Structured Data Guide
+url: /blog/structured-data-guide/
+canonical: https://example.com/blog/structured-data-guide/
+description: How to use JSON-LD structured data with jekyll-aeo
+author: Manuel Gruber
+date: 2025-02-20
+last_modified: 2025-02-20
+---
+# Structured Data Guide
+
+> How to use JSON-LD structured data with jekyll-aeo
+
+This guide explains how structured data works with jekyll-aeo.
+
+## Supported Schema Types
+
+jekyll-aeo supports six JSON-LD schema types that are automatically
+generated based on your page content and front matter.
+
+---
+
+---
+title: Code Examples
+url: /code-examples/
+canonical: https://example.com/code-examples/
+description: Testing content stripping with various code and Liquid constructs
+last_modified: 2026-03-13
+---
+> Testing content stripping with various code and Liquid constructs
+
+# Code Examples
+
+## Fenced Code Block
+
+```python
+def hello():
+    print("Hello, World!")
+    # This should be preserved exactly
+```
+
+## Liquid Tags in Content
+
+This content between if/endif should be preserved.
+
+## Raw Block
+
+These Liquid-like tags {{ should_not_be_stripped }} are protected.
+
+## Indented Code Block
+
+    def indented_example():
+        return "This should be protected with protect_indented_code: true"
+
+## Kramdown Attributes
+
+A paragraph with an attribute.
+
+Regular paragraph after kramdown IAL.
+
+---
+
+---
+title: Frequently Asked Questions
+url: /faq/
+canonical: https://example.com/faq/
+description: Common questions about Answer Engine Optimization
+last_modified: 2026-03-13
+---
+> Common questions about Answer Engine Optimization
+
+# Frequently Asked Questions
+
+Find answers to common questions about AEO below.
+
+---
+
+---
+title: How to Install jekyll-aeo
+url: /howto/
+canonical: https://example.com/howto/
+description: Step-by-step guide to adding AEO to your Jekyll site
+last_modified: 2026-03-13
+---
+> Step-by-step guide to adding AEO to your Jekyll site
+
+# How to Install jekyll-aeo
+
+Follow these steps to get started.
+
+## Step 1: Add the gem
+
+Add the following to your `Gemfile`:
+
+```ruby
+gem "jekyll-aeo"
+```
+
+## Step 2: Install dependencies
+
+Run `bundle install`.
+
+## Step 3: Configure
+
+Add settings to `_config.yml`.
+
+## Step 4: Build
+
+Run `jekyll build` and verify the output.
+
+---
+
+---
+title: Example.com
+url: /
+canonical: https://example.com/
+description: A test site for the jekyll-aeo gem — exercises all features
+last_modified: 2026-03-13
+---
+# Example.com
+
+> A test site for the jekyll-aeo gem — exercises all features
+
+Welcome to Example.com. This site exercises every feature of the jekyll-aeo gem.
+
+## Features Under Test
+
+- Markdown page generation
+- llms.txt and llms-full.txt
+- Link tag injection
+- JSON-LD schemas (FAQPage, HowTo, BreadcrumbList, Organization, Speakable, Article)
+- robots.txt generation
+- domain-profile.json
+- URL map generation

@@ -1,0 +1,8 @@
+{
+  "spec": "https://ai-domain-data.org/spec/v0.1",
+  "name": "Example.com",
+  "description": "A test site for the jekyll-aeo gem",
+  "website": "https://example.com",
+  "contact": "hello@example.com",
+  "entity_type": "Organization"
+}

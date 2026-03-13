@@ -1,0 +1,12 @@
+*.gem
+.context/
+pkg/
+tmp/
+
+# Demo site build artifacts
+demo/example.com/.jekyll-cache/
+demo/example.com/.jekyll-metadata
+demo/example.com/.sass-cache/
+
+# Jekyll Demo site build included in Git Repository for reference
+# demo/example.com/_public/
