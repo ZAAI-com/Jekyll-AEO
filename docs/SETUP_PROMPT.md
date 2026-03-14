@@ -71,7 +71,7 @@ First check if a `robots.txt` file already exists in the source directory. Then 
 - If yes: "What entity type describes your site? Options: Organization, Person, Blog, NGO, Community, Project, CreativeWork, SoftwareApplication, Thing. (or skip)"
 
 **Q4 — URL Map**
-"Would you like to generate a URL map table at `docs/Url-Map.md` in your source directory? Useful as a development reference. (yes/no)"
+"Would you like to generate a URL map table at `docs/Url-Map.md` (relative to your project root)? Useful as a development reference. (yes/no)"
 
 **Q5 — Dotmd metadata**
 "Should generated `.md` files include a YAML front matter block with title, url, and description? (yes/no)"

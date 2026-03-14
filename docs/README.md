@@ -29,11 +29,11 @@ Run `bundle exec jekyll build` and check your output directory.
 
 ## Configuration
 
-All settings are optional. Add to `_config.yml`:
+All settings are optional. Add to `_config.yml`. Configuration uses a strict schema — only keys defined in the plugin are accepted; typos or unknown keys are silently dropped.
 
 ```yaml
 jekyll_aeo:
-  enabled: true                    # master switch (default: true)
+  enabled: true                    # master switch; when false, all generation stops (default: true)
   exclude:                         # URL prefixes to skip
     - /privacy/
     - /error/
@@ -51,8 +51,8 @@ jekyll_aeo:
     enabled: true                  # generate llms.txt (default: true)
     description: ""                # override site description in llms.txt
     include_descriptions: true     # include page descriptions in llms.txt entries (default: true)
-    front_matter_keys: []          # (reserved) preserve these front matter keys in .md output
-    show_lastmod: false            # (reserved) add last-modified dates to llms.txt entries
+    front_matter_keys: []          # (reserved, not implemented)
+    show_lastmod: false            # (reserved, not implemented)
     sections:                      # custom sections (auto-generated if omitted)
       - title: "Pages"
         collection: "pages"
@@ -68,8 +68,8 @@ jekyll_aeo:
     full_txt_mode: "all"           # "all" or "linked" (default: "all")
   url_map:
     enabled: false                 # generate URL map markdown table (default: false)
-    output_filepath: "docs/Url-Map.md"  # output path relative to source (default: "docs/Url-Map.md")
-    show_created_at: true          # show created_at date in table (default: true)
+    output_filepath: "docs/Url-Map.md"  # output path relative to project root (default: "docs/Url-Map.md")
+    show_created_at: true          # show generation timestamp in document header (default: true)
     columns:                       # columns to include in the table
       - page_id
       - url
@@ -131,11 +131,11 @@ For every HTML page Jekyll renders, the plugin:
 
 1. Re-reads the original source file from disk
 2. Strips YAML front matter
-3. Strips Liquid tags (`{% %}` and `{{ }}`) outside fenced code blocks
+3. Strips Liquid tags (`{% %}` and `{{ }}`) outside fenced code blocks; content inside `{% raw %}…{% endraw %}` is preserved (tags stripped, inner content kept)
 4. Strips kramdown attribute annotations (`{: .class}`, `{:width="300"}`)
 5. Prepends the page title as an H1 header (if not already present)
 6. Adds the page description as a blockquote (if present)
-7. Writes the result as a `.md` file alongside the HTML output
+7. Writes the result as a `.md` file alongside the HTML output (for the root index, also writes `index.html.md` with the same content)
 
 ### html2dotmd (HTML to Markdown)
 
@@ -210,7 +210,7 @@ jekyll_aeo:
     enabled: true
 ```
 
-This writes a `docs/Url-Map.md` file (configurable via `output_filepath`) to your **source** directory — useful as a development reference that can be committed to version control.
+This writes a `docs/Url-Map.md` file (configurable via `output_filepath`) relative to your **project root** (the directory containing `_config.yml` when running Jekyll, or the source directory otherwise) — useful as a development reference that can be committed to version control.
 
 The table is grouped by collection (Pages first, then alphabetically) with configurable columns:
 
@@ -295,7 +295,7 @@ The tag automatically renders JSON-LD for 6 schema types based on your page's fr
 | Schema | Trigger | Auto? |
 |---|---|---|
 | BreadcrumbList | URL path (every page except homepage) | Yes |
-| Organization | Homepage, when `site.title` is set | Yes |
+| Organization | Homepage, when `site.title` or `site.name` is set | Yes |
 | FAQPage | `faq:` array in front matter | No (front matter) |
 | HowTo | `howto:` object in front matter | No (front matter) |
 | Speakable | `speakable: true` in front matter | No (front matter) |
@@ -419,16 +419,17 @@ bundle exec jekyll aeo:validate
 
 This checks:
 - `llms.txt` exists and starts with an H1 heading
-- `llms-full.txt` exists and is non-empty
+- `llms-full.txt` (if present) is non-empty
 - All `.md` files referenced in `llms.txt` exist in the destination directory
-- `domain-profile.json` (if present): valid JSON, required fields (`spec`, `name`, `description`, `website`, `contact`), and valid `entity_type`
+- `domain-profile.json` (if present): valid JSON, required fields (`spec`, `name`, `description`, `website`, `contact`), and valid `entity_type` (invalid values emit a warning, not an error)
 
 Respects `baseurl` when resolving file paths.
 
 ## Skipped Content
 
-The following are automatically skipped:
+The following are automatically skipped (in order):
 
+- Plugin disabled (`enabled: false`)
 - Non-HTML outputs (CSS, JS, etc.)
 - Pages with `markdown_copy: false` in front matter
 - Redirect pages (`redirect_to` in front matter)
