@@ -8,7 +8,7 @@ A RubyGem (`jekyll-aeo`) for Answer Engine Optimization — generates clean mark
 - **Module:** JekyllAeo
 - **Author:** Manuel Gruber (ZAAI)
 - **License:** MIT
-- **Ruby:** >= 3.0
+- **Ruby:** >= 3.2
 - **Jekyll:** >= 4.0
 
 ## Architecture

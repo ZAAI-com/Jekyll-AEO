@@ -48,9 +48,8 @@ jekyll_aeo:
       enabled: false               # convert rendered HTML to markdown (default: false)
       selector: null               # CSS selector (default: null — auto-detects main > article > body)
   llms_txt:
-    enabled: true                  # generate llms.txt + llms-full.txt (default: true)
+    enabled: true                  # generate llms.txt (default: true)
     description: ""                # override site description in llms.txt
-    full_txt_mode: "all"           # "all" or "linked" (default: "all")
     include_descriptions: true     # include page descriptions in llms.txt entries (default: true)
     front_matter_keys: []          # (reserved) preserve these front matter keys in .md output
     show_lastmod: false            # (reserved) add last-modified dates to llms.txt entries
@@ -63,9 +62,14 @@ jekyll_aeo:
         collection: "posts"
       - title: "Optional"
         collection: "profiles"
+  llms_full_txt:
+    enabled: true                  # generate llms-full.txt (default: true)
+    description: ""                # override description in llms-full.txt header
+    full_txt_mode: "all"           # "all" or "linked" (default: "all")
   url_map:
     enabled: false                 # generate URL map markdown table (default: false)
     output_filepath: "docs/Url-Map.md"  # output path relative to source (default: "docs/Url-Map.md")
+    show_created_at: true          # show created_at date in table (default: true)
     columns:                       # columns to include in the table
       - page_id
       - url
@@ -431,7 +435,7 @@ The following are automatically skipped:
 - Documents in the `assets` collection
 - `llms.txt` and `llms-full.txt` files
 - Paths matching `exclude` prefixes
-- Pages with no source file on disk (plugin-generated)
+- Pages with no source file on disk (unless html2dotmd is enabled)
 
 ## Development
 
