@@ -2,7 +2,7 @@
 set -e
 
 echo "==> Linting with RuboCop..."
-bundle exec rubocop
+bundle exec rubocop --config toolkit/rubocop/.rubocop.yml
 echo "==> Linting passed."
 
 echo ""

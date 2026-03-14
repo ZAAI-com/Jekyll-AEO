@@ -1,0 +1,68 @@
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "../../tmp/**/*"
+    - "../../pkg/**/*"
+    - "../../*.gemspec"
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/AbcSize:
+  Max: 42
+  Exclude:
+    - "../../lib/jekyll-aeo/utils/content_stripper.rb"
+    - "../../test/**/*"
+
+Metrics/BlockLength:
+  Exclude:
+    - "../../Rakefile"
+    - "../../lib/jekyll-aeo/utils/content_stripper.rb"
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+  Exclude:
+    - "../../lib/jekyll-aeo/utils/content_stripper.rb"
+    - "../../lib/jekyll-aeo/generators/url_map.rb"
+
+Metrics/MethodLength:
+  Max: 25
+  Exclude:
+    - "../../test/**/*"
+    - "../../lib/jekyll-aeo/utils/content_stripper.rb"
+
+Metrics/ModuleLength:
+  Max: 160
+
+Metrics/ParameterLists:
+  Exclude:
+    - "../../test/**/*"
+    - "../../lib/jekyll-aeo/generators/url_map.rb"
+
+Metrics/PerceivedComplexity:
+  Max: 10
+  Exclude:
+    - "../../lib/jekyll-aeo/utils/content_stripper.rb"
+    - "../../lib/jekyll-aeo/generators/url_map.rb"
+
+Metrics/ClassLength:
+  Exclude:
+    - "../../test/**/*"
+
+Naming/FileName:
+  Exclude:
+    - "../../lib/jekyll-aeo.rb"
+
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/QuotedSymbols:
+  EnforcedStyle: double_quotes
