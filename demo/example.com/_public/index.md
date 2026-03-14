@@ -3,7 +3,7 @@ title: Example.com
 url: /
 canonical: https://example.com/
 description: A test site for the jekyll-aeo gem — exercises all features
-last_modified: 2026-03-13
+last_modified: 2026-03-14
 ---
 # Example.com
 

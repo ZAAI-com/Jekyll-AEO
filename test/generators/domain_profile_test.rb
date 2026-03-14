@@ -52,19 +52,22 @@ class DomainProfileTest < Minitest::Test
   def test_disabled_by_default
     site = mock_site(aeo_config: {})
     JekyllAeo::Generators::DomainProfile.generate(site)
-    refute File.exist?(output_path)
+
+    refute_path_exists output_path
   end
 
   def test_disabled_via_master_switch
     site = mock_site(aeo_config: { "enabled" => false, "domain_profile" => { "enabled" => true, "contact" => "x" } })
     JekyllAeo::Generators::DomainProfile.generate(site)
-    refute File.exist?(output_path)
+
+    refute_path_exists output_path
   end
 
   def test_disabled_via_feature_switch
     site = mock_site(aeo_config: { "domain_profile" => { "enabled" => false } })
     JekyllAeo::Generators::DomainProfile.generate(site)
-    refute File.exist?(output_path)
+
+    refute_path_exists output_path
   end
 
   # --- Generation tests ---
@@ -73,8 +76,9 @@ class DomainProfileTest < Minitest::Test
     site = mock_site(aeo_config: enabled_config)
     JekyllAeo::Generators::DomainProfile.generate(site)
 
-    assert File.exist?(output_path), "domain-profile.json should be created"
+    assert_path_exists output_path, "domain-profile.json should be created"
     profile = read_profile
+
     assert_equal "https://ai-domain-data.org/spec/v0.1", profile["spec"]
   end
 
@@ -91,7 +95,8 @@ class DomainProfileTest < Minitest::Test
 
     content = File.read(output_path)
     profile = JSON.parse(content)
-    assert profile.is_a?(Hash), "Parsed JSON should be a Hash"
+
+    assert_kind_of Hash, profile, "Parsed JSON should be a Hash"
     assert content.end_with?("\n"), "File should end with newline"
   end
 
@@ -143,6 +148,7 @@ class DomainProfileTest < Minitest::Test
     JekyllAeo::Generators::DomainProfile.generate(site)
 
     profile = read_profile
+
     assert_equal "Custom Name", profile["name"]
     assert_equal "Custom desc", profile["description"]
     assert_equal "https://custom.com", profile["website"]
@@ -154,7 +160,7 @@ class DomainProfileTest < Minitest::Test
     site = mock_site(aeo_config: { "domain_profile" => { "enabled" => true } })
     JekyllAeo::Generators::DomainProfile.generate(site)
 
-    refute File.exist?(output_path), "Should not generate without contact"
+    refute_path_exists output_path, "Should not generate without contact"
   end
 
   # --- Optional fields ---
@@ -220,6 +226,7 @@ class DomainProfileTest < Minitest::Test
     JekyllAeo::Generators::DomainProfile.generate(site)
 
     profile = read_profile
+
     %w[spec name description website contact].each do |field|
       assert profile.key?(field), "Required field '#{field}' should be present"
     end

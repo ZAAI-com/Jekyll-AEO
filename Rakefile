@@ -8,7 +8,9 @@ Rake::TestTask.new(:test) do |t|
   t.test_files = FileList["test/**/*_test.rb"]
 end
 
-RuboCop::RakeTask.new
+RuboCop::RakeTask.new do |task|
+  task.options = ["--config", "toolkit/rubocop/.rubocop.yml"]
+end
 
 task default: %i[rubocop test]
 

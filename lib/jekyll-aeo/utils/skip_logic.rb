@@ -38,7 +38,10 @@ module JekyllAeo
 
       def self.llms_file?(obj, site)
         dest = obj.destination(site.dest)
-        dest.end_with?("llms.txt") || dest.end_with?("llms-full.txt")
+        return false unless dest.is_a?(String)
+
+        basename = File.basename(dest)
+        %w[llms.txt llms-full.txt].include?(basename)
       end
 
       def self.excluded?(obj, config)

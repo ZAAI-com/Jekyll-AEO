@@ -5,16 +5,19 @@ require "test_helper"
 class FaqPageSchemaTest < Minitest::Test
   def test_returns_nil_when_no_faq
     result = JekyllAeo::Schema::FaqPage.build({}, {})
+
     assert_nil result
   end
 
   def test_returns_nil_when_faq_empty
     result = JekyllAeo::Schema::FaqPage.build({ "faq" => [] }, {})
+
     assert_nil result
   end
 
   def test_returns_nil_when_faq_not_array
     result = JekyllAeo::Schema::FaqPage.build({ "faq" => "not array" }, {})
+
     assert_nil result
   end
 
@@ -31,6 +34,7 @@ class FaqPageSchemaTest < Minitest::Test
     assert_equal 1, result["mainEntity"].length
 
     question = result["mainEntity"].first
+
     assert_equal "Question", question["@type"]
     assert_equal "What is AEO?", question["name"]
     assert_equal "Answer", question["acceptedAnswer"]["@type"]
@@ -73,6 +77,7 @@ class FaqPageSchemaTest < Minitest::Test
       ]
     }
     result = JekyllAeo::Schema::FaqPage.build(page, {})
+
     assert_nil result
   end
 end

@@ -5,6 +5,7 @@ require "test_helper"
 class ArticleSchemaTest < Minitest::Test
   def test_returns_nil_when_no_date
     result = JekyllAeo::Schema::Article.build({ "title" => "Post" }, {})
+
     assert_nil result
   end
 

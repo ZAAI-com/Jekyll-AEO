@@ -12,7 +12,7 @@ module JekyllAeo
         full_config = config["llms_full_txt"] || {}
         return if full_config["enabled"] == false
 
-        warn_deprecated_full_txt_mode(site)
+        warn_deprecated_full_txt_mode(site.config["jekyll_aeo"])
 
         llms_config = config["llms_txt"] || {}
         eligible = LlmsTxt.collect_eligible(site, config)
@@ -42,12 +42,11 @@ module JekyllAeo
         end
 
         items_to_include.each do |item|
-          lines << "---"
-          lines << ""
-
           next unless File.exist?(item[:dest_md])
 
           content = File.read(item[:dest_md], encoding: "utf-8")
+          lines << "---"
+          lines << ""
           lines << content.strip
           lines << ""
         end
@@ -55,9 +54,9 @@ module JekyllAeo
         "#{lines.join("\n").rstrip}\n"
       end
 
-      def self.warn_deprecated_full_txt_mode(site)
-        user_config = site.config["jekyll_aeo"] || {}
-        llms_txt_config = user_config["llms_txt"] || {}
+      def self.warn_deprecated_full_txt_mode(user_aeo_config)
+        user_aeo_config ||= {}
+        llms_txt_config = user_aeo_config["llms_txt"] || {}
         return unless llms_txt_config.key?("full_txt_mode")
 
         Jekyll.logger.warn "AEO:", "'llms_txt.full_txt_mode' has moved to 'llms_full_txt.full_txt_mode'"

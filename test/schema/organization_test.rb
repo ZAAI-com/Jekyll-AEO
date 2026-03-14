@@ -8,11 +8,13 @@ class OrganizationSchemaTest < Minitest::Test
       { "url" => "/about/" },
       { "title" => "My Site" }
     )
+
     assert_nil result
   end
 
   def test_returns_nil_when_no_site_name
     result = JekyllAeo::Schema::Organization.build({ "url" => "/" }, {})
+
     assert_nil result
   end
 
@@ -45,28 +47,22 @@ class OrganizationSchemaTest < Minitest::Test
 
   def test_includes_logo_from_domain_profile
     page = { "url" => "/" }
-    config = {
-      "url" => "https://example.com",
-      "title" => "ZAAI",
-      "jekyll_aeo" => { "domain_profile" => { "logo" => "https://example.com/logo.png" } }
-    }
-    result = JekyllAeo::Schema::Organization.build(page, config)
+    config = { "url" => "https://example.com", "title" => "ZAAI" }
+    aeo_config = { "domain_profile" => { "logo" => "https://example.com/logo.png" } }
+    result = JekyllAeo::Schema::Organization.build(page, config, aeo_config)
 
     assert_equal "https://example.com/logo.png", result["logo"]
   end
 
   def test_includes_same_as_from_domain_profile
     page = { "url" => "/" }
-    config = {
-      "url" => "https://example.com",
-      "title" => "ZAAI",
-      "jekyll_aeo" => {
-        "domain_profile" => {
-          "jsonld" => { "sameAs" => ["https://github.com/zaai", "https://twitter.com/zaai"] }
-        }
+    config = { "url" => "https://example.com", "title" => "ZAAI" }
+    aeo_config = {
+      "domain_profile" => {
+        "jsonld" => { "sameAs" => ["https://github.com/zaai", "https://twitter.com/zaai"] }
       }
     }
-    result = JekyllAeo::Schema::Organization.build(page, config)
+    result = JekyllAeo::Schema::Organization.build(page, config, aeo_config)
 
     assert_equal ["https://github.com/zaai", "https://twitter.com/zaai"], result["sameAs"]
   end

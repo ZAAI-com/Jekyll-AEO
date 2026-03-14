@@ -2,7 +2,7 @@ PATH
   remote: ../..
   specs:
     jekyll-aeo (1.0.0)
-      jekyll (>= 4.0)
+      jekyll (~> 4.0)
       reverse_markdown (~> 2.0)
 
 GEM

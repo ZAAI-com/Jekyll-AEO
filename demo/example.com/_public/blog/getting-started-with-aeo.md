@@ -18,7 +18,7 @@ systems become the primary way people discover and consume information.
 
 - A Jekyll site
 - The jekyll-aeo gem
-- A basic understanding of markdown
+- A basic understanding of Markdown
 
 ## Next Steps
 

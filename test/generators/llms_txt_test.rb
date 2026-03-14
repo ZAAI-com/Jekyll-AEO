@@ -101,9 +101,11 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     llms_path = File.join(@dest_dir, "llms.txt")
-    assert File.exist?(llms_path), "llms.txt should be created"
+
+    assert_path_exists llms_path, "llms.txt should be created"
 
     content = File.read(llms_path)
+
     assert content.start_with?("# Test Site\n")
     assert_includes content, "> A test site"
     assert_includes content, "## Pages"
@@ -127,6 +129,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "## Pages"
     assert_includes content, "## Products"
   end
@@ -153,6 +156,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "## Main Pages"
   end
 
@@ -166,6 +170,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "> Custom override"
     refute_includes content, "A test site"
   end
@@ -175,7 +180,7 @@ class LlmsTxtTest < Minitest::Test
 
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
-    refute File.exist?(File.join(@dest_dir, "llms.txt"))
+    refute_path_exists File.join(@dest_dir, "llms.txt")
   end
 
   def test_disabled_via_llms_txt_switch
@@ -183,7 +188,7 @@ class LlmsTxtTest < Minitest::Test
 
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
-    refute File.exist?(File.join(@dest_dir, "llms.txt"))
+    refute_path_exists File.join(@dest_dir, "llms.txt")
   end
 
   def test_empty_site
@@ -191,6 +196,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert content.start_with?("# Test Site\n")
   end
 
@@ -206,6 +212,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "## Pages"
     assert_includes content, "[About]"
   end
@@ -217,6 +224,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "- [llms-full.txt](/llms-full.txt): Complete contents of all pages"
   end
 
@@ -225,6 +233,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "- [llms-full.txt](/docs/llms-full.txt)"
   end
 
@@ -234,6 +243,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     refute_includes content, "llms-full.txt"
   end
 
@@ -252,6 +262,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "- [About](/docs/about.md): About us"
   end
 
@@ -268,6 +279,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "(/docs/about.md)"
     refute_includes content, "(/docs//about.md)"
   end
@@ -285,6 +297,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "(/about.md)"
   end
 
@@ -305,6 +318,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "- [About](/about.md)"
     refute_includes content, "About us"
   end
@@ -322,6 +336,7 @@ class LlmsTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms.txt"))
+
     assert_includes content, "(/docs/index.md)"
   end
 end

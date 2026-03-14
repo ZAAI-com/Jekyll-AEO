@@ -12,6 +12,6 @@ faq:
     a: "Yes, it is open source under the MIT license."
 ---
 
-# Frequently Asked Questions
+## Common Questions
 
 Find answers to common questions about AEO below.

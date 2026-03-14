@@ -73,9 +73,11 @@ class MarkdownPageTest < Minitest::Test
     JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
-    assert File.exist?(output_path), "Expected .md file at clean path"
+
+    assert_path_exists output_path, "Expected .md file at clean path"
 
     content = read_output(output_path)
+
     assert content.start_with?("# Test Page\n"), "Expected title header"
     assert_includes content, "Some content here."
   end
@@ -87,6 +89,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute_includes content, "# Test Page\n"
     assert_includes content, "# My Custom Heading"
   end
@@ -98,6 +101,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "> A great page"
   end
 
@@ -109,6 +113,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "> Line one\n> Line two\n> Line three"
   end
 
@@ -119,6 +124,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute_includes content, "layout: page"
     refute_includes content, "---"
     assert_includes content, "Body content."
@@ -131,6 +137,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "Hello world."
     refute_includes content, "{% if"
   end
@@ -142,6 +149,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute_includes content, "\n\n\n"
   end
 
@@ -150,8 +158,8 @@ class MarkdownPageTest < Minitest::Test
     page = mock_page
     JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
 
-    assert File.exist?(File.join(@dest_dir, "page.md")),
-           "Clean style: /page/index.html -> /page.md"
+    assert_path_exists File.join(@dest_dir, "page.md"),
+                       "Clean style: /page/index.html -> /page.md"
   end
 
   def test_creates_directories_as_needed
@@ -160,7 +168,7 @@ class MarkdownPageTest < Minitest::Test
     page = mock_page(dest_path: deep_dest)
     JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
 
-    assert File.exist?(File.join(@dest_dir, "deep", "nested", "page.md"))
+    assert_path_exists File.join(@dest_dir, "deep", "nested", "page.md")
   end
 
   def test_ensures_trailing_newline
@@ -170,6 +178,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert content.end_with?("\n"), "Should end with newline"
   end
 
@@ -182,6 +191,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "> Last updated: 2025-06-15"
   end
 
@@ -192,6 +202,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "> Last updated: 2024-01-01"
   end
 
@@ -202,6 +213,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "> Last updated: 2025-06-15"
     refute_includes content, "2024-01-01"
   end
@@ -213,6 +225,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "> Last updated:"
   end
 
@@ -223,6 +236,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute_includes content, "Last updated"
   end
 
@@ -235,7 +249,8 @@ class MarkdownPageTest < Minitest::Test
     content = read_output(output_path)
     desc_pos = content.index("> A page")
     last_mod_pos = content.index("> Last updated:")
-    assert desc_pos < last_mod_pos, "Last updated should appear after description"
+
+    assert_operator desc_pos, :<, last_mod_pos, "Last updated should appear after description"
   end
 
   # --- Feature 4: Structured metadata header ---
@@ -247,6 +262,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute content.start_with?("---\n"), "Metadata block should not appear by default"
   end
 
@@ -263,6 +279,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert content.start_with?("---\n"), "Should start with metadata block"
     assert_includes content, "title: Test Page"
     assert_includes content, "url: /page/"
@@ -282,6 +299,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "canonical: https://example.com/page/"
   end
 
@@ -295,6 +313,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "canonical: https://other.com/page/"
     refute_includes content, "canonical: https://example.com/page/"
   end
@@ -308,6 +327,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute_includes content, "author:"
     refute_includes content, "lang:"
     refute_includes content, "date:"
@@ -321,6 +341,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "last_modified: 2025-06-15"
   end
 
@@ -332,6 +353,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute_includes content, "> Last updated:", "Should not have blockquote last_modified when dotmd_metadata enabled"
     assert_includes content, "last_modified: 2025-06-15"
   end
@@ -345,6 +367,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "# Test Page"
     assert_includes content, "> A test"
   end
@@ -361,6 +384,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, 'title: "FAQ: Setup Guide"'
   end
 
@@ -374,6 +398,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, 'description: "Use # for headings"'
   end
 
@@ -387,6 +412,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, 'author: "Name: Alias"'
   end
 
@@ -400,6 +426,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "title: My Simple Title"
     assert_includes content, "author: Manuel"
     assert_includes content, "lang: en"
@@ -417,6 +444,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "canonical: https://example.com/docs/page/"
   end
 
@@ -430,6 +458,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "canonical: https://example.com/page/"
   end
 
@@ -443,6 +472,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "canonical: https://example.com/docs/page/"
   end
 
@@ -460,9 +490,11 @@ class MarkdownPageTest < Minitest::Test
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
-    assert File.exist?(output_path), "Expected .md file from html2dotmd"
+
+    assert_path_exists output_path, "Expected .md file from html2dotmd"
 
     content = read_output(output_path)
+
     assert_includes content, "Plugin content."
   end
 
@@ -473,7 +505,8 @@ class MarkdownPageTest < Minitest::Test
     JekyllAeo::Generators::MarkdownPage.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
-    refute File.exist?(output_path), "Should not generate .md when html2dotmd is disabled"
+
+    refute_path_exists output_path, "Should not generate .md when html2dotmd is disabled"
   end
 
   def test_html2dotmd_extracts_main_content
@@ -504,6 +537,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "Important text from plugin."
     refute_includes content, "Site Header"
     refute_includes content, "Copyright 2025"
@@ -524,6 +558,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "# My Title"
     assert_includes content, "> My desc"
     assert_includes content, "Plugin content."
@@ -541,6 +576,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     refute_includes content, "Last updated:", "Should not have mtime-based last_modified for html2dotmd pages"
   end
 
@@ -566,6 +602,7 @@ class MarkdownPageTest < Minitest::Test
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
+
     assert_includes content, "Selected content."
     refute_includes content, "Side content"
   end

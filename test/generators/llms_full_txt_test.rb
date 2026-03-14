@@ -86,9 +86,11 @@ class LlmsFullTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsFullTxt.generate(site)
 
     full_path = File.join(@dest_dir, "llms-full.txt")
-    assert File.exist?(full_path), "llms-full.txt should be created"
+
+    assert_path_exists full_path, "llms-full.txt should be created"
 
     content = File.read(full_path)
+
     assert content.start_with?("# Test Site\n")
     assert_includes content, "---"
     assert_includes content, "About content."
@@ -122,6 +124,7 @@ class LlmsFullTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsFullTxt.generate(site)
 
     full_content = File.read(File.join(@dest_dir, "llms-full.txt"))
+
     assert_includes full_content, "Home content."
     assert_includes full_content, "Extra content."
   end
@@ -131,7 +134,7 @@ class LlmsFullTxtTest < Minitest::Test
 
     JekyllAeo::Generators::LlmsFullTxt.generate(site)
 
-    refute File.exist?(File.join(@dest_dir, "llms-full.txt"))
+    refute_path_exists File.join(@dest_dir, "llms-full.txt")
   end
 
   def test_disabled_via_llms_full_txt_switch
@@ -139,7 +142,7 @@ class LlmsFullTxtTest < Minitest::Test
 
     JekyllAeo::Generators::LlmsFullTxt.generate(site)
 
-    refute File.exist?(File.join(@dest_dir, "llms-full.txt"))
+    refute_path_exists File.join(@dest_dir, "llms-full.txt")
   end
 
   def test_description_override
@@ -159,6 +162,7 @@ class LlmsFullTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsFullTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms-full.txt"))
+
     assert_includes content, "> Custom full description"
     refute_includes content, "A test site"
   end
@@ -168,6 +172,7 @@ class LlmsFullTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsFullTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms-full.txt"))
+
     assert_includes content, "> A test site"
   end
 
@@ -176,6 +181,7 @@ class LlmsFullTxtTest < Minitest::Test
     JekyllAeo::Generators::LlmsFullTxt.generate(site)
 
     content = File.read(File.join(@dest_dir, "llms-full.txt"))
+
     assert content.start_with?("# Test Site\n")
   end
 end

@@ -63,6 +63,10 @@ module JekyllAeo
       deep_merge(DEFAULTS, user_config)
     end
 
+    # Strict-schema merge: iterates only over keys defined in +defaults+,
+    # intentionally dropping any user-supplied keys that are not part of
+    # the known schema.  This prevents typos from silently propagating and
+    # keeps the config surface predictable for downstream consumers.
     def self.deep_merge(defaults, overrides)
       defaults.each_with_object({}) do |(key, default_val), result|
         override_val = overrides[key]

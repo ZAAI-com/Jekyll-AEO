@@ -3,7 +3,7 @@
 module JekyllAeo
   module Schema
     module HowTo
-      def self.build(page, _site_config)
+      def self.build(page, _site_config, _aeo_config = {})
         howto = page["howto"]
         return nil unless howto.is_a?(Hash)
 

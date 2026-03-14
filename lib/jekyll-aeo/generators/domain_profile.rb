@@ -34,8 +34,12 @@ module JekyllAeo
         website = dp_config["website"] || site.config["url"]
         contact = dp_config["contact"]
 
-        unless contact
-          Jekyll.logger.warn "AEO Domain Profile:", "Skipped — 'contact' is required but not set"
+        missing = { "contact" => contact, "name" => name, "description" => description, "website" => website }
+                  .select { |_, v| v.nil? || v.to_s.empty? }
+                  .keys
+        unless missing.empty?
+          Jekyll.logger.warn "AEO Domain Profile:",
+                             "Skipped — required field(s) missing: #{missing.join(', ')}"
           return nil
         end
 

@@ -3,7 +3,7 @@
 module JekyllAeo
   module Schema
     module Article
-      def self.build(page, site_config)
+      def self.build(page, site_config, _aeo_config = {})
         return nil unless page["date"]
         return nil if seo_tag_present?
 

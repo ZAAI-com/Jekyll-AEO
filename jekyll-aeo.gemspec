@@ -17,15 +17,16 @@ Gem::Specification.new do |spec|
     "bug_tracker_uri" => "https://github.com/ZAAI-com/Jekyll-AEO/issues"
   }
 
-  spec.required_ruby_version = ">= 3.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.files         = Dir["lib/**/*.rb"]
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "jekyll", ">= 4.0"
+  spec.add_dependency "jekyll", "~> 4.0"
   spec.add_dependency "reverse_markdown", "~> 2.0"
 
   spec.add_development_dependency "minitest", "~> 5.0"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "rubocop", "~> 1.0"
+  spec.add_development_dependency "rubocop-minitest", "~> 0.39"
 end

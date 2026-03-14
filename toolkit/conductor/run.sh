@@ -2,7 +2,7 @@
 set -e
 
 echo "==> Linting with RuboCop..."
-bundle exec rubocop
+bundle exec rubocop --config toolkit/rubocop/.rubocop.yml
 echo "==> Linting passed."
 
 echo ""
@@ -12,7 +12,7 @@ echo "==> Tests passed."
 
 echo ""
 echo "==> Building demo site..."
-rake site:build
+bundle exec rake site:build
 echo "==> Demo site built."
 
 echo ""
