@@ -9,7 +9,7 @@ last_modified: 2026-03-14
 
 > Step-by-step guide to adding AEO to your Jekyll site
 
-## How to Install jekyll-aeo
+## Installation Steps
 
 Follow these steps to get started.
 

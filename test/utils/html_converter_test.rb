@@ -6,6 +6,7 @@ class HtmlConverterTest < Minitest::Test
   def test_converts_basic_html
     html = "<h2>Title</h2><p>Some text here.</p>"
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "## Title"
     assert_includes result, "Some text here."
   end
@@ -26,6 +27,7 @@ class HtmlConverterTest < Minitest::Test
       </html>
     HTML
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "Main Content"
     assert_includes result, "Important text."
     refute_includes result, "Footer stuff"
@@ -44,6 +46,7 @@ class HtmlConverterTest < Minitest::Test
       </body></html>
     HTML
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "Article Content"
     assert_includes result, "Article text."
     refute_includes result, "Footer"
@@ -52,6 +55,7 @@ class HtmlConverterTest < Minitest::Test
   def test_extracts_body_when_no_main_or_article
     html = "<html><body><h2>Body Content</h2><p>Body text.</p></body></html>"
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "Body Content"
     assert_includes result, "Body text."
   end
@@ -68,6 +72,7 @@ class HtmlConverterTest < Minitest::Test
     HTML
     config = { "selector" => ".content" }
     result = JekyllAeo::Utils::HtmlConverter.convert(html, config)
+
     assert_includes result, "Custom Content"
     assert_includes result, "Selected text."
     refute_includes result, "Sidebar"
@@ -84,6 +89,7 @@ class HtmlConverterTest < Minitest::Test
       </body></html>
     HTML
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "Visible text."
     refute_includes result, "alert"
     refute_includes result, "color: red"
@@ -99,6 +105,7 @@ class HtmlConverterTest < Minitest::Test
       </body></html>
     HTML
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "Main content."
     refute_includes result, "Site Header"
     refute_includes result, "Copyright"
@@ -116,24 +123,28 @@ class HtmlConverterTest < Minitest::Test
   def test_handles_links
     html = '<p>Visit <a href="https://example.com">Example</a> for more.</p>'
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "[Example](https://example.com)"
   end
 
   def test_handles_images
     html = '<p><img src="/photo.jpg" alt="A photo"></p>'
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "![A photo](/photo.jpg)"
   end
 
   def test_handles_code_blocks
     html = '<pre><code>def hello\n  puts "hi"\nend</code></pre>'
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "def hello"
   end
 
   def test_handles_lists
     html = "<ul><li>Item one</li><li>Item two</li></ul>"
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "Item one"
     assert_includes result, "Item two"
   end
@@ -141,6 +152,7 @@ class HtmlConverterTest < Minitest::Test
   def test_handles_ordered_lists
     html = "<ol><li>First</li><li>Second</li></ol>"
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "First"
     assert_includes result, "Second"
   end
@@ -148,6 +160,7 @@ class HtmlConverterTest < Minitest::Test
   def test_handles_emphasis
     html = "<p><strong>Bold</strong> and <em>italic</em> text.</p>"
     result = JekyllAeo::Utils::HtmlConverter.convert(html)
+
     assert_includes result, "**Bold**"
     assert_includes result, "_italic_"
   end
@@ -156,6 +169,7 @@ class HtmlConverterTest < Minitest::Test
     html = "<html><body><p>Content</p></body></html>"
     config = { "selector" => ".nonexistent" }
     result = JekyllAeo::Utils::HtmlConverter.convert(html, config)
+
     assert_equal "", result
   end
 end

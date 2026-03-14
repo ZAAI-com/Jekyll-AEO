@@ -5,11 +5,13 @@ require "test_helper"
 class SpeakableSchemaTest < Minitest::Test
   def test_returns_nil_when_speakable_not_set
     result = JekyllAeo::Schema::Speakable.build({}, {})
+
     assert_nil result
   end
 
   def test_returns_nil_when_speakable_false
     result = JekyllAeo::Schema::Speakable.build({ "speakable" => false }, {})
+
     assert_nil result
   end
 
@@ -29,6 +31,7 @@ class SpeakableSchemaTest < Minitest::Test
     result = JekyllAeo::Schema::Speakable.build(page, {})
 
     selectors = result["speakable"]["cssSelector"]
+
     assert_equal 2, selectors.length
     assert_includes selectors.first, "h1"
     assert_includes selectors.last, "p:first-of-type"

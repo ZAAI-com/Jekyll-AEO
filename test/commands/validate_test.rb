@@ -29,6 +29,7 @@ class ValidateTest < Minitest::Test
     write_file("about.md", "# About\n")
 
     errors, warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_empty errors
     assert_empty warnings
   end
@@ -37,6 +38,7 @@ class ValidateTest < Minitest::Test
     write_file("llms-full.txt", "content")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_equal 1, errors.size
     assert_match(/llms\.txt not found/, errors.first)
   end
@@ -45,6 +47,7 @@ class ValidateTest < Minitest::Test
     write_file("llms.txt", valid_llms_txt(links: []))
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_empty errors
   end
 
@@ -53,6 +56,7 @@ class ValidateTest < Minitest::Test
     write_file("llms-full.txt", "")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_equal 1, errors.size
     assert_match(/llms-full\.txt is empty/, errors.first)
   end
@@ -62,6 +66,7 @@ class ValidateTest < Minitest::Test
     write_file("llms-full.txt", "content")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert(errors.any? { |e| e.include?("H1 heading") })
   end
 
@@ -72,6 +77,7 @@ class ValidateTest < Minitest::Test
     # contact.md intentionally missing
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_equal 1, errors.size
     assert_match(%r{/contact\.md}, errors.first)
   end
@@ -83,6 +89,7 @@ class ValidateTest < Minitest::Test
     write_file("b.md", "# B\n")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_empty errors
   end
 
@@ -92,6 +99,7 @@ class ValidateTest < Minitest::Test
     write_file("about.md", "# About\n")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir, "/docs")
+
     assert_empty errors
   end
 
@@ -101,6 +109,7 @@ class ValidateTest < Minitest::Test
     write_file("about.md", "# About\n")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir, "")
+
     assert_empty errors
   end
 
@@ -116,6 +125,7 @@ class ValidateTest < Minitest::Test
                                                   ))
 
     errors, warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_empty errors
     assert_empty warnings
   end
@@ -130,6 +140,7 @@ class ValidateTest < Minitest::Test
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
     missing = errors.select { |e| e.include?("domain-profile.json missing required field") }
+
     assert_equal 3, missing.size
   end
 
@@ -139,6 +150,7 @@ class ValidateTest < Minitest::Test
     write_file(".well-known/domain-profile.json", "not json{")
 
     errors, _warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert(errors.any? { |e| e.include?("not valid JSON") })
   end
 
@@ -153,6 +165,7 @@ class ValidateTest < Minitest::Test
                                                   ))
 
     _errors, warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert(warnings.any? { |w| w.include?("invalid entity_type") })
   end
 
@@ -161,6 +174,7 @@ class ValidateTest < Minitest::Test
     write_file("llms-full.txt", "content")
 
     errors, warnings = JekyllAeo::Commands::Validate.validate(@tmpdir)
+
     assert_empty errors
     assert_empty warnings
   end

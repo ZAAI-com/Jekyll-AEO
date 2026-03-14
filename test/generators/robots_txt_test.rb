@@ -43,12 +43,14 @@ class RobotsTxtTest < Minitest::Test
   def test_disabled_by_default
     site = mock_site
     generate(site)
+
     assert_empty site.pages
   end
 
   def test_generates_when_enabled
     site = mock_site(aeo_config: { "robots_txt" => { "enabled" => true } })
     generate(site)
+
     assert_equal 1, site.pages.length
     assert_equal "robots.txt", site.pages.first.name
   end
@@ -56,6 +58,7 @@ class RobotsTxtTest < Minitest::Test
   def test_disabled_via_master_switch
     site = mock_site(aeo_config: { "enabled" => false, "robots_txt" => { "enabled" => true } })
     generate(site)
+
     assert_empty site.pages
   end
 
@@ -63,6 +66,7 @@ class RobotsTxtTest < Minitest::Test
     File.write(File.join(@source_dir, "robots.txt"), "User-agent: *\nDisallow:\n")
     site = mock_site(aeo_config: { "robots_txt" => { "enabled" => true } })
     generate(site)
+
     assert_empty site.pages
   end
 

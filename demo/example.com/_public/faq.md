@@ -9,6 +9,6 @@ last_modified: 2026-03-14
 
 > Common questions about Answer Engine Optimization
 
-## Frequently Asked Questions
+## Common Questions
 
 Find answers to common questions about AEO below.

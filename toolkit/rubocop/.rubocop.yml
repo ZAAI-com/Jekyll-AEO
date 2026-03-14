@@ -1,3 +1,6 @@
+plugins:
+  - rubocop-minitest
+
 AllCops:
   TargetRubyVersion: 3.2
   NewCops: enable
@@ -50,6 +53,9 @@ Metrics/PerceivedComplexity:
 Metrics/ClassLength:
   Exclude:
     - "../../test/**/*"
+
+Minitest/MultipleAssertions:
+  Max: 25
 
 Naming/FileName:
   Exclude:

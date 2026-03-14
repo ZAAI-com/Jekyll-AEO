@@ -5,21 +5,25 @@ require "test_helper"
 class HowToSchemaTest < Minitest::Test
   def test_returns_nil_when_no_howto
     result = JekyllAeo::Schema::HowTo.build({}, {})
+
     assert_nil result
   end
 
   def test_returns_nil_when_howto_not_hash
     result = JekyllAeo::Schema::HowTo.build({ "howto" => "not hash" }, {})
+
     assert_nil result
   end
 
   def test_returns_nil_when_no_steps
     result = JekyllAeo::Schema::HowTo.build({ "howto" => {} }, {})
+
     assert_nil result
   end
 
   def test_returns_nil_when_steps_empty
     result = JekyllAeo::Schema::HowTo.build({ "howto" => { "steps" => [] } }, {})
+
     assert_nil result
   end
 
@@ -41,6 +45,7 @@ class HowToSchemaTest < Minitest::Test
     assert_equal 2, result["step"].length
 
     step1 = result["step"].first
+
     assert_equal "HowToStep", step1["@type"]
     assert_equal 1, step1["position"]
     assert_equal "Download Ruby", step1["text"]
@@ -59,6 +64,7 @@ class HowToSchemaTest < Minitest::Test
     result = JekyllAeo::Schema::HowTo.build(page, {})
 
     positions = result["step"].map { |s| s["position"] }
+
     assert_equal [1, 2, 3], positions
   end
 

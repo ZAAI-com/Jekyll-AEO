@@ -8,11 +8,13 @@ class OrganizationSchemaTest < Minitest::Test
       { "url" => "/about/" },
       { "title" => "My Site" }
     )
+
     assert_nil result
   end
 
   def test_returns_nil_when_no_site_name
     result = JekyllAeo::Schema::Organization.build({ "url" => "/" }, {})
+
     assert_nil result
   end
 
