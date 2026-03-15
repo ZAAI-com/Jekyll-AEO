@@ -6,7 +6,7 @@ module JekyllAeo
       config = JekyllAeo::Config.from_site(site)
       dotmd_config = config["dotmd"]
       return unless dotmd_config["link_tag"] == "auto"
-      return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
+      return unless JekyllAeo::Utils::IncludeLogic.include?(obj, site, config)
 
       md_url = JekyllAeo::Utils::MdUrl.for(obj.url, site.config["baseurl"])
       tag = %(<link rel="alternate" type="text/markdown" href="#{md_url}">)
@@ -17,7 +17,7 @@ module JekyllAeo
       config = JekyllAeo::Config.from_site(site)
       dotmd_config = config["dotmd"]
       return unless dotmd_config["link_tag"] == "data"
-      return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
+      return unless JekyllAeo::Utils::IncludeLogic.include?(obj, site, config)
 
       md_url = JekyllAeo::Utils::MdUrl.for(obj.url, site.config["baseurl"])
       obj.data["md_url"] = md_url

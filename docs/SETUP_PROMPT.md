@@ -66,7 +66,12 @@ In that file, settings marked `(default)` are active without any config — you 
 ### Ask the user these questions, then build a minimal config
 
 **Q1 — Exclusions**
-"Are there URL prefixes to exclude from markdown generation? Common examples: `/admin/`, `/private/`, `/error/`. Enter prefixes separated by commas, or skip."
+"Are there URL prefixes to exclude from markdown generation? Common examples:
+- `/admin/`, `/private/` — internal pages
+- `/blog/page/` — pagination pages (page 2, 3, etc.)
+- `/404` — error pages
+
+Enter prefixes separated by commas, or skip."
 
 **Q2 — robots.txt**
 First check if a `robots.txt` file already exists in the source directory. Then ask:
@@ -85,6 +90,20 @@ First check if a `robots.txt` file already exists in the source directory. Then 
 
 **Q6 — html2dotmd (HTML fallback)**
 "Do you use Jekyll plugins that generate pages without source files (e.g., jekyll-paginate, jekyll-archives)? Enabling html2dotmd converts their rendered HTML to markdown. (yes/no)"
+
+**Q7 — Include layouts (content allowlist)**
+Scan all pages and documents in the site. Collect the distinct `layout` values from front matter across all files. Present the list:
+"These layouts are used in your site: `default`, `post`, `page`, ... (list all found)
+Which layouts contain content that should be available to LLMs? By default, ALL layouts are included. Setting an allowlist filters out non-content layouts like `redirect` or `archive`. (select all content layouts, or skip to include all)"
+- If the user selects specific layouts, add `include_layouts` to config.
+- If they skip, omit the key (`null` = include all).
+
+**Q8 — Include collections (content allowlist)**
+Read the `collections` key from `_config.yml`. Present the list:
+"These collections are defined in your site: `posts`, `docs`, ... (list all found)
+Which collections should be part of your AEO output? By default, ALL collections are included. (select all that apply, or skip to include all)"
+- If the user selects specific collections, add `include_collections` to config.
+- If they skip, omit the key (`null` = include all).
 
 ### Build and insert the config
 
@@ -194,22 +213,24 @@ Similarly, offer `howto:` front matter for any tutorial or guide pages.
 
 ## Step 4.5 — Cleanup Recommendations
 
-After a successful build, scan the generated output for entries that should be excluded from the LLM index:
+After a successful build, verify the output is clean:
 
-### Detect Redirect Pages
-
-1. Read `_site/llms.txt`.
-2. For each `.md` file listed, read its content from the `_site/` directory.
-3. Flag pages where the markdown content is very short (under 50 characters) and contains phrases like "Redirecting to", "Redirect", or consists mainly of a single link.
-4. For each flagged page, show the user the entry and its content and ask: "This page appears to be a redirect. Would you like to exclude it from the LLM index?"
+1. Read `_site/llms.txt` and check that it contains only content pages.
+2. If `include_layouts` or `include_collections` were configured in Q7/Q8, redirect and archive pages are already filtered automatically.
+3. If the allowlists were NOT configured, scan for remaining low-value pages:
 
 ### Detect Error Pages
 
 Flag pages whose URL contains common error patterns (`/404`, `/500`, `/error/`) or whose title contains "404", "Not Found", "Error", or "500".
 
+### Detect Low-Value Pages
+
+Read the `.md` files listed in `_site/llms.txt`. Flag any with very short content (under 50 characters) — these may be redirect stubs, empty search pages, or pagination listings.
+
 ### Apply Exclusions
 
-For pages the user confirms should be excluded, offer two approaches:
+For pages the user confirms should be excluded, offer three approaches:
+- **Allowlist**: Add `include_layouts` or `include_collections` to filter by layout/collection (best for broad filtering).
 - **Per-page**: Add `dotmd_mode: disabled` to the page's front matter (best for individual pages).
 - **By prefix**: Add a URL prefix to the `exclude` list under `jekyll_aeo` in `_config.yml` (best when multiple pages share a prefix, e.g., `/error/`).
 

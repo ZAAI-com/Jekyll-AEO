@@ -11,13 +11,13 @@ module JekyllAeo
       def self.process(obj, site)
         config = JekyllAeo::Config.from_site(site)
         dotmd_config = config["dotmd"]
-        source_path = JekyllAeo::Utils::SkipLogic.resolve_source_path(obj, site)
-        return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
+        source_path = JekyllAeo::Utils::IncludeLogic.resolve_source_path(obj, site)
+        return unless JekyllAeo::Utils::IncludeLogic.include?(obj, site, config)
 
         dest_path = md_dest_path(obj, site)
         body, dotmd_mode = extract_body(source_path, obj, dotmd_config)
         obj.data["aeo_dotmd_mode"] = dotmd_mode
-        return if body.nil?
+        return if body.nil? || body.strip.empty?
 
         if dotmd_config["include_last_modified"] && File.exist?(source_path)
           last_modified = resolve_last_modified(obj, source_path)

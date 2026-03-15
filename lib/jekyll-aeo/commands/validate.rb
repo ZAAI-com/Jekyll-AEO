@@ -72,6 +72,7 @@ module JekyllAeo
           content = File.read(llms_path, encoding: "utf-8")
           md_urls = content.scan(/\[.*?\]\(([^)]*\.md)\)/).flatten
 
+          dest_expanded = File.expand_path(dest)
           md_urls.each do |url|
             relative_url = if !baseurl.empty? && url.start_with?(baseurl)
                              url.delete_prefix(baseurl)
@@ -79,6 +80,8 @@ module JekyllAeo
                              url
                            end
             file_path = File.join(dest, relative_url)
+            next unless File.expand_path(file_path).start_with?(dest_expanded)
+
             errors << "Referenced file not found: #{url} (expected at #{file_path})" unless File.exist?(file_path)
           end
         end

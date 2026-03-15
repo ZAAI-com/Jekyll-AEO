@@ -193,10 +193,10 @@ class UrlMapTest < Minitest::Test
     content = File.read(output_path)
 
     assert_includes content, "Layout"
-    assert_includes content, "URL"
-    assert_includes content, "URL DotMd"
+    assert_includes content, "Url"
+    assert_includes content, "Url DotMd"
     assert_includes content, "DotMd Mode"
-    assert_includes content, "Skipped"
+    assert_includes content, "Excluded"
     assert_includes content, "Path"
     assert_includes content, "Page ID"
     assert_includes content, "Lang"
@@ -213,10 +213,10 @@ class UrlMapTest < Minitest::Test
 
     content = File.read(output_path)
 
-    assert_includes content, "| URL | Path |"
+    assert_includes content, "| Url | Path |"
     refute_includes content, "Page ID"
-    refute_includes content, "URL DotMd"
-    refute_includes content, "Skipped"
+    refute_includes content, "Url DotMd"
+    refute_includes content, "Excluded"
   end
 
   # --- Sections ---

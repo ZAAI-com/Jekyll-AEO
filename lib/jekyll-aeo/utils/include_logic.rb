@@ -2,13 +2,15 @@
 
 module JekyllAeo
   module Utils
-    module SkipLogic
-      def self.skip_reason(obj, site, config)
+    module IncludeLogic
+      def self.exclude_reason(obj, site, config)
         return "plugin disabled" if config["enabled"] == false
         return "static file" if static_file?(obj)
         return "non-HTML output" unless html_output?(obj)
         return "dotmd_mode: disabled" if obj.data["dotmd_mode"] == "disabled"
         return "redirect" if obj.data["redirect_to"]
+        return "layout: #{obj.data['layout']}" unless included_layout?(obj, config)
+        return "collection: #{obj.collection.label}" unless included_collection?(obj, config)
         return "llms file" if llms_file?(obj, site)
         return "excluded" if excluded?(obj, config)
         return "no source file" unless source_available?(obj, site, config)
@@ -16,8 +18,8 @@ module JekyllAeo
         nil
       end
 
-      def self.skip?(obj, site, config)
-        !skip_reason(obj, site, config).nil?
+      def self.include?(obj, site, config)
+        exclude_reason(obj, site, config).nil?
       end
 
       def self.resolve_source_path(obj, site)
@@ -34,6 +36,22 @@ module JekyllAeo
 
       def self.static_file?(obj)
         obj.is_a?(Jekyll::StaticFile)
+      end
+
+      def self.included_layout?(obj, config)
+        include_layouts = config["include_layouts"]
+        return true if include_layouts.nil?
+
+        include_layouts.include?(obj.data["layout"])
+      end
+
+      def self.included_collection?(obj, config)
+        return true unless obj.respond_to?(:collection)
+
+        include_collections = config["include_collections"]
+        return true if include_collections.nil?
+
+        include_collections.include?(obj.collection&.label)
       end
 
       def self.llms_file?(obj, site)
@@ -59,7 +77,8 @@ module JekyllAeo
         source_file_exists?(obj, site) || html2dotmd["enabled"]
       end
 
-      private_class_method :html_output?, :static_file?, :llms_file?,
+      private_class_method :html_output?, :static_file?, :included_layout?,
+                           :included_collection?, :llms_file?,
                            :excluded?, :source_file_exists?, :source_available?
     end
   end

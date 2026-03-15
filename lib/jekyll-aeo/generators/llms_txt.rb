@@ -23,7 +23,7 @@ module JekyllAeo
         items = []
 
         site.documents.each do |doc|
-          next if JekyllAeo::Utils::SkipLogic.skip?(doc, site, config)
+          next unless JekyllAeo::Utils::IncludeLogic.include?(doc, site, config)
 
           items << {
             obj: doc,
@@ -36,7 +36,7 @@ module JekyllAeo
         end
 
         site.pages.each do |page|
-          next if JekyllAeo::Utils::SkipLogic.skip?(page, site, config)
+          next unless JekyllAeo::Utils::IncludeLogic.include?(page, site, config)
 
           items << {
             obj: page,

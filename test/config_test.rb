@@ -105,7 +105,7 @@ class ConfigTest < Minitest::Test
 
     refute config["url_map"]["enabled"]
     assert_equal "docs/Url-Map.md", config["url_map"]["output_filepath"]
-    assert_equal %w[layout url url_dotmd dotmd_mode skipped path page_id lang redirects], config["url_map"]["columns"]
+    assert_equal %w[layout url url_dotmd dotmd_mode excluded path page_id lang redirects], config["url_map"]["columns"]
   end
 
   def test_deep_merge_url_map
