@@ -27,7 +27,7 @@ module JekyllAeo
 
           items << {
             obj: doc,
-            title: doc.data["title"] || "",
+            title: title_for(doc),
             description: doc.data["description"] || "",
             url: doc.url,
             collection: doc.collection&.label,
@@ -40,7 +40,7 @@ module JekyllAeo
 
           items << {
             obj: page,
-            title: page.data["title"] || "",
+            title: title_for(page),
             description: page.data["description"] || "",
             url: page.url,
             collection: nil,
@@ -114,6 +114,16 @@ module JekyllAeo
         end
       end
 
+      def self.title_for(obj)
+        title = obj.data["title"]
+        return title if title.is_a?(String) && !title.strip.empty?
+
+        segment = obj.url.chomp("/").split("/").last
+        return "Untitled" if segment.nil? || segment.empty?
+
+        segment.split(/[_-]/).map(&:capitalize).join(" ")
+      end
+
       def self.build_llms_txt(site, sections, llms_config, config)
         lines = []
         lines << "# #{site.config['title']}"
@@ -158,8 +168,8 @@ module JekyllAeo
       end
 
       private_class_method :build_custom_sections, :build_auto_sections,
-                           :titleize, :build_llms_txt, :append_full_txt_link,
-                           :append_sections
+                           :titleize, :title_for, :build_llms_txt,
+                           :append_full_txt_link, :append_sections
     end
   end
 end

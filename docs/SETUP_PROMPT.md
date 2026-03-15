@@ -12,6 +12,8 @@ You are helping the user install and configure **Jekyll-AEO**, a RubyGem for Ans
 
 Follow the steps below. Ask the user questions where indicated — do not assume preferences.
 
+This prompt works for both **fresh installs** and **updates** to existing sites. During pre-flight checks, detect whether `jekyll-aeo` is already installed. If it is, skip installation/configuration steps and proceed directly to the migration and optimization steps.
+
 ---
 
 ## Pre-flight Checks
@@ -22,12 +24,15 @@ Before starting, verify:
 2. A `Gemfile` exists.
 3. Ruby version is >= 3.0 (`ruby --version`).
 4. Jekyll version is >= 4.0 (check `Gemfile` or run `bundle exec jekyll --version`).
+5. **Detect existing installation**: Check if `Gemfile` already contains `jekyll-aeo` and if `_config.yml` already has a `jekyll_aeo:` key. If both are present, this is an **update** — inform the user that Jekyll-AEO is already installed and skip to Step 3. If only one is present, note the partial installation and proceed normally.
 
-If any check fails, inform the user and stop.
+If checks 1–4 fail, inform the user and stop.
 
 ---
 
 ## Step 1 — Install the Gem
+
+If the `Gemfile` already contains `jekyll-aeo`, inform the user and skip this step.
 
 1. Read the `Gemfile`. If it contains a `group :jekyll_plugins` block, add the gem inside that group. Otherwise, add it as a standalone line after other gem declarations.
 
@@ -40,6 +45,8 @@ gem "jekyll-aeo"
 ---
 
 ## Step 2 — Configure `_config.yml`
+
+If `_config.yml` already contains a `jekyll_aeo:` key, show the user their current configuration and ask if they'd like to review or update it. Do not overwrite existing settings — only add or modify settings the user explicitly requests. Then skip to Step 3.
 
 Jekyll-AEO works with zero configuration. The defaults below are already active — you only need to add settings the user explicitly opts into.
 
@@ -97,6 +104,8 @@ If the user accepted all defaults (no exclusions, no opt-in features), you can s
 
 ## Step 3 — Add the JSON-LD Liquid Tag
 
+First check if `{% aeo_json_ld %}` already exists in the site's layout files — search `_layouts/` and `_includes/` for the string `aeo_json_ld`. If found, inform the user it's already in place and skip to Step 3.5.
+
 The `{% aeo_json_ld %}` tag renders structured data (BreadcrumbList, Organization, FAQPage, HowTo, Speakable, Article) as `<script type="application/ld+json">` blocks.
 
 1. Find the site's base layout — typically `_layouts/default.html` or `_layouts/base.html`. If the layout delegates to an include (e.g., `{% include head.html %}`), edit the include file instead.
@@ -104,6 +113,68 @@ The `{% aeo_json_ld %}` tag renders structured data (BreadcrumbList, Organizatio
 3. If jekyll-seo-tag is installed (check `Gemfile` or `_config.yml` plugins), note that the Article schema auto-skips to avoid conflicts with BlogPosting — no action needed.
 
 If you cannot find a `<head>` section, ask the user which layout file to edit.
+
+---
+
+## Step 3.5 — Migrate Existing JSON-LD Schemas
+
+Search the site's `_layouts/` and `_includes/` directories for existing `<script type="application/ld+json">` blocks. For each schema type detected, offer the appropriate migration:
+
+### FAQPage Migration
+
+Search all layout and include files for `"@type"` occurrences containing `"FAQPage"`. Also search for inline JSON-LD containing `"Question"` and `"acceptedAnswer"`.
+
+If found:
+1. Show the user the existing Q&A pairs extracted from the JSON-LD.
+2. Identify which page(s) use the layout/include that contains this schema (check for conditionals like `if page.url == "/about/"` or similar).
+3. Offer to move each Q&A pair into `faq:` front matter in the relevant page files. The format is:
+   ```yaml
+   faq:
+     - q: "The question text"
+       a: "The answer text"
+   ```
+4. After adding front matter, offer to remove the hardcoded JSON-LD block from the layout/include. The `{% aeo_json_ld %}` tag will now generate the FAQPage schema automatically from the front matter.
+
+### BreadcrumbList Migration
+
+Search for `"@type"` occurrences containing `"BreadcrumbList"` in layout and include files.
+
+If found:
+1. Inform the user that `{% aeo_json_ld %}` automatically generates BreadcrumbList from URL path structure — no configuration needed.
+2. Offer to remove the manual BreadcrumbList JSON-LD block.
+3. Note: AEO auto-generates breadcrumbs for all pages except the homepage.
+
+### Article / BlogPosting Migration
+
+Search for `"@type"` occurrences containing `"Article"` or `"BlogPosting"` in layout and include files.
+
+If found:
+1. Check if `jekyll-seo-tag` is installed (look in `Gemfile` for `jekyll-seo-tag`).
+2. **If jekyll-seo-tag IS installed**: Inform the user that AEO automatically skips Article schema generation when jekyll-seo-tag is detected, to avoid duplicate/conflicting BlogPosting schemas. The manual implementation can be removed — jekyll-seo-tag handles BlogPosting, and AEO defers to it.
+3. **If jekyll-seo-tag is NOT installed**: Offer to remove the manual Article/BlogPosting JSON-LD and let AEO generate Article schema automatically for any page with a `date` field. Note that AEO generates `"@type": "Article"` (not `"BlogPosting"`), and includes `headline`, `url`, `datePublished`, optional `description`, `author`, and `dateModified`.
+
+If no manual JSON-LD schemas are found, skip this step and inform the user: "No manual JSON-LD schemas detected — nothing to migrate."
+
+---
+
+## Step 3.6 — Front Matter Optimization
+
+Suggest adding structured data front matter to key pages:
+
+### Speakable
+
+Ask the user:
+"Would you like to enable Speakable structured data on key pages? This marks content as suitable for text-to-speech by voice assistants. Recommended for your homepage and about page. (yes/no)"
+
+If yes:
+1. Identify the homepage (typically `index.md` or `index.html`) and an about page (commonly `about.md`, `about/index.md`, or similar).
+2. Add `speakable: true` to the front matter of each identified page.
+
+### FAQPage and HowTo
+
+If no FAQ migration was performed in Step 3.5, offer to add `faq:` front matter to pages that would benefit from FAQ structured data — for example, about pages, service pages, or pages with Q&A content.
+
+Similarly, offer `howto:` front matter for any tutorial or guide pages.
 
 ---
 
@@ -121,6 +192,31 @@ If you cannot find a `<head>` section, ask the user which layout file to edit.
 
 ---
 
+## Step 4.5 — Cleanup Recommendations
+
+After a successful build, scan the generated output for entries that should be excluded from the LLM index:
+
+### Detect Redirect Pages
+
+1. Read `_site/llms.txt`.
+2. For each `.md` file listed, read its content from the `_site/` directory.
+3. Flag pages where the markdown content is very short (under 50 characters) and contains phrases like "Redirecting to", "Redirect", or consists mainly of a single link.
+4. For each flagged page, show the user the entry and its content and ask: "This page appears to be a redirect. Would you like to exclude it from the LLM index?"
+
+### Detect Error Pages
+
+Flag pages whose URL contains common error patterns (`/404`, `/500`, `/error/`) or whose title contains "404", "Not Found", "Error", or "500".
+
+### Apply Exclusions
+
+For pages the user confirms should be excluded, offer two approaches:
+- **Per-page**: Add `markdown_copy: false` to the page's front matter (best for individual pages).
+- **By prefix**: Add a URL prefix to the `exclude` list under `jekyll_aeo` in `_config.yml` (best when multiple pages share a prefix, e.g., `/error/`).
+
+Recommend the approach that best fits the number and pattern of pages found.
+
+---
+
 ## Step 5 — Summary and Next Steps
 
 Tell the user what was installed and configured, then share these next steps:
@@ -130,6 +226,7 @@ Tell the user what was installed and configured, then share these next steps:
 - **Speakable schema**: Add `speakable: true` to front matter for voice-assistant-friendly pages.
 - **Exclude pages**: Set `markdown_copy: false` in any page's front matter to skip markdown generation.
 - **Validate after builds**: Run `bundle exec jekyll aeo:validate` after future builds.
+- **Re-run this prompt**: This setup prompt is safe to re-run on an already-configured site to check for optimization opportunities (schema migration, cleanup, new features).
 - **Full docs**: <https://zaai.com/jekyll-aeo>
 
 Offer to add front matter examples (`faq:`, `howto:`, `speakable: true`) to existing pages if the user wants.
