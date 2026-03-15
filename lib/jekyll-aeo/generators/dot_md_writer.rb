@@ -51,7 +51,10 @@ module JekyllAeo
         if File.exist?(source_path)
           extract_from_source(source_path, obj, dotmd_config, preferred)
         else
-          html2dotmd_result(obj.output, dotmd_config)
+          html_output = obj.respond_to?(:output) ? obj.output : nil
+          return html2dotmd_result(html_output, dotmd_config) if html_output && !html_output.strip.empty?
+
+          [nil, "html2dotmd"]
         end
       end
 

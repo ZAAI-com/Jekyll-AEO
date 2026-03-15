@@ -7,13 +7,22 @@ module JekyllAeo
         return "plugin disabled" if config["enabled"] == false
         return "static file" if static_file?(obj)
         return "non-HTML output" unless html_output?(obj)
+
+        reason = filter_reason(obj, config)
+        return reason if reason
+
+        return "llms file" if llms_file?(obj, site)
+        return "excluded" if excluded?(obj, config)
+        return "no source file" unless source_available?(obj, site, config)
+
+        nil
+      end
+
+      def self.filter_reason(obj, config)
         return "dotmd_mode: disabled" if obj.data["dotmd_mode"] == "disabled"
         return "redirect" if obj.data["redirect_to"]
         return "layout: #{obj.data['layout']}" unless included_layout?(obj, config)
         return "collection: #{obj.collection.label}" unless included_collection?(obj, config)
-        return "llms file" if llms_file?(obj, site)
-        return "excluded" if excluded?(obj, config)
-        return "no source file" unless source_available?(obj, site, config)
 
         nil
       end
@@ -78,7 +87,7 @@ module JekyllAeo
       end
 
       private_class_method :html_output?, :static_file?, :included_layout?,
-                           :included_collection?, :llms_file?,
+                           :included_collection?, :llms_file?, :filter_reason,
                            :excluded?, :source_file_exists?, :source_available?
     end
   end
