@@ -4,7 +4,7 @@ require "test_helper"
 require "tmpdir"
 require "fileutils"
 
-class MarkdownPageTest < Minitest::Test
+class DotMdWriterTest < Minitest::Test
   def setup
     @tmpdir = Dir.mktmpdir
     @source_dir = File.join(@tmpdir, "source")
@@ -70,7 +70,7 @@ class MarkdownPageTest < Minitest::Test
   def test_generates_md_file_with_clean_path
     write_source("page.md", "---\ntitle: Test Page\n---\nSome content here.\n")
     page = mock_page
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
 
@@ -85,7 +85,7 @@ class MarkdownPageTest < Minitest::Test
   def test_does_not_prepend_title_when_h1_exists
     write_source("page.md", "---\ntitle: Test Page\n---\n# My Custom Heading\n\nContent.\n")
     page = mock_page
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -97,7 +97,7 @@ class MarkdownPageTest < Minitest::Test
   def test_adds_description_blockquote
     write_source("page.md", "---\ntitle: Test Page\ndescription: A great page\n---\nContent.\n")
     page = mock_page(description: "A great page")
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -109,7 +109,7 @@ class MarkdownPageTest < Minitest::Test
     desc = "Line one\nLine two\nLine three"
     write_source("page.md", "---\ntitle: Test Page\n---\nContent.\n")
     page = mock_page(description: desc)
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -120,7 +120,7 @@ class MarkdownPageTest < Minitest::Test
   def test_strips_yaml_front_matter
     write_source("page.md", "---\ntitle: Test\nlayout: page\n---\nBody content.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -133,7 +133,7 @@ class MarkdownPageTest < Minitest::Test
   def test_strips_liquid_from_body
     write_source("page.md", "---\ntitle: Test\n---\nHello {% if true %}world{% endif %}.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -145,7 +145,7 @@ class MarkdownPageTest < Minitest::Test
   def test_collapses_blank_lines
     write_source("page.md", "---\ntitle: Test\n---\n\n\n\n\nContent.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -156,7 +156,7 @@ class MarkdownPageTest < Minitest::Test
   def test_clean_path_style
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     assert_path_exists File.join(@dest_dir, "page.md"),
                        "Clean style: /page/index.html -> /page.md"
@@ -166,7 +166,7 @@ class MarkdownPageTest < Minitest::Test
     deep_dest = File.join(@dest_dir, "deep", "nested", "page", "index.html")
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(dest_path: deep_dest)
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     assert_path_exists File.join(@dest_dir, "deep", "nested", "page.md")
   end
@@ -174,7 +174,7 @@ class MarkdownPageTest < Minitest::Test
   def test_ensures_trailing_newline
     write_source("page.md", "---\ntitle: Test\n---\nContent")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -187,7 +187,7 @@ class MarkdownPageTest < Minitest::Test
   def test_includes_last_modified_from_last_modified_at
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -198,7 +198,7 @@ class MarkdownPageTest < Minitest::Test
   def test_includes_last_modified_from_date
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", date: Time.new(2024, 1, 1))
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -209,7 +209,7 @@ class MarkdownPageTest < Minitest::Test
   def test_last_modified_at_takes_priority_over_date
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15), date: Time.new(2024, 1, 1))
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -221,7 +221,7 @@ class MarkdownPageTest < Minitest::Test
   def test_last_modified_falls_back_to_mtime
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -232,7 +232,7 @@ class MarkdownPageTest < Minitest::Test
   def test_last_modified_disabled_via_config
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -243,7 +243,7 @@ class MarkdownPageTest < Minitest::Test
   def test_last_modified_after_description
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", description: "A page", last_modified_at: Time.new(2025, 6, 15))
-    JekyllAeo::Generators::MarkdownPage.process(page, mock_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, mock_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -258,7 +258,7 @@ class MarkdownPageTest < Minitest::Test
   def test_dotmd_metadata_disabled_by_default
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test")
-    JekyllAeo::Generators::MarkdownPage.process(page, no_lastmod_site)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -275,7 +275,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -295,7 +295,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -309,7 +309,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -323,7 +323,7 @@ class MarkdownPageTest < Minitest::Test
     page = mock_page(title: "Test", url: "/page/")
     site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true,
                                                     "include_last_modified" => false } })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -337,7 +337,7 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
     site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true } })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -349,7 +349,7 @@ class MarkdownPageTest < Minitest::Test
     write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
     page = mock_page(title: "Test", last_modified_at: Time.new(2025, 6, 15))
     site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true } })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -363,7 +363,7 @@ class MarkdownPageTest < Minitest::Test
     page = mock_page(title: "Test Page", description: "A test")
     site = mock_site("jekyll_aeo" => { "dotmd" => { "dotmd_metadata" => true,
                                                     "include_last_modified" => false } })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -380,7 +380,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -394,7 +394,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -408,7 +408,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -422,7 +422,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -440,7 +440,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "baseurl" => "/docs", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -454,7 +454,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -468,7 +468,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("url" => "https://example.com", "baseurl" => "/docs/", "jekyll_aeo" => {
                        "dotmd" => { "dotmd_metadata" => true, "include_last_modified" => false }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -487,7 +487,7 @@ class MarkdownPageTest < Minitest::Test
                        "dotmd" => { "include_last_modified" => false,
                                     "html2dotmd" => { "enabled" => true } }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
 
@@ -502,7 +502,7 @@ class MarkdownPageTest < Minitest::Test
     html = "<html><body><p>Content</p></body></html>"
     page = mock_page(title: "Test", source_file: "nonexistent_xyz.md", output: html)
     site = no_lastmod_site
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
 
@@ -533,7 +533,7 @@ class MarkdownPageTest < Minitest::Test
                        "dotmd" => { "include_last_modified" => false,
                                     "html2dotmd" => { "enabled" => true } }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -554,7 +554,7 @@ class MarkdownPageTest < Minitest::Test
                        "dotmd" => { "include_last_modified" => false,
                                     "html2dotmd" => { "enabled" => true } }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -572,7 +572,7 @@ class MarkdownPageTest < Minitest::Test
     site = mock_site("jekyll_aeo" => {
                        "dotmd" => { "html2dotmd" => { "enabled" => true } }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
@@ -598,12 +598,124 @@ class MarkdownPageTest < Minitest::Test
                          "html2dotmd" => { "enabled" => true, "selector" => ".main-content" }
                        }
                      })
-    JekyllAeo::Generators::MarkdownPage.process(page, site)
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
 
     output_path = File.join(@dest_dir, "page.md")
     content = read_output(output_path)
 
     assert_includes content, "Selected content."
     refute_includes content, "Side content"
+  end
+
+  # --- dotmd_mode front matter ---
+
+  def test_dotmd_mode_html_uses_rendered_output
+    write_source("page.md", "---\ntitle: Blog\n---\n{% for post in site.posts %}\n{{ post.title }}\n{% endfor %}\n")
+    html = "<html><body><main><h2>First Post</h2><p>Content from rendering.</p></main></body></html>"
+    page = mock_page(title: "Blog", output: html)
+    page.data["dotmd_mode"] = "html2dotmd"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "Content from rendering."
+    refute_includes content, "site.posts"
+  end
+
+  def test_dotmd_mode_md_forces_md2dotmd
+    write_source("page.md", "---\ntitle: Test\n---\n{% for post in site.posts %}{% endfor %}\nReal content here.\n")
+    html = "<html><body><main><p>Rich HTML content.</p></main></body></html>"
+    page = mock_page(title: "Test", output: html)
+    page.data["dotmd_mode"] = "md2dotmd"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "Real content here."
+    refute_includes content, "Rich HTML content."
+  end
+
+  def test_dotmd_mode_disabled_skips_generation
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    page.data["dotmd_mode"] = "disabled"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    refute_path_exists output_path, "Should not generate .md when dotmd_mode is disabled"
+  end
+
+  def test_dotmd_mode_html_skips_when_no_output
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    page.data["dotmd_mode"] = "html2dotmd"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    refute_path_exists output_path, "Should skip when html2dotmd set but no output available"
+  end
+
+  def test_dotmd_mode_md_skips_when_no_source
+    page = mock_page(title: "Test", source_file: "nonexistent_xyz.md")
+    page.data["dotmd_mode"] = "md2dotmd"
+    site = mock_site("jekyll_aeo" => {
+                       "dotmd" => { "include_last_modified" => false,
+                                    "html2dotmd" => { "enabled" => true } }
+                     })
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    refute_path_exists output_path, "Should skip when md2dotmd set but no source file"
+  end
+
+  def test_auto_detect_liquid_uses_html2dotmd
+    write_source("page.md", "---\ntitle: Blog\n---\n{% for post in site.posts %}\n{{ post.title }}\n{% endfor %}\n")
+    html = "<html><body><main><h2>Latest Posts</h2><p>Here are the posts.</p></main></body></html>"
+    page = mock_page(title: "Blog", output: html)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "Here are the posts."
+  end
+
+  def test_no_liquid_source_stays_md2dotmd
+    write_source("page.md", "---\ntitle: About\n---\nWe are a company that does great things.\n")
+    html = "<html><body><main><p>We are a company.</p><footer>Copyright</footer></main></body></html>"
+    page = mock_page(title: "About", output: html)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "We are a company that does great things."
+    refute_includes content, "Copyright"
+  end
+
+  def test_liquid_source_falls_back_without_output
+    write_source("page.md", "---\ntitle: Blog\n---\n{% for post in site.posts %}\nSome text.\n{% endfor %}\n")
+    page = mock_page(title: "Blog")
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    assert_path_exists output_path, "Should fall back to md2dotmd when no output available"
+    content = read_output(output_path)
+
+    assert_includes content, "Some text."
+  end
+
+  def test_dotmd_mode_stored_on_page_data
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    assert_equal "md2dotmd", page.data["aeo_dotmd_mode"]
   end
 end

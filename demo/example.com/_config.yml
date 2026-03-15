@@ -37,6 +37,8 @@ plugins:
 # Settings marked (override) differ from defaults — these opt into extra features.
 jekyll_aeo:
   enabled: true                       # (default) master switch for the entire plugin
+  # include_layouts: null              # (default) null = include all layouts; set to allowlist, e.g., [default, post, page]
+  # include_collections: null          # (default) null = include all collections; set to allowlist, e.g., [posts, docs]
 
   # --- Markdown copy generation (.md companion files) ---
   dotmd:
@@ -69,7 +71,7 @@ jekyll_aeo:
   url_map:
     enabled: true                     # (override | default: false) generate a markdown table of all pages
     output_filepath: "docs/Url-Map.md"  # (default) path relative to source directory
-    # columns: [page_id, url, lang, layout, path, redirects, markdown_copy, skipped]  # (default)
+    # columns: [layout, url, url_dotmd, dotmd_mode, excluded, path, page_id, lang, redirects]  # (default)
     # show_created_at: true           # (default)
 
   # --- robots.txt (crawler policy) ---

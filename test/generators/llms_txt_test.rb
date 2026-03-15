@@ -339,4 +339,72 @@ class LlmsTxtTest < Minitest::Test
 
     assert_includes content, "(/docs/index.md)"
   end
+
+  # --- title fallback ---
+
+  def test_nil_title_document_uses_url_fallback
+    write_source_and_md("_tags/manuel.md", "t/manuel/index.html", "# Manuel\n")
+
+    doc = mock_document(
+      title: nil, url: "/t/manuel/",
+      collection_label: "tags", source_file: "_tags/manuel.md",
+      dest_html: "t/manuel/index.html"
+    )
+
+    site = mock_site(documents: [doc])
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+
+    assert_includes content, "- [Manuel](/t/manuel.md)"
+  end
+
+  def test_empty_title_page_uses_url_fallback
+    write_source_and_md("archive/2025.md", "archive/2025/index.html", "# 2025\n")
+
+    page = mock_page(
+      title: "", url: "/archive/2025/",
+      source_file: "archive/2025.md", dest_html: "archive/2025/index.html"
+    )
+
+    site = mock_site(pages: [page])
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+
+    assert_includes content, "- [2025](/archive/2025.md)"
+  end
+
+  def test_hyphenated_slug_titleized
+    write_source_and_md("_tags/ruby-on-rails.md", "t/ruby-on-rails/index.html", "# Ruby on Rails\n")
+
+    doc = mock_document(
+      title: nil, url: "/t/ruby-on-rails/",
+      collection_label: "tags", source_file: "_tags/ruby-on-rails.md",
+      dest_html: "t/ruby-on-rails/index.html"
+    )
+
+    site = mock_site(documents: [doc])
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+
+    assert_includes content, "[Ruby On Rails]"
+  end
+
+  def test_root_page_nil_title_falls_back_to_untitled
+    write_source_and_md("index.md", "index.html", "# Home\n")
+
+    page = mock_page(
+      title: nil, url: "/",
+      source_file: "index.md", dest_html: "index.html"
+    )
+
+    site = mock_site(pages: [page])
+    JekyllAeo::Generators::LlmsTxt.generate(site)
+
+    content = File.read(File.join(@dest_dir, "llms.txt"))
+
+    assert_includes content, "[Untitled]"
+  end
 end

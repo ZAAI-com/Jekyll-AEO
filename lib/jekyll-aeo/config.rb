@@ -5,6 +5,8 @@ module JekyllAeo
     DEFAULTS = {
       "enabled" => true,
       "exclude" => [],
+      "include_layouts" => nil,
+      "include_collections" => nil,
       "dotmd" => {
         "link_tag" => "auto",
         "include_last_modified" => true,
@@ -34,7 +36,7 @@ module JekyllAeo
       "url_map" => {
         "enabled" => false,
         "output_filepath" => "docs/Url-Map.md",
-        "columns" => %w[page_id url lang layout path redirects markdown_copy skipped],
+        "columns" => %w[layout url url_dotmd dotmd_mode excluded path page_id lang redirects],
         "show_created_at" => true
       },
       "robots_txt" => {

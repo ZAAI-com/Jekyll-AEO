@@ -71,14 +71,15 @@ jekyll_aeo:
     output_filepath: "docs/Url-Map.md"  # output path relative to project root (default: "docs/Url-Map.md")
     show_created_at: true          # show generation timestamp in document header (default: true)
     columns:                       # columns to include in the table
-      - page_id
-      - url
-      - lang
       - layout
+      - url
+      - url_dotmd
+      - dotmd_mode
+      - excluded
       - path
+      - page_id
+      - lang
       - redirects
-      - markdown_copy
-      - skipped
   robots_txt:
     enabled: false                 # generate robots.txt with crawler policy (default: false)
     allow:                         # search/retrieval bots to allow
@@ -112,14 +113,25 @@ jekyll_aeo:
 
 ### Per-Page Options
 
-Disable markdown generation for a specific page via front matter:
+Control `.md` generation per page via `dotmd_mode` front matter:
 
 ```yaml
 ---
 title: Secret Page
-markdown_copy: false
+dotmd_mode: disabled       # skip .md generation for this page
 ---
 ```
+
+```yaml
+---
+title: Blog
+dotmd_mode: html2dotmd     # force HTML-to-markdown conversion
+---
+```
+
+Available values: `auto` (default), `md2dotmd`, `html2dotmd`, `disabled`.
+
+See [`lib/jekyll-aeo/generators/README.md`](../lib/jekyll-aeo/generators/README.md) for the full decision logic.
 
 Pages with `redirect_to` in front matter are automatically skipped.
 
@@ -216,14 +228,15 @@ The table is grouped by collection (Pages first, then alphabetically) with confi
 
 | Column | Description |
 |---|---|
-| `page_id` | Value of `page_id` from front matter |
-| `url` | Page URL |
-| `lang` | Value of `lang` from front matter |
 | `layout` | Layout name |
+| `url` | Page URL |
+| `url_dotmd` | Path to the generated `.md` file |
+| `dotmd_mode` | Converter used: `html2dotmd` or `md2dotmd` |
+| `excluded` | Reason the page was excluded (if any) |
 | `path` | Relative source file path |
+| `page_id` | Value of `page_id` from front matter |
+| `lang` | Value of `lang` from front matter |
 | `redirects` | Values from `redirect_from` front matter |
-| `markdown_copy` | Path to the generated `.md` file |
-| `skipped` | Reason the page was skipped (if any) |
 
 ## Domain Profile
 
@@ -431,7 +444,7 @@ The following are automatically skipped (in order):
 
 - Plugin disabled (`enabled: false`)
 - Non-HTML outputs (CSS, JS, etc.)
-- Pages with `markdown_copy: false` in front matter
+- Pages with `dotmd_mode: disabled` in front matter
 - Redirect pages (`redirect_to` in front matter)
 - Documents in the `assets` collection
 - `llms.txt` and `llms-full.txt` files

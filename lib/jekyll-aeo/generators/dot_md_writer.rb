@@ -4,17 +4,20 @@ require "fileutils"
 
 module JekyllAeo
   module Generators
-    module MarkdownPage
+    module DotMdWriter
       YAML_FRONT_MATTER_REGEXP = /\A(---\s*\n.*?\n?)^(---\s*$\n?)/m
+      LIQUID_PATTERN = /\{[{%]/
 
       def self.process(obj, site)
         config = JekyllAeo::Config.from_site(site)
         dotmd_config = config["dotmd"]
-        source_path = JekyllAeo::Utils::SkipLogic.resolve_source_path(obj, site)
-        return if JekyllAeo::Utils::SkipLogic.skip?(obj, site, config)
+        source_path = JekyllAeo::Utils::IncludeLogic.resolve_source_path(obj, site)
+        return unless JekyllAeo::Utils::IncludeLogic.include?(obj, site, config)
 
         dest_path = md_dest_path(obj, site)
-        body = extract_body(source_path, obj, dotmd_config)
+        body, dotmd_mode = extract_body(source_path, obj, dotmd_config)
+        obj.data["aeo_dotmd_mode"] = dotmd_mode
+        return if body.nil? || body.strip.empty?
 
         if dotmd_config["include_last_modified"] && File.exist?(source_path)
           last_modified = resolve_last_modified(obj, source_path)
@@ -40,13 +43,50 @@ module JekyllAeo
       end
 
       def self.extract_body(source_path, obj, dotmd_config)
+        preferred = obj.data["dotmd_mode"]
+
+        return extract_html2dotmd(obj, dotmd_config) if preferred == "html2dotmd"
+        return extract_explicit_md2dotmd(source_path, obj) if preferred == "md2dotmd" && !File.exist?(source_path)
+
         if File.exist?(source_path)
-          raw = File.read(source_path, encoding: "utf-8")
-          body = raw.sub(YAML_FRONT_MATTER_REGEXP, "")
-          JekyllAeo::Utils::ContentStripper.strip(body, dotmd_config["md2dotmd"])
+          extract_from_source(source_path, obj, dotmd_config, preferred)
         else
-          JekyllAeo::Utils::HtmlConverter.convert(obj.output, dotmd_config["html2dotmd"])
+          html_output = obj.respond_to?(:output) ? obj.output : nil
+          return html2dotmd_result(html_output, dotmd_config) if html_output && !html_output.strip.empty?
+
+          [nil, "html2dotmd"]
         end
+      end
+
+      def self.extract_html2dotmd(obj, dotmd_config)
+        html_output = obj.respond_to?(:output) ? obj.output : nil
+        return html2dotmd_result(html_output, dotmd_config) if html_output && !html_output.strip.empty?
+
+        Jekyll.logger.warn "Jekyll-AEO:",
+                           "dotmd_mode: html2dotmd set but no rendered output for #{obj.url}"
+        [nil, "html2dotmd"]
+      end
+
+      def self.extract_explicit_md2dotmd(_source_path, obj)
+        Jekyll.logger.warn "Jekyll-AEO:",
+                           "dotmd_mode: md2dotmd set but no source file for #{obj.url}"
+        [nil, "md2dotmd"]
+      end
+
+      def self.extract_from_source(source_path, obj, dotmd_config, preferred)
+        raw = File.read(source_path, encoding: "utf-8")
+        body = raw.sub(YAML_FRONT_MATTER_REGEXP, "")
+
+        if preferred != "md2dotmd" && body.match?(LIQUID_PATTERN)
+          html_output = obj.respond_to?(:output) ? obj.output : nil
+          return html2dotmd_result(html_output, dotmd_config) if html_output && !html_output.strip.empty?
+        end
+
+        [JekyllAeo::Utils::ContentStripper.strip(body, dotmd_config["md2dotmd"]), "md2dotmd"]
+      end
+
+      def self.html2dotmd_result(html, dotmd_config)
+        [JekyllAeo::Utils::HtmlConverter.convert(html, dotmd_config["html2dotmd"] || {}), "html2dotmd"]
       end
 
       def self.build_header(obj, body, _config = nil, last_modified: nil)
@@ -142,7 +182,9 @@ module JekyllAeo
 
       private_class_method :build_header, :md_dest_path, :resolve_last_modified,
                            :format_date, :build_metadata_block,
-                           :yaml_safe_scalar, :extract_body, :metadata_fields
+                           :yaml_safe_scalar, :extract_body, :metadata_fields,
+                           :extract_html2dotmd, :extract_explicit_md2dotmd,
+                           :extract_from_source, :html2dotmd_result
     end
   end
 end
