@@ -40,14 +40,14 @@ module JekyllAeo
         baseurl = site.config["baseurl"].to_s.chomp("/")
 
         site.documents.each do |doc|
-          next unless doc.output_ext == ".html"
+          next unless doc.respond_to?(:output_ext) && doc.output_ext == ".html"
           next if doc.respond_to?(:collection) && doc.collection&.label == "assets"
 
           items << build_item(doc, doc.collection&.label, site, config, needs_skip, needs_md, baseurl)
         end
 
         site.pages.each do |page|
-          next unless page.output_ext == ".html"
+          next unless page.respond_to?(:output_ext) && page.output_ext == ".html"
 
           items << build_item(page, nil, site, config, needs_skip, needs_md, baseurl)
         end

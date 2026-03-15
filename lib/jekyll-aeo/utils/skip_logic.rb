@@ -5,10 +5,10 @@ module JekyllAeo
     module SkipLogic
       def self.skip_reason(obj, site, config)
         return "plugin disabled" if config["enabled"] == false
+        return "assets collection" if assets_collection?(obj)
         return "non-HTML output" unless html_output?(obj)
         return "markdown_copy: false" if obj.data["markdown_copy"] == false
         return "redirect" if obj.data["redirect_to"]
-        return "assets collection" if assets_collection?(obj)
         return "llms file" if llms_file?(obj, site)
         return "excluded" if excluded?(obj, config)
         return "no source file" unless source_available?(obj, site, config)
@@ -29,7 +29,7 @@ module JekyllAeo
       end
 
       def self.html_output?(obj)
-        obj.output_ext == ".html"
+        obj.respond_to?(:output_ext) && obj.output_ext == ".html"
       end
 
       def self.assets_collection?(obj)
