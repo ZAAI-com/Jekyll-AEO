@@ -210,7 +210,7 @@ Flag pages whose URL contains common error patterns (`/404`, `/500`, `/error/`) 
 ### Apply Exclusions
 
 For pages the user confirms should be excluded, offer two approaches:
-- **Per-page**: Add `markdown_copy: false` to the page's front matter (best for individual pages).
+- **Per-page**: Add `dotmd_mode: disabled` to the page's front matter (best for individual pages).
 - **By prefix**: Add a URL prefix to the `exclude` list under `jekyll_aeo` in `_config.yml` (best when multiple pages share a prefix, e.g., `/error/`).
 
 Recommend the approach that best fits the number and pattern of pages found.
@@ -224,7 +224,7 @@ Tell the user what was installed and configured, then share these next steps:
 - **FAQPage schema**: Add `faq:` front matter with `q:`/`a:` pairs to generate FAQ structured data.
 - **HowTo schema**: Add `howto:` front matter with `steps:` to generate HowTo structured data.
 - **Speakable schema**: Add `speakable: true` to front matter for voice-assistant-friendly pages.
-- **Exclude pages**: Set `markdown_copy: false` in any page's front matter to skip markdown generation.
+- **Exclude pages**: Set `dotmd_mode: disabled` in any page's front matter to skip markdown generation.
 - **Validate after builds**: Run `bundle exec jekyll aeo:validate` after future builds.
 - **Re-run this prompt**: This setup prompt is safe to re-run on an already-configured site to check for optimization opportunities (schema migration, cleanup, new features).
 - **Full docs**: <https://zaai.com/jekyll-aeo>

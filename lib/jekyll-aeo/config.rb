@@ -34,7 +34,7 @@ module JekyllAeo
       "url_map" => {
         "enabled" => false,
         "output_filepath" => "docs/Url-Map.md",
-        "columns" => %w[page_id url lang layout path redirects markdown_copy skipped],
+        "columns" => %w[layout url url_dotmd dotmd_mode skipped path page_id lang redirects],
         "show_created_at" => true
       },
       "robots_txt" => {

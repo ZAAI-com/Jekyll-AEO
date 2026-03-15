@@ -606,4 +606,116 @@ class DotMdWriterTest < Minitest::Test
     assert_includes content, "Selected content."
     refute_includes content, "Side content"
   end
+
+  # --- dotmd_mode front matter ---
+
+  def test_dotmd_mode_html_uses_rendered_output
+    write_source("page.md", "---\ntitle: Blog\n---\n{% for post in site.posts %}\n{{ post.title }}\n{% endfor %}\n")
+    html = "<html><body><main><h2>First Post</h2><p>Content from rendering.</p></main></body></html>"
+    page = mock_page(title: "Blog", output: html)
+    page.data["dotmd_mode"] = "html2dotmd"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "Content from rendering."
+    refute_includes content, "site.posts"
+  end
+
+  def test_dotmd_mode_md_forces_md2dotmd
+    write_source("page.md", "---\ntitle: Test\n---\n{% for post in site.posts %}{% endfor %}\nReal content here.\n")
+    html = "<html><body><main><p>Rich HTML content.</p></main></body></html>"
+    page = mock_page(title: "Test", output: html)
+    page.data["dotmd_mode"] = "md2dotmd"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "Real content here."
+    refute_includes content, "Rich HTML content."
+  end
+
+  def test_dotmd_mode_disabled_skips_generation
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    page.data["dotmd_mode"] = "disabled"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    refute_path_exists output_path, "Should not generate .md when dotmd_mode is disabled"
+  end
+
+  def test_dotmd_mode_html_skips_when_no_output
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    page.data["dotmd_mode"] = "html2dotmd"
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    refute_path_exists output_path, "Should skip when html2dotmd set but no output available"
+  end
+
+  def test_dotmd_mode_md_skips_when_no_source
+    page = mock_page(title: "Test", source_file: "nonexistent_xyz.md")
+    page.data["dotmd_mode"] = "md2dotmd"
+    site = mock_site("jekyll_aeo" => {
+                       "dotmd" => { "include_last_modified" => false,
+                                    "html2dotmd" => { "enabled" => true } }
+                     })
+    JekyllAeo::Generators::DotMdWriter.process(page, site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    refute_path_exists output_path, "Should skip when md2dotmd set but no source file"
+  end
+
+  def test_auto_detect_liquid_uses_html2dotmd
+    write_source("page.md", "---\ntitle: Blog\n---\n{% for post in site.posts %}\n{{ post.title }}\n{% endfor %}\n")
+    html = "<html><body><main><h2>Latest Posts</h2><p>Here are the posts.</p></main></body></html>"
+    page = mock_page(title: "Blog", output: html)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "Here are the posts."
+  end
+
+  def test_no_liquid_source_stays_md2dotmd
+    write_source("page.md", "---\ntitle: About\n---\nWe are a company that does great things.\n")
+    html = "<html><body><main><p>We are a company.</p><footer>Copyright</footer></main></body></html>"
+    page = mock_page(title: "About", output: html)
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+    content = read_output(output_path)
+
+    assert_includes content, "We are a company that does great things."
+    refute_includes content, "Copyright"
+  end
+
+  def test_liquid_source_falls_back_without_output
+    write_source("page.md", "---\ntitle: Blog\n---\n{% for post in site.posts %}\nSome text.\n{% endfor %}\n")
+    page = mock_page(title: "Blog")
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    output_path = File.join(@dest_dir, "page.md")
+
+    assert_path_exists output_path, "Should fall back to md2dotmd when no output available"
+    content = read_output(output_path)
+
+    assert_includes content, "Some text."
+  end
+
+  def test_dotmd_mode_stored_on_page_data
+    write_source("page.md", "---\ntitle: Test\n---\nContent.\n")
+    page = mock_page(title: "Test")
+    JekyllAeo::Generators::DotMdWriter.process(page, no_lastmod_site)
+
+    assert_equal "md2dotmd", page.data["aeo_dotmd_mode"]
+  end
 end

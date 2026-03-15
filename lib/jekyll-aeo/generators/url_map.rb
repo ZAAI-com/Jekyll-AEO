@@ -12,9 +12,12 @@ module JekyllAeo
         "layout" => "Layout",
         "path" => "Path",
         "redirects" => "Redirects",
-        "markdown_copy" => "Markdown Copy",
-        "skipped" => "Skipped"
+        "url_dotmd" => "URL DotMd",
+        "skipped" => "Skipped",
+        "dotmd_mode" => "DotMd Mode"
       }.freeze
+
+      DEFAULT_COLUMNS = %w[layout url url_dotmd dotmd_mode skipped path page_id lang redirects].freeze
 
       def self.generate(site)
         config = JekyllAeo::Config.from_site(site)
@@ -23,7 +26,7 @@ module JekyllAeo
         url_map_config = config["url_map"] || {}
         return if url_map_config["enabled"] == false
 
-        columns = url_map_config["columns"] || COLUMN_HEADERS.keys
+        columns = url_map_config["columns"] || DEFAULT_COLUMNS
         items = collect_all_items(site, config, columns)
         sections = build_sections(items)
         markdown = build_markdown(sections, columns, url_map_config)
@@ -36,27 +39,28 @@ module JekyllAeo
       def self.collect_all_items(site, config, columns)
         items = []
         needs_skip = columns.include?("skipped")
-        needs_md = columns.include?("markdown_copy")
+        needs_md = columns.include?("url_dotmd")
+        needs_mode = columns.include?("dotmd_mode")
         baseurl = site.config["baseurl"].to_s.chomp("/")
 
         site.documents.each do |doc|
           next if doc.is_a?(Jekyll::StaticFile)
           next unless doc.output_ext == ".html"
 
-          items << build_item(doc, doc.collection&.label, site, config, needs_skip, needs_md, baseurl)
+          items << build_item(doc, doc.collection&.label, site, config, needs_skip, needs_md, needs_mode, baseurl)
         end
 
         site.pages.each do |page|
           next if page.is_a?(Jekyll::StaticFile)
           next unless page.output_ext == ".html"
 
-          items << build_item(page, nil, site, config, needs_skip, needs_md, baseurl)
+          items << build_item(page, nil, site, config, needs_skip, needs_md, needs_mode, baseurl)
         end
 
         items
       end
 
-      def self.build_item(obj, collection_label, site, config, needs_skip, needs_md, baseurl = "")
+      def self.build_item(obj, collection_label, site, config, needs_skip, needs_md, needs_mode, baseurl = "")
         redirect_from = obj.data["redirect_from"]
         redirects_str = case redirect_from
                         when Array then redirect_from.join(", ")
@@ -75,8 +79,9 @@ module JekyllAeo
         }
 
         item[:skipped] = JekyllAeo::Utils::SkipLogic.skip_reason(obj, site, config) || "" if needs_skip
-        item[:markdown_copy] = md_url(obj.url, baseurl) if needs_md && (!needs_skip || item[:skipped].empty?)
-        item[:markdown_copy] ||= "" if needs_md
+        item[:url_dotmd] = md_url(obj.url, baseurl) if needs_md && (!needs_skip || item[:skipped].empty?)
+        item[:url_dotmd] ||= "" if needs_md
+        item[:dotmd_mode] = obj.data["aeo_dotmd_mode"] || "" if needs_mode
 
         item
       end

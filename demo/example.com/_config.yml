@@ -69,7 +69,7 @@ jekyll_aeo:
   url_map:
     enabled: true                     # (override | default: false) generate a markdown table of all pages
     output_filepath: "docs/Url-Map.md"  # (default) path relative to source directory
-    # columns: [page_id, url, lang, layout, path, redirects, markdown_copy, skipped]  # (default)
+    # columns: [layout, url, url_dotmd, dotmd_mode, skipped, path, page_id, lang, redirects]  # (default)
     # show_created_at: true           # (default)
 
   # --- robots.txt (crawler policy) ---

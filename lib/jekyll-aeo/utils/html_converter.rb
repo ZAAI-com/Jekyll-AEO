@@ -16,8 +16,9 @@ module JekyllAeo
         return "" unless content_node
 
         STRIP_ELEMENTS.each { |tag| content_node.css(tag).each(&:remove) }
+        promote_code_languages(content_node)
 
-        ReverseMarkdown.convert(content_node.inner_html, unknown_tags: :bypass).strip
+        ReverseMarkdown.convert(content_node.inner_html, unknown_tags: :bypass, github_flavored: true).strip
       end
 
       def self.extract_content(doc, config)
@@ -29,7 +30,18 @@ module JekyllAeo
         end
       end
 
-      private_class_method :extract_content
+      # Jekyll/Rouge: <div class="language-python"><div class="highlight"><pre>…
+      # ReverseMarkdown: reads `highlight-{lang}` from <pre>'s parent
+      def self.promote_code_languages(node)
+        node.css('div[class*="language-"]').each do |div|
+          next unless div["class"] =~ /language-(\S+)/
+
+          pre = div.at_css("pre")
+          pre.parent["class"] = "highlight-#{Regexp.last_match(1)}" if pre&.parent
+        end
+      end
+
+      private_class_method :extract_content, :promote_code_languages
     end
   end
 end

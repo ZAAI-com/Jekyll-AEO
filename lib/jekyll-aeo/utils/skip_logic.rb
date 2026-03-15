@@ -7,7 +7,7 @@ module JekyllAeo
         return "plugin disabled" if config["enabled"] == false
         return "static file" if static_file?(obj)
         return "non-HTML output" unless html_output?(obj)
-        return "markdown_copy: false" if obj.data["markdown_copy"] == false
+        return "dotmd_mode: disabled" if obj.data["dotmd_mode"] == "disabled"
         return "redirect" if obj.data["redirect_to"]
         return "llms file" if llms_file?(obj, site)
         return "excluded" if excluded?(obj, config)

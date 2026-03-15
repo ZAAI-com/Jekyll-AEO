@@ -60,10 +60,17 @@ class SkipLogicTest < Minitest::Test
     assert JekyllAeo::Utils::SkipLogic.skip?(obj, mock_site, default_config)
   end
 
-  def test_skip_markdown_copy_false
-    obj = mock_obj(data: { "markdown_copy" => false })
+  def test_skip_dotmd_mode_disabled
+    obj = mock_obj(data: { "dotmd_mode" => "disabled" })
 
     assert JekyllAeo::Utils::SkipLogic.skip?(obj, mock_site, default_config)
+  end
+
+  def test_skip_reason_dotmd_mode_disabled
+    obj = mock_obj(data: { "dotmd_mode" => "disabled" })
+    reason = JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, default_config)
+
+    assert_equal "dotmd_mode: disabled", reason
   end
 
   def test_skip_redirect_page

@@ -23,12 +23,14 @@ This content between if/endif should be preserved.
 
 ## Raw Block
 
-These Liquid-like tags {{ should_not_be_stripped }} are protected.
+These Liquid-like tags {{ should\_not\_be\_stripped }} are protected.
 
 ## Indented Code Block
 
-    def indented_example():
-        return "This should be protected with protect_indented_code: true"
+```plaintext
+def indented_example():
+    return "This should be protected with protect_indented_code: true"
+```
 
 ## Kramdown Attributes
 

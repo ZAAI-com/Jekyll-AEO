@@ -192,14 +192,15 @@ class UrlMapTest < Minitest::Test
 
     content = File.read(output_path)
 
-    assert_includes content, "Page ID"
-    assert_includes content, "URL"
-    assert_includes content, "Lang"
     assert_includes content, "Layout"
-    assert_includes content, "Path"
-    assert_includes content, "Redirects"
-    assert_includes content, "Markdown Copy"
+    assert_includes content, "URL"
+    assert_includes content, "URL DotMd"
+    assert_includes content, "DotMd Mode"
     assert_includes content, "Skipped"
+    assert_includes content, "Path"
+    assert_includes content, "Page ID"
+    assert_includes content, "Lang"
+    assert_includes content, "Redirects"
   end
 
   def test_custom_columns
@@ -214,7 +215,7 @@ class UrlMapTest < Minitest::Test
 
     assert_includes content, "| URL | Path |"
     refute_includes content, "Page ID"
-    refute_includes content, "Markdown Copy"
+    refute_includes content, "URL DotMd"
     refute_includes content, "Skipped"
   end
 
@@ -296,7 +297,7 @@ class UrlMapTest < Minitest::Test
     assert_includes content, "/about-us/, /old-about/"
   end
 
-  def test_markdown_copy_url
+  def test_url_dotmd_column
     write_source("about.md")
     page = mock_page(url: "/about/", source_file: "about.md")
     site = mock_site(pages: [page])
@@ -318,7 +319,7 @@ class UrlMapTest < Minitest::Test
     assert_includes content, "redirect"
   end
 
-  def test_skipped_page_has_empty_markdown_copy
+  def test_skipped_page_has_empty_url_dotmd
     write_source("secret.md")
     page = mock_page(url: "/secret/", source_file: "secret.md", data: { "redirect_to" => "/other/" })
     site = mock_site(pages: [page])
@@ -328,9 +329,9 @@ class UrlMapTest < Minitest::Test
     lines = content.lines.select { |l| l.include?("/secret/") }
 
     assert_equal 1, lines.length
-    # The markdown_copy cell should be empty for skipped pages
+    # The url_dotmd cell should be empty for skipped pages
     cells = lines.first.split("|").map(&:strip)
-    md_copy_index = 7 # 0=empty, 1=page_id, 2=url, 3=lang, 4=layout, 5=path, 6=redirects, 7=markdown_copy
+    md_copy_index = 3 # 0=empty, 1=layout, 2=url, 3=url_dotmd
 
     assert_equal "", cells[md_copy_index]
   end
@@ -394,9 +395,9 @@ class UrlMapTest < Minitest::Test
     refute_includes content, "logo"
   end
 
-  # --- Bug fix: .html URLs produce correct markdown copy ---
+  # --- Bug fix: .html URLs produce correct url_dotmd ---
 
-  def test_markdown_copy_for_html_url
+  def test_url_dotmd_for_html_url
     write_source("about.html")
     page = mock_page(url: "/about.html", source_file: "about.html", dest_html: "/about.html")
     site = mock_site(pages: [page])
@@ -408,7 +409,7 @@ class UrlMapTest < Minitest::Test
     refute_includes content, "/about.html.md"
   end
 
-  def test_markdown_copy_for_404_html
+  def test_url_dotmd_for_404_html
     write_source("404.html")
     page = mock_page(url: "/404.html", source_file: "404.html", dest_html: "/404.html")
     site = mock_site(pages: [page])
@@ -418,5 +419,34 @@ class UrlMapTest < Minitest::Test
 
     assert_includes content, "/404.md"
     refute_includes content, "/404.html.md"
+  end
+
+  # --- dotmd_mode column ---
+
+  def test_dotmd_mode_column_shows_converter
+    write_source("about.md")
+    page = mock_page(url: "/about/", source_file: "about.md", data: {
+                       "aeo_dotmd_mode" => "md2dotmd"
+                     })
+    site = mock_site(pages: [page], aeo_config: {
+                       "url_map" => { "enabled" => true, "columns" => %w[url dotmd_mode] }
+                     })
+    JekyllAeo::Generators::UrlMap.generate(site)
+
+    content = File.read(output_path)
+
+    assert_includes content, "DotMd Mode"
+    assert_includes content, "md2dotmd"
+  end
+
+  def test_dotmd_mode_column_in_default
+    write_source("about.md")
+    page = mock_page(url: "/about/", source_file: "about.md")
+    site = mock_site(pages: [page])
+    JekyllAeo::Generators::UrlMap.generate(site)
+
+    content = File.read(output_path)
+
+    assert_includes content, "DotMd Mode"
   end
 end
