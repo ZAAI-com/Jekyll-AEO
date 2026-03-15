@@ -4,7 +4,7 @@ require "fileutils"
 
 module JekyllAeo
   module Generators
-    module MarkdownPage
+    module DotMdWriter
       YAML_FRONT_MATTER_REGEXP = /\A(---\s*\n.*?\n?)^(---\s*$\n?)/m
 
       def self.process(obj, site)
