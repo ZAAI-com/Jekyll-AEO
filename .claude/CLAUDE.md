@@ -31,8 +31,9 @@ A RubyGem (`jekyll-aeo`) for Answer Engine Optimization — generates clean mark
 - Config is always read via `JekyllAeo::Config.from_site(site)`, never directly from `site.config`
 - Tests use Minitest (not RSpec), located in `test/` mirroring `lib/` structure
 - `test/integration/example_site_test.rb` — integration tests that build `demo/example.com/` and assert on output
-- Run unit tests: `rake test`
-- Run all tests (unit + integration): `rake` (default task runs rubocop + all tests)
+- Run tests: `rake test`
+- Run linter + tests: `rake` (default task runs rubocop + all tests)
+- Run integration tests standalone: `rake site:test`
 - Build/serve the example site: `rake site:build` / `rake site:serve`
 - Build gem: `gem build jekyll-aeo.gemspec`
 

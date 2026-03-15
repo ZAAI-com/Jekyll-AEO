@@ -75,7 +75,7 @@ jekyll_aeo:
       - url
       - url_dotmd
       - dotmd_mode
-      - skipped
+      - excluded
       - path
       - page_id
       - lang
@@ -232,7 +232,7 @@ The table is grouped by collection (Pages first, then alphabetically) with confi
 | `url` | Page URL |
 | `url_dotmd` | Path to the generated `.md` file |
 | `dotmd_mode` | Converter used: `html2dotmd` or `md2dotmd` |
-| `skipped` | Reason the page was skipped (if any) |
+| `excluded` | Reason the page was excluded (if any) |
 | `path` | Relative source file path |
 | `page_id` | Value of `page_id` from front matter |
 | `lang` | Value of `lang` from front matter |

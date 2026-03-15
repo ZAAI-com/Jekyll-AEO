@@ -8,7 +8,7 @@ You are helping the user install and configure **Jekyll-AEO**, a RubyGem for Ans
 
 - Docs: <https://zaai.com/jekyll-aeo>
 - Source: <https://github.com/ZAAI-com/Jekyll-AEO>
-- Requires: Ruby >= 3.0, Jekyll >= 4.0
+- Requires: Ruby >= 3.2, Jekyll >= 4.0
 
 Follow the steps below. Ask the user questions where indicated — do not assume preferences.
 
@@ -22,7 +22,7 @@ Before starting, verify:
 
 1. A `_config.yml` file exists in the working directory (this is a Jekyll site).
 2. A `Gemfile` exists.
-3. Ruby version is >= 3.0 (`ruby --version`).
+3. Ruby version is >= 3.2 (`ruby --version`).
 4. Jekyll version is >= 4.0 (check `Gemfile` or run `bundle exec jekyll --version`).
 5. **Detect existing installation**: Check if `Gemfile` already contains `jekyll-aeo` and if `_config.yml` already has a `jekyll_aeo:` key. If both are present, this is an **update** — inform the user that Jekyll-AEO is already installed and skip to Step 3. If only one is present, note the partial installation and proceed normally.
 
