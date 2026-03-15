@@ -380,10 +380,13 @@ class UrlMapTest < Minitest::Test
     refute_includes content, "style.css"
   end
 
-  def test_assets_collection_excluded
-    write_source("_assets/logo.md")
-    doc = mock_document(url: "/assets/logo/", collection_label: "assets", source_file: "_assets/logo.md")
-    site = mock_site(documents: [doc])
+  def test_static_file_excluded
+    obj = Jekyll::StaticFile.allocate
+    obj.define_singleton_method(:url) { "/assets/logo/" }
+    obj.define_singleton_method(:relative_path) { "_assets/logo.md" }
+    obj.define_singleton_method(:output_ext) { ".html" }
+
+    site = mock_site(documents: [obj])
     JekyllAeo::Generators::UrlMap.generate(site)
 
     content = File.read(output_path)

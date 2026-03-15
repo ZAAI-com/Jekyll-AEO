@@ -34,6 +34,13 @@ class SkipLogicTest < Minitest::Test
     obj
   end
 
+  def mock_static_file(url:, relative_path:)
+    obj = Jekyll::StaticFile.allocate
+    obj.define_singleton_method(:url) { url }
+    obj.define_singleton_method(:relative_path) { relative_path }
+    obj
+  end
+
   def test_normal_html_page_not_skipped
     obj = mock_obj(relative_path: File.basename(__FILE__))
     site = mock_site(source: File.dirname(__FILE__))
@@ -65,8 +72,8 @@ class SkipLogicTest < Minitest::Test
     assert JekyllAeo::Utils::SkipLogic.skip?(obj, mock_site, default_config)
   end
 
-  def test_skip_assets_collection
-    obj = mock_obj(collection_label: "assets")
+  def test_skip_static_file
+    obj = mock_static_file(url: "/assets/style.css", relative_path: "_assets/style.css")
 
     assert JekyllAeo::Utils::SkipLogic.skip?(obj, mock_site, default_config)
   end
@@ -154,11 +161,11 @@ class SkipLogicTest < Minitest::Test
     assert_equal "excluded", reason
   end
 
-  def test_skip_reason_assets_collection
-    obj = mock_obj(collection_label: "assets")
+  def test_skip_reason_static_file
+    obj = mock_static_file(url: "/assets/style.css", relative_path: "_assets/style.css")
     reason = JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, default_config)
 
-    assert_equal "assets collection", reason
+    assert_equal "static file", reason
   end
 
   # --- html2dotmd tests ---
@@ -187,28 +194,13 @@ class SkipLogicTest < Minitest::Test
     assert_nil JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, config)
   end
 
-  def test_skip_static_file_without_output_ext
-    # Simulate a Jekyll::StaticFile — no output_ext method
-    obj = Object.new
-    obj.define_singleton_method(:url) { "/assets/style.css" }
-    obj.define_singleton_method(:relative_path) { "_assets/style.css" }
-
-    assert JekyllAeo::Utils::SkipLogic.skip?(obj, mock_site, default_config)
-  end
-
-  def test_assets_collection_skipped_before_output_ext_check
-    # Object with collection "assets" but no output_ext — must not crash
-    obj = Object.new
-    obj.define_singleton_method(:url) { "/assets/style.css" }
-    obj.define_singleton_method(:relative_path) { "_assets/style.css" }
-    collection = Object.new
-    collection.define_singleton_method(:label) { "assets" }
-    obj.define_singleton_method(:collection) { collection }
-    obj.define_singleton_method(:path) { "/src/_assets/style.css" }
+  def test_static_file_skipped_before_output_ext_check
+    # Jekyll::StaticFile lacks output_ext — must not crash
+    obj = mock_static_file(url: "/assets/style.css", relative_path: "_assets/style.css")
 
     reason = JekyllAeo::Utils::SkipLogic.skip_reason(obj, mock_site, default_config)
 
-    assert_equal "assets collection", reason
+    assert_equal "static file", reason
   end
 
   def test_no_false_positive_for_similar_filename

@@ -5,7 +5,7 @@ module JekyllAeo
     module SkipLogic
       def self.skip_reason(obj, site, config)
         return "plugin disabled" if config["enabled"] == false
-        return "assets collection" if assets_collection?(obj)
+        return "static file" if static_file?(obj)
         return "non-HTML output" unless html_output?(obj)
         return "markdown_copy: false" if obj.data["markdown_copy"] == false
         return "redirect" if obj.data["redirect_to"]
@@ -29,11 +29,11 @@ module JekyllAeo
       end
 
       def self.html_output?(obj)
-        obj.respond_to?(:output_ext) && obj.output_ext == ".html"
+        obj.output_ext == ".html"
       end
 
-      def self.assets_collection?(obj)
-        obj.respond_to?(:collection) && obj.collection&.label == "assets"
+      def self.static_file?(obj)
+        obj.is_a?(Jekyll::StaticFile)
       end
 
       def self.llms_file?(obj, site)
@@ -59,7 +59,7 @@ module JekyllAeo
         source_file_exists?(obj, site) || html2dotmd["enabled"]
       end
 
-      private_class_method :html_output?, :assets_collection?, :llms_file?,
+      private_class_method :html_output?, :static_file?, :llms_file?,
                            :excluded?, :source_file_exists?, :source_available?
     end
   end
